@@ -14,8 +14,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public static final String TAG = MainActivity.class.getSimpleName();
     @Bind(R.id.playButton) Button mPlayButton;
     @Bind(R.id.loginButton) Button mLoginButton;
-    @Bind(R.id.usernameEditText) EditText mUsernameEditText;
-    @Bind(R.id.passwordEditText) EditText mPasswordEditText;
+    @Bind(R.id.aboutButton) Button mAboutButton;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

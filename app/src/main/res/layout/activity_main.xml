@@ -12,5 +12,40 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Hello World!" />
+        android:text="TRUE NORTH"
+        android:id="@+id/appTitleTextView"
+        android:textStyle="bold"
+        android:textSize="50dp"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="35dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="A TRIVIA GAME!"
+        android:id="@+id/appSubtitleTextView"
+        android:layout_below="@+id/appTitleTextView"
+        android:layout_centerHorizontal="true"
+        android:textSize="30dp" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="login"
+        android:id="@+id/loginButton"
+        android:layout_centerVertical="true"
+        android:layout_alignLeft="@+id/appSubtitleTextView"
+        android:layout_alignStart="@+id/appSubtitleTextView"
+        android:layout_alignRight="@+id/appSubtitleTextView"
+        android:layout_alignEnd="@+id/appSubtitleTextView" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="New Button"
+        android:id="@+id/button"
+        android:layout_below="@+id/loginButton"
+        android:layout_centerHorizontal="true" />
+
 </RelativeLayout>

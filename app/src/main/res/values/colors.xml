@@ -5,9 +5,10 @@
     <color name="colorPrimaryLight">#FF7700</color>
     <color name="colorTextIcons">#ffffff</color>
     <color name="colorAccent">#406EBC</color>
+    <color name="colorAccentDark">#251A55</color>
     <color name="colorPrimaryText">#3E2110</color>
     <color name="colorSecondaryText">#BD6916</color>
-    <color name="colorDivider">#F9DEBA</color>
+    <color name="colorDivider">#f9deba</color>
 </resources>
 
 
