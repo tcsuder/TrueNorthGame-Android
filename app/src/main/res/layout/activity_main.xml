@@ -38,14 +38,31 @@
         android:layout_alignLeft="@+id/appSubtitleTextView"
         android:layout_alignStart="@+id/appSubtitleTextView"
         android:layout_alignRight="@+id/appSubtitleTextView"
-        android:layout_alignEnd="@+id/appSubtitleTextView" />
+        android:layout_alignEnd="@+id/appSubtitleTextView"
+        android:background="@drawable/top_button"/>
 
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="New Button"
-        android:id="@+id/button"
+        android:text="quick play"
+        android:id="@+id/playButton"
         android:layout_below="@+id/loginButton"
-        android:layout_centerHorizontal="true" />
+        android:layout_alignLeft="@+id/loginButton"
+        android:layout_alignStart="@+id/loginButton"
+        android:layout_alignRight="@+id/loginButton"
+        android:layout_alignEnd="@+id/loginButton"
+        android:background="@drawable/middle_button"/>
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="About"
+        android:id="@+id/aboutButton"
+        android:layout_below="@+id/playButton"
+        android:layout_alignLeft="@+id/playButton"
+        android:layout_alignStart="@+id/playButton"
+        android:layout_alignRight="@+id/playButton"
+        android:layout_alignEnd="@+id/playButton"
+        android:background="@drawable/bottom_button"/>
 
 </RelativeLayout>

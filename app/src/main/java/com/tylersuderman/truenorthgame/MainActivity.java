@@ -35,8 +35,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 startActivity(intent);
                 break;
             case R.id.loginButton:
-                String username = mUsernameEditText.getText().toString();
-                String password = mPasswordEditText.getText().toString();
                 Intent fakeIntent = new Intent(MainActivity.this, GameRoundActivity.class);
                 startActivity(fakeIntent);
                 break;
