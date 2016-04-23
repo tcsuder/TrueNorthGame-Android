@@ -41,48 +41,60 @@
         android:layout_height="wrap_content"
         android:text="login"
         android:id="@+id/loginButton"
-        android:background="@drawable/main_button"
-        android:layout_above="@+id/playButton"
+        android:background="@drawable/login_button"
+        android:layout_centerVertical="true"
         android:layout_alignLeft="@+id/playButton"
         android:layout_alignStart="@+id/playButton"
         android:layout_alignRight="@+id/playButton"
-        android:layout_alignEnd="@+id/playButton"
-        android:layout_marginBottom="10dp"/>
+        android:layout_alignEnd="@+id/playButton" />
 
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="quick play"
         android:id="@+id/playButton"
-        android:background="@drawable/main_button"
-        android:layout_above="@+id/aboutButton"
+        android:background="@drawable/quick_play_button"
+        android:layout_below="@+id/loginButton"
         android:layout_alignLeft="@+id/appTitleTextView"
         android:layout_alignStart="@+id/appTitleTextView"
+        android:layout_marginTop="26dp"
         android:layout_alignRight="@+id/appTitleTextView"
-        android:layout_alignEnd="@+id/appTitleTextView"
-        android:layout_marginBottom="10dp"/>
+        android:layout_alignEnd="@+id/appTitleTextView" />
 
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="About"
         android:id="@+id/aboutButton"
-        android:background="@drawable/main_button"
-        android:layout_marginBottom="69dp"
-        android:layout_alignParentBottom="true"
-        android:layout_alignRight="@+id/appTitleTextView"
-        android:layout_alignEnd="@+id/appTitleTextView"
+        android:background="@drawable/about_button"
+        android:layout_below="@+id/playButton"
         android:layout_alignLeft="@+id/playButton"
-        android:layout_alignStart="@+id/playButton"/>
+        android:layout_alignStart="@+id/playButton"
+        android:layout_marginTop="30dp"
+        android:layout_alignRight="@+id/playButton"
+        android:layout_alignEnd="@+id/playButton" />
 
     <EditText
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/editText"
+        android:id="@+id/usernameEditText"
         android:layout_below="@+id/appSubtitleTextView"
-        android:layout_alignLeft="@+id/imageView"
-        android:layout_alignStart="@+id/imageView"
         android:layout_marginTop="42dp"
-        android:hint="testningtesting" />
+        android:hint="username - tyler"
+        android:layout_alignLeft="@+id/loginButton"
+        android:layout_alignStart="@+id/loginButton"
+        android:layout_alignRight="@+id/loginButton"
+        android:layout_alignEnd="@+id/loginButton" />
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/passwordEditText"
+        android:hint="password - password"
+        android:layout_below="@+id/usernameEditText"
+        android:layout_alignRight="@+id/usernameEditText"
+        android:layout_alignEnd="@+id/usernameEditText"
+        android:layout_alignLeft="@+id/loginButton"
+        android:layout_alignStart="@+id/loginButton" />
 
 </RelativeLayout>

@@ -3,9 +3,12 @@ package com.tylersuderman.truenorthgame;
         import android.content.Intent;
         import android.support.v7.app.AppCompatActivity;
         import android.os.Bundle;
+        import android.util.Log;
         import android.view.View;
+        import android.view.inputmethod.InputMethodManager;
         import android.widget.Button;
         import android.widget.EditText;
+        import android.widget.Toast;
 
         import butterknife.Bind;
         import butterknife.ButterKnife;
@@ -15,6 +18,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Bind(R.id.playButton) Button mPlayButton;
     @Bind(R.id.loginButton) Button mLoginButton;
     @Bind(R.id.aboutButton) Button mAboutButton;
+    @Bind(R.id.usernameEditText) EditText mUsernameEditText;
+    @Bind(R.id.passwordEditText) EditText mPasswordEditText;
 
 
     @Override
@@ -35,8 +40,29 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 startActivity(intent);
                 break;
             case R.id.loginButton:
-                Intent fakeIntent = new Intent(MainActivity.this, GameRoundActivity.class);
-                startActivity(fakeIntent);
+//                CLOSE KEYBOARD ON CLICK
+                InputMethodManager inputManager = (InputMethodManager)
+                        getSystemService(INPUT_METHOD_SERVICE);
+
+                inputManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(),
+                        InputMethodManager.HIDE_NOT_ALWAYS);
+
+
+                String username = mUsernameEditText.getText().toString();
+                String password = mPasswordEditText.getText().toString();
+                if (username.equals("") || password.equals("")) {
+                    Toast.makeText(MainActivity.this, "No Username/Password", Toast.LENGTH_SHORT).show();
+                } else if (username.equals("tyler") && password.equals("password")) {
+                    Intent loginIntent = new Intent(MainActivity.this, GameRoundActivity.class);
+                    loginIntent.putExtra("username", username);
+                    startActivity(loginIntent);
+                } else {
+                    Toast.makeText(MainActivity.this, "Invalid Username/Password", Toast.LENGTH_SHORT).show();
+                }
+
+                break;
+
+            default:
                 break;
 
         }
