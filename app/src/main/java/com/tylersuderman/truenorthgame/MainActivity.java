@@ -30,6 +30,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         mPlayButton.setOnClickListener(this);
         mLoginButton.setOnClickListener(this);
+        mAboutButton.setOnClickListener(this);
     }
 
     @Override
@@ -61,7 +62,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 }
 
                 break;
-
+            case R.id.aboutButton:
+                Intent aboutIntent = new Intent(MainActivity.this, AboutActivity.class);
+                startActivity(aboutIntent);
+                break;
             default:
                 break;
 
