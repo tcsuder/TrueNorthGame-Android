@@ -23,8 +23,8 @@ public class MainActivityInstrumentationTest {
 
     @Test
     public void validateEditText() {
-        onView(withId(R.id.usernameEditText)).perform(typeText("tyler")).check(matches(withText("tyler")));
-
+        onView(withId(R.id.usernameEditText)).perform(typeText("tyler"))
+                .check(matches(withText("tyler")));
     }
 
     @Test
@@ -32,6 +32,8 @@ public class MainActivityInstrumentationTest {
         onView(withId(R.id.usernameEditText)).perform(typeText("tyler"));
         onView(withId(R.id.passwordEditText)).perform(typeText("password"));
         onView(withId(R.id.loginButton)).perform(click());
+        onView(withId(R.id.welcomeToGameTextView))
+                .check(matches(withText("HELLO TYLER!")));
 
     }
 }
