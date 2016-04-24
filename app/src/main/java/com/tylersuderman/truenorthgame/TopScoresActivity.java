@@ -8,7 +8,7 @@ import android.widget.ListView;
 
 import java.util.ArrayList;
 
-public class TopScoresActivity extends AppCompatActivity extends  {
+public class TopScoresActivity extends AppCompatActivity  {
     public static final String TAG = TopScoresActivity.class.getSimpleName();
     private ListView mListView;
     private ArrayList<Player> players = Player.getPlayers();
