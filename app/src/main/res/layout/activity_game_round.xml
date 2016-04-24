@@ -17,4 +17,32 @@
         android:textSize="30dp"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true" />
+
+    <TextView
+        android:layout_width="165dp"
+        android:layout_height="100dp"
+        android:text="City"
+        android:id="@+id/cityOneTextView"
+        android:layout_below="@+id/welcomeToGameTextView"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:background="@color/colorPrimaryDark"
+        android:layout_marginTop="40dp"
+        android:padding="30dp"
+        android:textColor="@color/colorTextIcons"
+        android:textStyle="bold"/>
+
+    <TextView
+        android:layout_width="165dp"
+        android:layout_height="100dp"
+        android:text="City 2"
+        android:id="@+id/cityTwoTextView"
+        android:layout_below="@+id/welcomeToGameTextView"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:background="@color/colorPrimaryDark"
+        android:layout_marginTop="40dp"
+        android:padding="30dp"
+        android:textColor="@color/colorTextIcons"
+        android:textStyle="bold"/>
 </RelativeLayout>
