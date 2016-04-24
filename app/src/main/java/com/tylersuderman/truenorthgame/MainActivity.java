@@ -36,7 +36,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.quickPlayButton:
+                String notUsername = " ";
                 Intent intent = new Intent(MainActivity.this, GameRoundActivity.class);
+                intent.putExtra("username", notUsername);
                 startActivity(intent);
                 break;
             case R.id.loginButton:
