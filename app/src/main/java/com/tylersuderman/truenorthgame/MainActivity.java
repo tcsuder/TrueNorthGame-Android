@@ -3,7 +3,6 @@ package com.tylersuderman.truenorthgame;
         import android.content.Intent;
         import android.support.v7.app.AppCompatActivity;
         import android.os.Bundle;
-        import android.util.Log;
         import android.view.View;
         import android.view.inputmethod.InputMethodManager;
         import android.widget.Button;
@@ -15,7 +14,7 @@ package com.tylersuderman.truenorthgame;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
     public static final String TAG = MainActivity.class.getSimpleName();
-    @Bind(R.id.playButton) Button mPlayButton;
+    @Bind(R.id.quickPlayButton) Button mPlayButton;
     @Bind(R.id.loginButton) Button mLoginButton;
     @Bind(R.id.aboutButton) Button mAboutButton;
     @Bind(R.id.usernameEditText) EditText mUsernameEditText;
@@ -36,7 +35,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.playButton:
+            case R.id.quickPlayButton:
                 Intent intent = new Intent(MainActivity.this, GameRoundActivity.class);
                 startActivity(intent);
                 break;

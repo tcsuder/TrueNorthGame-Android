@@ -43,16 +43,16 @@
         android:id="@+id/loginButton"
         android:background="@drawable/login_button"
         android:layout_centerVertical="true"
-        android:layout_alignLeft="@+id/playButton"
-        android:layout_alignStart="@+id/playButton"
-        android:layout_alignRight="@+id/playButton"
-        android:layout_alignEnd="@+id/playButton" />
+        android:layout_alignLeft="@+id/quickPlayButton"
+        android:layout_alignStart="@+id/quickPlayButton"
+        android:layout_alignRight="@+id/quickPlayButton"
+        android:layout_alignEnd="@+id/quickPlayButton" />
 
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="quick play"
-        android:id="@+id/playButton"
+        android:id="@+id/quickPlayButton"
         android:background="@drawable/quick_play_button"
         android:layout_below="@+id/loginButton"
         android:layout_alignLeft="@+id/appTitleTextView"
@@ -67,12 +67,12 @@
         android:text="About"
         android:id="@+id/aboutButton"
         android:background="@drawable/about_button"
-        android:layout_below="@+id/playButton"
-        android:layout_alignLeft="@+id/playButton"
-        android:layout_alignStart="@+id/playButton"
+        android:layout_below="@+id/quickPlayButton"
+        android:layout_alignLeft="@+id/quickPlayButton"
+        android:layout_alignStart="@+id/quickPlayButton"
         android:layout_marginTop="30dp"
-        android:layout_alignRight="@+id/playButton"
-        android:layout_alignEnd="@+id/playButton" />
+        android:layout_alignRight="@+id/quickPlayButton"
+        android:layout_alignEnd="@+id/quickPlayButton" />
 
     <EditText
         android:layout_width="wrap_content"
