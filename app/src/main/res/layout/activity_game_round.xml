@@ -13,9 +13,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="THIS IS A GAME!"
-        android:id="@+id/textView"
+        android:id="@+id/welcomeToGameTextView"
+        android:textSize="30dp"
         android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="73dp"
-        android:textSize="40dp" />
+        android:layout_centerHorizontal="true" />
 </RelativeLayout>

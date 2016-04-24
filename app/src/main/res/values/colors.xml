@@ -2,10 +2,12 @@
 <resources>
     <color name="colorPrimary">#D80006</color>
     <color name="colorPrimaryDark">#820008</color>
-    <color name="colorPrimaryLight">#FF7700</color>
+    <color name="colorPrimaryLight">#ffa732</color>
     <color name="colorTextIcons">#ffffff</color>
     <color name="colorAccent">#406EBC</color>
     <color name="colorAccentDark">#251A55</color>
+    <color name="colorSecondary">#6E8031</color>
+    <color name="colorSecondaryDark">#48521F</color>
     <color name="colorPrimaryText">#3E2110</color>
     <color name="colorSecondaryText">#BD6916</color>
     <color name="colorDivider">#f9deba</color>
@@ -13,8 +15,6 @@
 
 
 <!--
-darkgreen - #576226
-lightgreen - #6E8031
 darkorange - #FF7700
 lightorange - #FFA732
 darkblue - #251A55

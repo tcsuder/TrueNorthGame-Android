@@ -4,19 +4,17 @@
 
     <gradient
         android:angle="270"
-        android:startColor="@color/colorAccent"
-        android:endColor="@color/colorAccentDark" />
+        android:startColor="@color/colorSecondary"
+        android:endColor="@color/colorSecondaryDark"/>
 
+    <corners
+        android:radius="10dp"/>
 
     <padding
         android:bottom="7dp"
         android:left="7dp"
         android:right="7dp"
         android:top="7dp" />
-
-    <stroke
-        android:width="2dp"
-        android:color="@color/colorAccentDark" />
 
 
 </shape>
