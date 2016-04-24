@@ -92,7 +92,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="True North is a game by Tyler Suderman, written and designed at Epicodus, a vocational school for web development. For more information follow the links bellow."
+            android:text="True North is a game by Tyler Suderman, written and designed at Epicodus, a vocational school for web development. More info:"
             android:id="@+id/aboutTextView"
             android:layout_gravity="center_horizontal"
             android:layout_margin="10dp"
@@ -100,41 +100,50 @@
             android:textColor="@color/colorTextIcons"
             android:textSize="15dp" />
 
-        <TextView
+        <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="True North&apos;s GitHub Repo"
-            android:id="@+id/repoLinkTextView"
+            android:text="Link"
+            android:id="@+id/repoLinkButton"
             android:layout_gravity="center_horizontal"
-            android:layout_marginTop="20dp"
+            android:layout_marginTop="10dp"
             android:textSize="20dp"
             android:textStyle="bold"
+            android:background="@android:color/transparent"
             android:textColor="@color/colorPrimaryLight"
-            android:clickable="true" />
+            android:clickable="true"
+            android:elegantTextHeight="false"
+            android:allowUndo="true" />
 
-        <TextView
+        <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Other Projects by Tyler Suderman"
-            android:id="@+id/gitHubLinkTextView"
+            android:text="Link"
+            android:id="@+id/gitHubLinkButton"
             android:layout_gravity="center_horizontal"
             android:layout_marginTop="20dp"
             android:textSize="20dp"
             android:textStyle="bold"
+            android:background="@android:color/transparent"
             android:textColor="@color/colorPrimaryLight"
-            android:clickable="true" />
+            android:clickable="true"
+            android:elegantTextHeight="false"
+            android:allowUndo="true" />
 
-        <TextView
+        <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="More on Tyler Suderman"
-            android:id="@+id/linkdInTextView"
+            android:text="Link"
+            android:id="@+id/linkdInLinkButton"
             android:layout_gravity="center_horizontal"
             android:layout_marginTop="20dp"
             android:textSize="20dp"
             android:textStyle="bold"
+            android:background="@android:color/transparent"
             android:textColor="@color/colorPrimaryLight"
-            android:clickable="true" />
+            android:clickable="true"
+            android:elegantTextHeight="false"
+            android:allowUndo="true" />
 
     </LinearLayout>
 
