@@ -1,6 +1,8 @@
 package com.tylersuderman.truenorthgame;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 
 /**
  * Created by tylersuderman on 4/24/16.
@@ -9,7 +11,24 @@ public class Player {
     private String mPlayerName;
     private Integer mPlayerScore;
 
-//    FAKE DATA
+    public Player(String name) {
+        this.mPlayerName = name;
+        this.mPlayerScore = (int) Math.floor(Math.random() * 1001);
+    }
+
+    public String getName() {
+        return mPlayerName;
+    }
+    public Integer getScore() {
+        return mPlayerScore;
+    }
+    public Integer addScore(int newScore) {
+        this.mPlayerScore += newScore;
+        return mPlayerScore;
+    }
+
+
+    //    FAKE DATA
 
     public static ArrayList<Player> getPlayers() {
         Player tom = new Player("Tom");
@@ -26,24 +45,5 @@ public class Player {
         players.add(lawdyJean);
 
         return players;
-    }
-
-
-
-
-    public Player(String name) {
-        this.mPlayerName = name;
-        this.mPlayerScore = (int) Math.floor(Math.random() * 101);
-    }
-
-    public String getName() {
-        return mPlayerName;
-    }
-    public Integer getScore() {
-        return mPlayerScore;
-    }
-    public Integer addScore(int newScore) {
-        this.mPlayerScore += newScore;
-        return mPlayerScore;
     }
 }
