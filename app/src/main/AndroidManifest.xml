@@ -27,7 +27,11 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.tylersuderman.truenorthgame.MainActivity" />
         </activity>
-        <activity android:name=".TopScoresActivity"></activity>
+        <activity android:name=".TopScoresActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.tylersuderman.truenorthgame.MainActivity" />
+        </activity>
     </application>
 
 </manifest>

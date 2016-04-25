@@ -10,7 +10,10 @@ android:layout_height="match_parent"
         android:layout_marginTop="40dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Name:" />
+        android:text="Name"
+        android:shadowColor="@color/colorAccentDark"
+        android:textStyle="bold"
+        android:textColor="@color/colorAccentDark" />
 
     <TextView
         android:id="@+id/playerScore"
@@ -21,5 +24,7 @@ android:layout_height="match_parent"
         android:layout_marginTop="40dp"
         android:textSize="30dp"
         android:text="Score"
-        android:layout_weight="0.97" />
+        android:layout_weight="0.97"
+        android:shadowColor="@color/colorPrimaryDark"
+        android:textColor="@color/colorPrimaryDark" />
 </LinearLayout>
