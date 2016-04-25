@@ -42,7 +42,7 @@
         android:text="login"
         android:id="@+id/loginButton"
         android:background="@drawable/login_button"
-        android:layout_centerVertical="true"
+        android:layout_below="@+id/passwordEditText"
         android:layout_alignLeft="@+id/quickPlayButton"
         android:layout_alignStart="@+id/quickPlayButton"
         android:layout_alignRight="@+id/quickPlayButton"
@@ -57,7 +57,7 @@
         android:layout_below="@+id/loginButton"
         android:layout_alignLeft="@+id/appTitleTextView"
         android:layout_alignStart="@+id/appTitleTextView"
-        android:layout_marginTop="26dp"
+        android:layout_marginTop="20dp"
         android:layout_alignRight="@+id/appTitleTextView"
         android:layout_alignEnd="@+id/appTitleTextView" />
 
@@ -70,16 +70,29 @@
         android:layout_below="@+id/quickPlayButton"
         android:layout_alignLeft="@+id/quickPlayButton"
         android:layout_alignStart="@+id/quickPlayButton"
-        android:layout_marginTop="30dp"
+        android:layout_marginTop="20dp"
         android:layout_alignRight="@+id/quickPlayButton"
         android:layout_alignEnd="@+id/quickPlayButton" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Top Scores"
+        android:id="@+id/topScoresButton"
+        android:background="@drawable/top_scores_button"
+        android:layout_marginTop="20dp"
+        android:layout_below="@+id/aboutButton"
+        android:layout_alignLeft="@+id/aboutButton"
+        android:layout_alignStart="@+id/aboutButton"
+        android:layout_alignRight="@+id/aboutButton"
+        android:layout_alignEnd="@+id/aboutButton" />
 
     <EditText
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/usernameEditText"
         android:layout_below="@+id/appSubtitleTextView"
-        android:layout_marginTop="42dp"
+        android:layout_marginTop="60dp"
         android:hint="username - tyler"
         android:layout_alignLeft="@+id/loginButton"
         android:layout_alignStart="@+id/loginButton"
@@ -91,6 +104,7 @@
         android:layout_height="wrap_content"
         android:id="@+id/passwordEditText"
         android:hint="password - password"
+        android:layout_marginBottom="20dp"
         android:layout_below="@+id/usernameEditText"
         android:layout_alignRight="@+id/usernameEditText"
         android:layout_alignEnd="@+id/usernameEditText"

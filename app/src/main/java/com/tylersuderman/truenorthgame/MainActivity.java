@@ -17,6 +17,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Bind(R.id.quickPlayButton) Button mPlayButton;
     @Bind(R.id.loginButton) Button mLoginButton;
     @Bind(R.id.aboutButton) Button mAboutButton;
+    @Bind(R.id.topScoresButton) Button mTopScoreButton;
     @Bind(R.id.usernameEditText) EditText mUsernameEditText;
     @Bind(R.id.passwordEditText) EditText mPasswordEditText;
 
@@ -30,6 +31,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         mPlayButton.setOnClickListener(this);
         mLoginButton.setOnClickListener(this);
         mAboutButton.setOnClickListener(this);
+        mTopScoreButton.setOnClickListener(this);
     }
 
     @Override
@@ -67,6 +69,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 Intent aboutIntent = new Intent(MainActivity.this, AboutActivity.class);
                 startActivity(aboutIntent);
                 break;
+            case R.id.topScoresButton:
+                Intent topScoresIntent = new Intent(MainActivity.this, TopScoresActivity.class);
+                startActivity(topScoresIntent);
             default:
                 break;
 
