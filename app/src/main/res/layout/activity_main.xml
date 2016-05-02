@@ -51,7 +51,7 @@
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="quick play"
+        android:text="play"
         android:id="@+id/quickPlayButton"
         android:background="@drawable/quick_play_button"
         android:layout_below="@+id/loginButton"
@@ -77,7 +77,7 @@
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Top Scores"
+        android:text="Scores"
         android:id="@+id/topScoresButton"
         android:background="@drawable/top_scores_button"
         android:layout_marginTop="20dp"
