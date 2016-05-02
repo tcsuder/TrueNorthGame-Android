@@ -55,7 +55,7 @@ public class GameRoundActivity extends AppCompatActivity {
     }
 
     private void getTrackIds(String artistId) {
-        SpotifyService.findTrackIds(artistId, new Callback() {
+        SpotifyService.findSongIds(artistId, new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
                 e.printStackTrace();
@@ -63,7 +63,7 @@ public class GameRoundActivity extends AppCompatActivity {
 
             @Override
             public void onResponse(Call call, Response response) throws IOException {
-                tracks = SpotifyService.processTrackIds(response);
+                tracks = SpotifyService.processSongIds(response);
             }
         });
     }

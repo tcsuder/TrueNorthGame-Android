@@ -76,7 +76,7 @@ public class SpotifyService {
         return artist;
     }
 
-    public static void findTrackIds(String id, Callback callback) {
+    public static void findSongIds(String id, Callback callback) {
 
         OkHttpClient client = new OkHttpClient.Builder()
                 .build();
@@ -96,7 +96,7 @@ public class SpotifyService {
         call.enqueue(callback);
     }
 
-    public static ArrayList<Song> processTrackIds(Response response) {
+    public static ArrayList<Song> processSongIds(Response response) {
         ArrayList<Song> tracks = new ArrayList<>();
         try {
             String jsonData = response.body().string();
@@ -105,14 +105,14 @@ public class SpotifyService {
                 JSONArray tracksJSON = spotifyJSON.getJSONArray("tracks");
 
                 for (int i = 0; i < tracksJSON.length(); i++) {
-                    JSONObject track = tracksJSON.getJSONObject(i);
-                    JSONArray artistArray = track.getJSONArray("artists");
+                    JSONObject song = tracksJSON.getJSONObject(i);
+                    JSONArray artistArray = song.getJSONArray("artists");
 
-                    String id = track.getString("id");
-                    String title = track.getString("name");
+                    String id = song.getString("id");
+                    String title = song.getString("name");
                     String artist = artistArray.getJSONObject(0).getString("name");
-                    String album = track.getJSONObject("album").getString("name");
-                    String preview = track.getString("preview_url");
+                    String album = song.getJSONObject("album").getString("name");
+                    String preview = song.getString("preview_url");
 
                     Song newTrack = new Song(id, title, artist, album, preview);
                     tracks.add(newTrack);

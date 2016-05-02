@@ -4,23 +4,23 @@ package com.tylersuderman.truenorthgame;
  * Created by tylersuderman on 5/2/16.
  */
 public class Song {
-    private String mTrackTitle;
+    private String mSongTitle;
     private String mArtistName;
     private String mAlbumTitle;
     private String mPreviewUrl;
     private String mTrackId;
 
-    public Song(String trackId, String trackTitle, String artistName, String albumTitle,
+    public Song(String trackId, String SongTitle, String artistName, String albumTitle,
                 String previewUrl) {
         this.mTrackId = trackId;
-        this.mTrackTitle = trackTitle;
+        this.mSongTitle = SongTitle;
         this.mArtistName = artistName;
         this.mAlbumTitle = albumTitle;
         this.mPreviewUrl = previewUrl;
     }
 
     public String getTitle() {
-        return mTrackTitle;
+        return mSongTitle;
     }
 
     public String getArtist() {
