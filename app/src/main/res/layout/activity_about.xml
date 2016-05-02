@@ -103,7 +103,7 @@
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Link"
+            android:text="True North Repo"
             android:id="@+id/repoLinkButton"
             android:layout_gravity="center_horizontal"
             android:layout_marginTop="10dp"
@@ -118,7 +118,7 @@
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Link"
+            android:text="Other Projects"
             android:id="@+id/gitHubLinkButton"
             android:layout_gravity="center_horizontal"
             android:layout_marginTop="20dp"
@@ -133,7 +133,7 @@
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Link"
+            android:text="LinkedIn"
             android:id="@+id/linkdInLinkButton"
             android:layout_gravity="center_horizontal"
             android:layout_marginTop="20dp"

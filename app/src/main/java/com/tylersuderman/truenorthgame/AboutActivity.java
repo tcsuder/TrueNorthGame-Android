@@ -1,5 +1,7 @@
 package com.tylersuderman.truenorthgame;
 
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Html;
@@ -27,21 +29,28 @@ public class AboutActivity extends AppCompatActivity implements View.OnClickList
         mRepoLinkButton.setOnClickListener(this);
         mGitHubLinkButton.setOnClickListener(this);
         mLinkdInLinkButton.setOnClickListener(this);
-        Spanned html = Html.fromHtml("<a href='https://github.com/tcsuder/TrueNorthGame-Android'>True North Project</a>");
-        mRepoLinkButton.setMovementMethod(LinkMovementMethod.getInstance());
-        mRepoLinkButton.setText(html);
-        Spanned html2 = Html.fromHtml("<a href='https://github.com/tcsuder/'>Other Projects</a>");
-        mGitHubLinkButton.setMovementMethod(LinkMovementMethod.getInstance());
-        mGitHubLinkButton.setText(html2);
-        Spanned html3 = Html.fromHtml("<a href='https://www.linkedin.com/in/tylersuderman'>Tyler Suderman</a>");
-        mLinkdInLinkButton.setMovementMethod(LinkMovementMethod.getInstance());
-        mLinkdInLinkButton.setText(html3);
+
     }
 
     @Override
     public void onClick(View v) {
-        switch (v.getId()) {
-
+        switch(v.getId()) {
+            case R.id.repoLinkButton:
+                Uri gameRepo = Uri.parse("https://github.com/tcsuder/TrueNorthGame-Android");
+                Intent repoIntent = new Intent(Intent.ACTION_VIEW, gameRepo);
+                startActivity(repoIntent);
+                break;
+            case R.id.gitHubLinkButton:
+                Uri github = Uri.parse("https://github.com/tcsuder/");
+                Intent gitIntent = new Intent(Intent.ACTION_VIEW, github);
+                startActivity(gitIntent);
+                break;
+            case R.id.linkdInLinkButton:
+                Uri linkedIn = Uri.parse("https://www.linkedin.com/in/tylersuderman");
+                Intent linkedIntent = new Intent(Intent.ACTION_VIEW, linkedIn);
+                startActivity(linkedIntent);
+                break;
         }
     }
+
 }
