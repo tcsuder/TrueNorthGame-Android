@@ -97,7 +97,7 @@ public class SpotifyService {
     }
 
     public static ArrayList<Song> processSongIds(Response response) {
-        ArrayList<Song> tracks = new ArrayList<>();
+        ArrayList<Song> songs = new ArrayList<>();
         try {
             String jsonData = response.body().string();
             if (response.isSuccessful()) {
@@ -114,8 +114,8 @@ public class SpotifyService {
                     String album = song.getJSONObject("album").getString("name");
                     String preview = song.getString("preview_url");
 
-                    Song newTrack = new Song(id, title, artist, album, preview);
-                    tracks.add(newTrack);
+                    Song newSong = new Song(id, title, artist, album, preview);
+                    songs.add(newSong);
                 }
             }
         } catch (IOException e) {
@@ -123,6 +123,7 @@ public class SpotifyService {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        return tracks;
+        Collections.shuffle(songs);
+        return songs;
     }
 }

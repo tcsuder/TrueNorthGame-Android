@@ -20,7 +20,7 @@ public class GameRoundActivity extends AppCompatActivity {
     public static final String TAG = GameRoundActivity.class.getSimpleName();
     public String SPOTIFY_ACCESS_TOKEN;
     public String artistName;
-    public ArrayList<Song> tracks = new ArrayList<>();
+    public ArrayList<Song> songs = new ArrayList<>();
 
 
     @Override
@@ -63,7 +63,7 @@ public class GameRoundActivity extends AppCompatActivity {
 
             @Override
             public void onResponse(Call call, Response response) throws IOException {
-                tracks = SpotifyService.processSongIds(response);
+                songs = SpotifyService.processSongIds(response);
             }
         });
     }
