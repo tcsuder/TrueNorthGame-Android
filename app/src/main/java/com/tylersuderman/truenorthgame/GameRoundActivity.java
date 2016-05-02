@@ -20,7 +20,7 @@ public class GameRoundActivity extends AppCompatActivity {
     public static final String TAG = GameRoundActivity.class.getSimpleName();
     public String SPOTIFY_ACCESS_TOKEN;
     public String artistName;
-    public String data;
+    public ArrayList<Song> tracks = new ArrayList<>();
 
 
     @Override
@@ -32,10 +32,10 @@ public class GameRoundActivity extends AppCompatActivity {
         Intent intent = getIntent();
         SPOTIFY_ACCESS_TOKEN = intent.getStringExtra("token");
         artistName = intent.getStringExtra("artistName");
-        getArtist("the beatles");
+        getArtistTracks("the beatles");
     }
 
-    private void getArtist(String artistName) {
+    private void getArtistTracks(String artistName) {
         SpotifyService.findArtist(artistName, new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
@@ -46,7 +46,24 @@ public class GameRoundActivity extends AppCompatActivity {
             public void onResponse(Call call, Response response) {
                 Artist artist = SpotifyService
                     .processArtistResults(response).get(0);
-                Log.d(TAG, artist.getId());
+                String artistId = artist.getId();
+
+                getTrackIds(artistId);
+
+            }
+        });
+    }
+
+    private void getTrackIds(String artistId) {
+        SpotifyService.findTrackIds(artistId, new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                e.printStackTrace();
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                tracks = SpotifyService.processTrackIds(response);
             }
         });
     }

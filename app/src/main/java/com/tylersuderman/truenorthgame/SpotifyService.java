@@ -8,6 +8,7 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -84,6 +85,7 @@ public class SpotifyService {
         urlBuilder.addPathSegment("artists");
         urlBuilder.addPathSegment(id);
         urlBuilder.addPathSegment("top-tracks");
+        urlBuilder.addQueryParameter("country", "US");
         String url = urlBuilder.build().toString();
 
         Request request= new Request.Builder()
@@ -94,30 +96,33 @@ public class SpotifyService {
         call.enqueue(callback);
     }
 
-    public static ArrayList<Artist> processIds(Response response) {
-        ArrayList<Artist> artist = new ArrayList<>();
+    public static ArrayList<Song> processTrackIds(Response response) {
+        ArrayList<Song> tracks = new ArrayList<>();
         try {
             String jsonData = response.body().string();
             if (response.isSuccessful()) {
                 JSONObject spotifyJSON = new JSONObject(jsonData);
-                JSONObject artistDetailsJSON = spotifyJSON.getJSONObject("artists")
-                        .getJSONArray("items").getJSONObject(0);
+                JSONArray tracksJSON = spotifyJSON.getJSONArray("tracks");
 
-                String name = artistDetailsJSON.getString("name");
-                String imageUrl = artistDetailsJSON.getJSONArray("images")
-                        .getJSONObject(1).getString("url");
-                String id = artistDetailsJSON.getString("id");
-                String page = artistDetailsJSON.getJSONObject("external_urls")
-                        .getString("spotify");
-                Artist instance = new Artist(name, imageUrl, id, page);
-                artist.add(instance);
+                for (int i = 0; i < tracksJSON.length(); i++) {
+                    JSONObject track = tracksJSON.getJSONObject(i);
+                    JSONArray artistArray = track.getJSONArray("artists");
 
+                    String id = track.getString("id");
+                    String title = track.getString("name");
+                    String artist = artistArray.getJSONObject(0).getString("name");
+                    String album = track.getJSONObject("album").getString("name");
+                    String preview = track.getString("preview_url");
+
+                    Song newTrack = new Song(id, title, artist, album, preview);
+                    tracks.add(newTrack);
+                }
             }
         } catch (IOException e) {
             e.printStackTrace();
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        return artist;
+        return tracks;
     }
 }
