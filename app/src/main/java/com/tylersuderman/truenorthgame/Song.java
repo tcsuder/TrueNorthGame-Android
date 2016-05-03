@@ -13,6 +13,7 @@ public class Song {
     private String mAlbumTitle;
     private String mPreviewUrl;
     private String mTrackId;
+    private boolean mPlayed;
 
     public Song() {}
 
@@ -23,6 +24,7 @@ public class Song {
         this.mArtistName = artistName;
         this.mAlbumTitle = albumTitle;
         this.mPreviewUrl = previewUrl;
+        this.mPlayed = false;
     }
 
     public String getTitle() {
@@ -33,9 +35,7 @@ public class Song {
         return mArtistName;
     }
 
-    public String getAlbum() {
-        return mAlbumTitle;
-    }
+    public String getAlbum() { return mAlbumTitle; }
 
     public String getPreview() {
         return mPreviewUrl;
@@ -44,4 +44,11 @@ public class Song {
     public String getId() {
         return mTrackId;
     }
+
+    public boolean getPlayed() {
+        return mPlayed;
+    }
+
+    public void setToPlayed() { mPlayed = true; }
+
 }

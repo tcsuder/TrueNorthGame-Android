@@ -7,6 +7,7 @@ import android.os.CountDownTimer;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -25,9 +26,11 @@ public class GameRoundActivity extends AppCompatActivity {
 
     public Artist artist;
     ArrayList<Song> songs = new ArrayList<>();
+    ArrayList<Song> allSongs = new ArrayList<>();
     public MediaPlayer mediaPlayer;
     public String audioPath;
     public CountDownTimer countdownTimer;
+    public int playTime = 8000;
 
 
 
@@ -39,14 +42,35 @@ public class GameRoundActivity extends AppCompatActivity {
 
         Intent intent = getIntent();
         artist = Parcels.unwrap(intent.getParcelableExtra("artist"));
-        songs = Parcels.unwrap(intent.getParcelableExtra("songs"));
-        Collections.shuffle(songs);
+
+//        RETRIEVE SHUFFLE AND CHOOSE 4 RANDOM SONGS AND REMOVE CURRENT QUIZ SONG
+        allSongs = Parcels.unwrap(intent.getParcelableExtra("songs"));
+        Collections.shuffle(allSongs);
+        for (int i=0; i<allSongs.size(); i++) {
+            if (songs.size() == 4) {
+                break;
+            } else if (songs.size() > 0) {
+                songs.add(allSongs.get(i));
+            } else {
+                if (allSongs.get(i).getPlayed() == true ) {
+                        Log.i(TAG, "Song skipped");
+                    } else {
+                        songs.add(allSongs.get(i));
+                        allSongs.get(i).setToPlayed();
+                    }
+            }
+        }
+
+
+//        ERROR HANDLING FOR SONG RETREIVAL
         if (songs.size() > 0) {
             audioPath = songs.get(0).getPreview();
         } else {
             Toast.makeText(GameRoundActivity.this, "Async error: please choose artist again.",
                     Toast.LENGTH_SHORT).show();
         }
+
+
 
 
         try {
@@ -73,17 +97,19 @@ public class GameRoundActivity extends AppCompatActivity {
                         mediaPlayer.pause();
                     }
                 },
-                7000);
+                playTime);
 
-        countdownTimer = new CountDownTimer(30000, 1000) {
+        countdownTimer = new CountDownTimer(playTime, 1000) {
 
             public void onTick(long millisUntilFinished) {
-                mCountdownTextView.setText("seconds remaining: " + millisUntilFinished / 1000);
+                mCountdownTextView.setText("time: " + millisUntilFinished / 1000);
             }
 
             public void onFinish() {
-                mCountdownTextView.setText("done!");
+                mCountdownTextView.setText("OVER!");
             }
         }.start();
+
+
     }
 }

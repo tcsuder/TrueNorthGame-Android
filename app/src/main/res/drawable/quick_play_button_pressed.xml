@@ -4,8 +4,8 @@
 
     <gradient
         android:angle="270"
-        android:startColor="@color/colorPrimaryLight"
-        android:endColor="@color/colorPrimaryLight" />
+        android:startColor="@color/colorAccentGreen"
+        android:endColor="@color/colorAccentGreen" />
 
 
     <padding
