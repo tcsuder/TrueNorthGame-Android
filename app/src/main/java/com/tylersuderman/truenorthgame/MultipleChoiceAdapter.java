@@ -1,11 +1,14 @@
 package com.tylersuderman.truenorthgame;
 
 import android.content.Context;
+import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+
+import org.parceler.Parcels;
 
 import java.util.ArrayList;
 
@@ -18,11 +21,16 @@ import butterknife.ButterKnife;
 public class MultipleChoiceAdapter  extends RecyclerView.Adapter<MultipleChoiceAdapter
         .ChoiceViewHolder>{
     private ArrayList<Song> mSongs = new ArrayList<>();
+    private Artist mArtist = new Artist();
     private Context mContext;
+    private ArrayList<Song> mAllSongs = new ArrayList<>();
 
-    public MultipleChoiceAdapter(Context context, ArrayList<Song> songs) {
+    public MultipleChoiceAdapter(Context context, ArrayList<Song> songs, ArrayList<Song> allSongs,
+                                 Artist artist) {
         mContext = context;
         mSongs = songs;
+        mAllSongs = allSongs;
+        mArtist = artist;
     }
 
     @Override
@@ -51,6 +59,19 @@ public class MultipleChoiceAdapter  extends RecyclerView.Adapter<MultipleChoiceA
             super(itemView);
             ButterKnife.bind(this, itemView);
             mContext = itemView.getContext();
+
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    int itemPosition = getLayoutPosition();
+                    Song song = mSongs.get(itemPosition);
+                    song.unsetRightAnswer();
+                    Intent intent = new Intent(mContext, GameRoundActivity.class);
+                    intent.putExtra("songs", Parcels.wrap(mAllSongs));
+                    intent.putExtra("artist", Parcels.wrap(mArtist));
+                    mContext.startActivity(intent);
+                }
+            });
         }
 
         public void bindSong(Song song) {

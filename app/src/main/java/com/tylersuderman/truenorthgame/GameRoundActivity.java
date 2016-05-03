@@ -47,14 +47,19 @@ public class GameRoundActivity extends AppCompatActivity {
         Intent intent = getIntent();
         artist = Parcels.unwrap(intent.getParcelableExtra("artist"));
 
+        Log.d(TAG, "ARTIST ID " + artist.getId());
+
 //        RETRIEVE SHUFFLE AND CHOOSE 4 RANDOM SONGS AND REMOVE CURRENT QUIZ SONG
         allSongs = Parcels.unwrap(intent.getParcelableExtra("songs"));
         Collections.shuffle(allSongs);
+        Log.d(TAG, "ALL SONGS SIZE: "+ allSongs.size());
         for (int i=0; i<allSongs.size(); i++) {
+            Log.d(TAG, "SONGS: "+ songs);
+
             Song song = allSongs.get(i);
             if (songs.size() == 4) {
                 break;
-            } else if (songs.size() > 0) {
+            } else if (songs.size() < 3) {
                 songs.add(song);
             } else {
                 if (song.getPlayed() == true ) {
@@ -70,14 +75,12 @@ public class GameRoundActivity extends AppCompatActivity {
 
         //        ERROR HANDLING FOR SONG RETREIVAL
         if (songs.size() > 0) {
-            audioPath = songs.get(0).getPreview();
+            audioPath = songs.get(3).getPreview();
         } else {
             Toast.makeText(GameRoundActivity.this, "Async error: please choose artist again.",
                     Toast.LENGTH_SHORT).show();
         }
         Collections.shuffle(songs);
-
-
 
 
 //        SET UP MEDIA PLAYER
@@ -104,7 +107,8 @@ public class GameRoundActivity extends AppCompatActivity {
 
 
                 //        SET CHOICES INTO RECYCLERVIEW
-                mAdapter = new MultipleChoiceAdapter(getApplicationContext(), songs);
+                mAdapter = new MultipleChoiceAdapter(getApplicationContext(), songs, allSongs,
+                        artist);
                 mRecyclerView.setAdapter(mAdapter);
                 RecyclerView.LayoutManager layoutManager =
                         new LinearLayoutManager(GameRoundActivity.this);
@@ -118,7 +122,7 @@ public class GameRoundActivity extends AppCompatActivity {
         new android.os.Handler().postDelayed(
                 new Runnable() {
                     public void run() {
-                        mediaPlayer.pause();
+                        mediaPlayer.stop();
                     }
                 },
                 playTime);
@@ -135,6 +139,13 @@ public class GameRoundActivity extends AppCompatActivity {
             }
         }.start();
 
+
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        mediaPlayer.stop();
 
     }
 }

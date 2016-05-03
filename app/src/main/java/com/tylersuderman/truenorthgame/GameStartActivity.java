@@ -62,7 +62,6 @@ public class GameStartActivity extends AppCompatActivity implements View.OnClick
 
             @Override
             public void onResponse(Call call, Response response) {
-                Log.d(TAG, "RESPONSE RESPONSE " + response);
                 artist = SpotifyService
                     .processArtistResults(response).get(0);
                 String artistId = artist.getId();
@@ -87,7 +86,7 @@ public class GameStartActivity extends AppCompatActivity implements View.OnClick
     }
 
     private void getTrackIds(String artistId) {
-        SpotifyService.findSongIds(artistId, new Callback() {
+        SpotifyService.findSpotifySongs(artistId, new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
                 e.printStackTrace();
@@ -108,7 +107,6 @@ public class GameStartActivity extends AppCompatActivity implements View.OnClick
             case R.id.startGameButton:
                 Intent intent = new Intent(GameStartActivity.this, GameRoundActivity.class);
                 intent.putExtra("songs", Parcels.wrap(songs));
-                Log.d(TAG, "THIS IS AN ARRAY LIST OF SONG OBJECTS" + songs);
                 intent.putExtra("artist", Parcels.wrap(artist));
                 startActivity(intent);
                 break;

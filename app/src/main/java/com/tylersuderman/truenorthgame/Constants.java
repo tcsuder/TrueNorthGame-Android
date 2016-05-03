@@ -9,4 +9,5 @@ public class Constants {
 
     public static final String SPOTIFY_BASE_URL = "https://api.spotify.com/v1/";
     public static final String SPOTIFY_TRACKS_QUERY_PARAMETER = "tracks";
+
 }

@@ -22,11 +22,12 @@ import okhttp3.Response;
  */
 public class SpotifyService {
     public static final String TAG = SpotifyService.class.getSimpleName();
-    String SPOTIFY_CLIENT_ID = Constants.SPOTIFY_CLIENT_ID;
-    String SPOTIFY_CLIENT_SECRET = Constants.SPOTIFY_CLIENT_SECRET;
-    String SPOTIFY_BASE_URL = Constants.SPOTIFY_BASE_URL;
-    String SPOTIFY_TRACKS_QUERY_PARAMETER_ = Constants.SPOTIFY_TRACKS_QUERY_PARAMETER;
-    Artist artist;
+//    String SPOTIFY_CLIENT_ID = Constants.SPOTIFY_CLIENT_ID;
+//    String SPOTIFY_CLIENT_SECRET = Constants.SPOTIFY_CLIENT_SECRET;
+//    String SPOTIFY_BASE_URL = Constants.SPOTIFY_BASE_URL;
+//    String SPOTIFY_TRACKS_QUERY_PARAMETER_ = Constants.SPOTIFY_TRACKS_QUERY_PARAMETER;
+//    String ECHO_NEST_KEY = Constants.ECHO_NEST_KEY;
+//    Artist artist;
 
 
     public static void findArtist(String artistName, Callback callback) {
@@ -49,11 +50,14 @@ public class SpotifyService {
         call.enqueue(callback);
     }
 
+
     public static ArrayList<Artist> processArtistResults(Response response) {
         ArrayList<Artist> artist = new ArrayList<>();
         try {
             String jsonData = response.body().string();
             if (response.isSuccessful()) {
+
+//                CREATE ARTIST OBJECT FROM SUCCESSFUL CALL
                 JSONObject spotifyJSON = new JSONObject(jsonData);
                 JSONObject artistDetailsJSON = spotifyJSON.getJSONObject("artists")
                         .getJSONArray("items").getJSONObject(0);
@@ -76,9 +80,9 @@ public class SpotifyService {
         return artist;
     }
 
-    public static void findSongIds(String id, Callback callback) {
+    public static void findSpotifySongs(String id, Callback callback) {
 
-        OkHttpClient client = new OkHttpClient.Builder()
+        OkHttpClient spotify = new OkHttpClient.Builder()
                 .build();
 
         HttpUrl.Builder urlBuilder = HttpUrl.parse(Constants.SPOTIFY_BASE_URL).newBuilder();
@@ -92,9 +96,10 @@ public class SpotifyService {
                 .url(url)
                 .build();
 
-        Call call = client.newCall(request);
+        Call call = spotify.newCall(request);
         call.enqueue(callback);
     }
+
 
     public static ArrayList<Song> processSongIds(Response response) {
         ArrayList<Song> songs = new ArrayList<>();
