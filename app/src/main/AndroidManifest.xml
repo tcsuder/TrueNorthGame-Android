@@ -19,7 +19,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".GameRoundActivity">
+        <activity android:name=".GameStartActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.tylersuderman.truenorthgame.MainActivity" />
@@ -41,7 +41,9 @@
         <service
             android:name=".SpotifyService"
             android:enabled="true"
-            android:exported="true"></service>
+            android:exported="true" />
+
+        <activity android:name=".GameRoundActivity"></activity>
     </application>
 
 </manifest>

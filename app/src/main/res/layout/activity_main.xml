@@ -5,48 +5,27 @@
     android:layout_height="match_parent"
     tools:context="com.tylersuderman.truenorthgame.MainActivity">
 
-    <ImageView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/imageView"
-        android:src="@drawable/background1"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true"/>
-
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="TRUE NORTH"
+        android:text="QUIZ"
         android:id="@+id/appTitleTextView"
         android:textStyle="bold"
         android:textSize="50dp"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="35dp"
-        android:textColor="@color/colorAccentDark" />
+        android:textColor="@color/colorSecondaryDark" />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="A TRIVIA GAME!"
+        android:text="A MUSIC GAME!"
         android:id="@+id/appSubtitleTextView"
         android:layout_below="@+id/appTitleTextView"
         android:layout_centerHorizontal="true"
         android:textSize="30dp"
-        android:textColor="@color/colorAccentDark" />
-
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="login"
-        android:id="@+id/loginButton"
-        android:background="@drawable/login_button"
-        android:layout_below="@+id/passwordEditText"
-        android:layout_alignLeft="@+id/quickPlayButton"
-        android:layout_alignStart="@+id/quickPlayButton"
-        android:layout_alignRight="@+id/quickPlayButton"
-        android:layout_alignEnd="@+id/quickPlayButton" />
+        android:textColor="@color/colorSecondaryDark" />
 
     <Button
         android:layout_width="wrap_content"
@@ -54,12 +33,12 @@
         android:text="play"
         android:id="@+id/quickPlayButton"
         android:background="@drawable/quick_play_button"
-        android:layout_below="@+id/loginButton"
-        android:layout_alignLeft="@+id/appTitleTextView"
-        android:layout_alignStart="@+id/appTitleTextView"
         android:layout_marginTop="20dp"
-        android:layout_alignRight="@+id/appTitleTextView"
-        android:layout_alignEnd="@+id/appTitleTextView" />
+        android:layout_below="@+id/artistNameEditText"
+        android:layout_alignLeft="@+id/artistNameEditText"
+        android:layout_alignStart="@+id/artistNameEditText"
+        android:layout_alignRight="@+id/artistNameEditText"
+        android:layout_alignEnd="@+id/artistNameEditText" />
 
     <Button
         android:layout_width="wrap_content"
@@ -72,7 +51,8 @@
         android:layout_alignStart="@+id/quickPlayButton"
         android:layout_marginTop="20dp"
         android:layout_alignRight="@+id/quickPlayButton"
-        android:layout_alignEnd="@+id/quickPlayButton" />
+        android:layout_alignEnd="@+id/quickPlayButton"
+        android:textColor="@color/colorTextIcons" />
 
     <Button
         android:layout_width="wrap_content"
@@ -85,30 +65,19 @@
         android:layout_alignLeft="@+id/aboutButton"
         android:layout_alignStart="@+id/aboutButton"
         android:layout_alignRight="@+id/aboutButton"
-        android:layout_alignEnd="@+id/aboutButton" />
+        android:layout_alignEnd="@+id/aboutButton"
+        android:textColor="@color/colorTextIcons" />
 
     <EditText
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/usernameEditText"
+        android:id="@+id/artistNameEditText"
         android:layout_below="@+id/appSubtitleTextView"
         android:layout_marginTop="60dp"
-        android:hint="username - tyler"
-        android:layout_alignLeft="@+id/loginButton"
-        android:layout_alignStart="@+id/loginButton"
-        android:layout_alignRight="@+id/loginButton"
-        android:layout_alignEnd="@+id/loginButton" />
-
-    <EditText
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/passwordEditText"
-        android:hint="password - password"
-        android:layout_marginBottom="20dp"
-        android:layout_below="@+id/usernameEditText"
-        android:layout_alignRight="@+id/usernameEditText"
-        android:layout_alignEnd="@+id/usernameEditText"
-        android:layout_alignLeft="@+id/loginButton"
-        android:layout_alignStart="@+id/loginButton" />
+        android:hint="artist name"
+        android:layout_alignLeft="@+id/appSubtitleTextView"
+        android:layout_alignStart="@+id/appSubtitleTextView"
+        android:layout_alignRight="@+id/appSubtitleTextView"
+        android:layout_alignEnd="@+id/appSubtitleTextView" />
 
 </RelativeLayout>

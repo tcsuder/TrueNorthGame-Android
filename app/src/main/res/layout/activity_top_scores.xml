@@ -23,7 +23,7 @@
         android:textStyle="bold"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
-        android:textColor="@color/colorAccentDark" />
+        android:textColor="@color/colorSecondaryDark" />
 
     <ListView
         android:layout_width="wrap_content"

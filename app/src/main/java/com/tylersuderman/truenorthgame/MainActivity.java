@@ -20,11 +20,9 @@ package com.tylersuderman.truenorthgame;
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
     public static final String TAG = MainActivity.class.getSimpleName();
     @Bind(R.id.quickPlayButton) Button mPlayButton;
-    @Bind(R.id.loginButton) Button mLoginButton;
     @Bind(R.id.aboutButton) Button mAboutButton;
     @Bind(R.id.topScoresButton) Button mTopScoreButton;
-    @Bind(R.id.usernameEditText) EditText mArtistName;
-    @Bind(R.id.passwordEditText) EditText mPasswordEditText;
+    @Bind(R.id.artistNameEditText) EditText mArtistName;
 
     private static final int REQUEST_CODE = 1337;
     private static final String REDIRECT_URI = "truenorthgame.mainactivity://callback";
@@ -49,7 +47,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         AuthenticationClient.openLoginActivity(this, REQUEST_CODE, request);
 
         mPlayButton.setOnClickListener(this);
-        mLoginButton.setOnClickListener(this);
         mAboutButton.setOnClickListener(this);
         mTopScoreButton.setOnClickListener(this);
     }
@@ -70,7 +67,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
                 // Auth flow returned an error
                 case ERROR:
-                    Log.d(TAG, "ERROR it doesn't work");
                     break;
 
                 // Most likely auth flow was cancelled
@@ -85,33 +81,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         switch (v.getId()) {
             case R.id.quickPlayButton:
                 String notUsername = " ";
-                Intent intent = new Intent(MainActivity.this, GameRoundActivity.class);
+                Intent intent = new Intent(MainActivity.this, GameStartActivity.class);
                 String artistName = mArtistName.getText().toString();
                 intent.putExtra("artistName", artistName);
                 intent.putExtra("token", SPOTIFY_ACCESS_TOKEN);
                 startActivity(intent);
-                break;
-            case R.id.loginButton:
-//                CLOSE KEYBOARD ON CLICK
-                InputMethodManager inputManager = (InputMethodManager)
-                        getSystemService(INPUT_METHOD_SERVICE);
-
-                inputManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(),
-                        InputMethodManager.HIDE_NOT_ALWAYS);
-
-
-                String username = mArtistName.getText().toString();
-                String password = mPasswordEditText.getText().toString();
-                if (username.equals("") || password.equals("")) {
-                    Toast.makeText(MainActivity.this, "No Username/Password", Toast.LENGTH_SHORT).show();
-                } else if (username.equals("tyler") && password.equals("password")) {
-                    Intent loginIntent = new Intent(MainActivity.this, com.spotify.sdk.android.authentication.LoginActivity.class);
-                    loginIntent.putExtra("username", username);
-                    startActivity(loginIntent);
-                } else {
-                    Toast.makeText(MainActivity.this, "Invalid Username/Password", Toast.LENGTH_SHORT).show();
-                }
-
                 break;
             case R.id.aboutButton:
                 Intent aboutIntent = new Intent(MainActivity.this, AboutActivity.class);

@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".GameStartActivity">
+
+    <ImageView
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:id="@+id/artistImageView"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:scaleType="centerCrop" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/artistNameTextView"
+        android:textSize="55dp"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:textStyle="bold"
+        android:textColor="@color/colorTextIcons" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="START YOUR QUIZ"
+        android:id="@+id/startGameButton"
+        android:layout_alignParentBottom="true"
+        android:layout_alignRight="@+id/artistImageView"
+        android:layout_alignEnd="@+id/artistImageView"
+        android:layout_alignLeft="@+id/artistImageView"
+        android:layout_alignStart="@+id/artistImageView"
+        android:background="@drawable/quick_play_button"
+        android:singleLine="true"
+        android:textColor="@color/colorTextIcons"
+        android:textStyle="bold"
+        android:textSize="20sp" />
+
+
+</RelativeLayout>
