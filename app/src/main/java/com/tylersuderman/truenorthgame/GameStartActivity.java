@@ -46,8 +46,10 @@ public class GameStartActivity extends AppCompatActivity implements View.OnClick
         mContext = this;
         ButterKnife.bind(this);
 
-//        TAKE THIS OUT LATER!
-        getArtistTracks("the beatles");
+        Intent intent = new Intent();
+        String artistName = intent.getStringExtra("artistName");
+
+        getArtistTracks(artistName);
         mStartGameButton.setOnClickListener(GameStartActivity.this);
 
     }
@@ -107,7 +109,6 @@ public class GameStartActivity extends AppCompatActivity implements View.OnClick
                 Intent intent = new Intent(GameStartActivity.this, GameRoundActivity.class);
                 intent.putExtra("songs", Parcels.wrap(songs));
                 Log.d(TAG, "THIS IS AN ARRAY LIST OF SONG OBJECTS" + songs);
-                //intent.putParcelableArrayListExtra("songs", songs);
                 intent.putExtra("artist", Parcels.wrap(artist));
                 startActivity(intent);
                 break;

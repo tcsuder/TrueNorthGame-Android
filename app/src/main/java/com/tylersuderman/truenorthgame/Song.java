@@ -14,6 +14,7 @@ public class Song {
     private String mPreviewUrl;
     private String mTrackId;
     private boolean mPlayed;
+    private boolean mRightAnswerSong;
 
     public Song() {}
 
@@ -25,6 +26,7 @@ public class Song {
         this.mAlbumTitle = albumTitle;
         this.mPreviewUrl = previewUrl;
         this.mPlayed = false;
+        this.mRightAnswerSong = false;
     }
 
     public String getTitle() {
@@ -50,5 +52,9 @@ public class Song {
     }
 
     public void setToPlayed() { mPlayed = true; }
+
+    public void setRightAnswer() { mRightAnswerSong = true; }
+
+    public void unsetRightAnswer() { mRightAnswerSong = false; }
 
 }
