@@ -82,9 +82,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.quickPlayButton:
                 Intent intent = new Intent(MainActivity.this, GameStartActivity.class);
                 String artistName = mArtistName.getText().toString();
-                intent.putExtra("artistName", artistName);
-                intent.putExtra("token", SPOTIFY_ACCESS_TOKEN);
-                startActivity(intent);
+
+                if (artistName.equals("")) {
+                    Toast.makeText(MainActivity.this, "no artist given", Toast.LENGTH_SHORT).show();
+                } else {
+                    intent.putExtra("artistName", artistName);
+                    intent.putExtra("token", SPOTIFY_ACCESS_TOKEN);
+                    startActivity(intent);
+                }
                 break;
             case R.id.aboutButton:
                 Intent aboutIntent = new Intent(MainActivity.this, AboutActivity.class);

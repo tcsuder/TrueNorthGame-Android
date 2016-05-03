@@ -46,9 +46,8 @@ public class GameStartActivity extends AppCompatActivity implements View.OnClick
         mContext = this;
         ButterKnife.bind(this);
 
-        Intent intent = new Intent();
+        Intent intent = getIntent();
         String artistName = intent.getStringExtra("artistName");
-
         getArtistTracks(artistName);
         mStartGameButton.setOnClickListener(GameStartActivity.this);
 
@@ -63,6 +62,7 @@ public class GameStartActivity extends AppCompatActivity implements View.OnClick
 
             @Override
             public void onResponse(Call call, Response response) {
+                Log.d(TAG, "RESPONSE RESPONSE " + response);
                 artist = SpotifyService
                     .processArtistResults(response).get(0);
                 String artistId = artist.getId();

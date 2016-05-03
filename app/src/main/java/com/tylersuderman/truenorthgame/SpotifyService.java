@@ -36,7 +36,7 @@ public class SpotifyService {
 
         HttpUrl.Builder urlBuilder = HttpUrl.parse(Constants.SPOTIFY_BASE_URL).newBuilder();
         urlBuilder.addPathSegment("search");
-        urlBuilder.addQueryParameter("q", "beatles");
+        urlBuilder.addQueryParameter("q", artistName);
         urlBuilder.addQueryParameter("type", "artist");
         urlBuilder.addQueryParameter("limit", "1");
         String url = urlBuilder.build().toString();
