@@ -1,14 +1,20 @@
 package com.tylersuderman.truenorthgame;
 
+import org.parceler.Parcel;
+
 /**
  * Created by tylersuderman on 5/2/16.
  */
+
+@Parcel
 public class Song {
     private String mSongTitle;
     private String mArtistName;
     private String mAlbumTitle;
     private String mPreviewUrl;
     private String mTrackId;
+
+    public Song() {}
 
     public Song(String trackId, String SongTitle, String artistName, String albumTitle,
                 String previewUrl) {

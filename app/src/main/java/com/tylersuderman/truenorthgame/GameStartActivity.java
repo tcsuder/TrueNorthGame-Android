@@ -1,10 +1,10 @@
 package com.tylersuderman.truenorthgame;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -13,7 +13,6 @@ import android.widget.TextView;
 import com.squareup.picasso.Picasso;
 
 import org.parceler.Parcels;
-import org.w3c.dom.Text;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -34,8 +33,6 @@ public class GameStartActivity extends AppCompatActivity implements View.OnClick
     @Bind(R.id.startGameButton) Button mStartGameButton;
 
     public static final String TAG = GameStartActivity.class.getSimpleName();
-    public String SPOTIFY_ACCESS_TOKEN;
-    public String artistName;
     public ArrayList<Song> songs = new ArrayList<>();
     public boolean callBackDone = false;
     public Artist artist;
@@ -108,12 +105,12 @@ public class GameStartActivity extends AppCompatActivity implements View.OnClick
         switch(v.getId()) {
             case R.id.startGameButton:
                 Intent intent = new Intent(GameStartActivity.this, GameRoundActivity.class);
-                startActivity(intent);
-                intent.putExtra("songs", songs);
+                intent.putExtra("songs", Parcels.wrap(songs));
+                Log.d(TAG, "THIS IS AN ARRAY LIST OF SONG OBJECTS" + songs);
+                //intent.putParcelableArrayListExtra("songs", songs);
                 intent.putExtra("artist", Parcels.wrap(artist));
+                startActivity(intent);
                 break;
         }
     }
-
-
 }

@@ -1,13 +1,10 @@
 package com.tylersuderman.truenorthgame;
-
-
 import org.parceler.Parcel;
 
 /**
  * Created by tylersuderman on 5/2/16.
  */
 @Parcel
-
 public class Artist {
     private String mArtistName;
     private String mArtistImageUrl;
