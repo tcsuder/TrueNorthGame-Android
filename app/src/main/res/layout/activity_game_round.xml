@@ -10,39 +10,17 @@
     tools:context="com.tylersuderman.truenorthgame.GameRoundActivity">
 
     <TextView
-        android:layout_width="wrap_content"
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:text="THIS IS A GAME!"
-        android:id="@+id/welcomeToGameTextView"
-        android:textSize="30dp"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true" />
+        android:id="@+id/countdownTextView"
+        android:layout_centerHorizontal="true"
+        android:textSize="30sp"
+        android:textAlignment="center" />
 
-    <TextView
-        android:layout_width="165dp"
-        android:layout_height="100dp"
-        android:text="City"
-        android:id="@+id/cityOneTextView"
-        android:layout_below="@+id/welcomeToGameTextView"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:background="@color/colorPrimaryDark"
-        android:layout_marginTop="40dp"
-        android:padding="30dp"
-        android:textColor="@color/colorTextIcons"
-        android:textStyle="bold"/>
+    <android.support.v7.widget.RecyclerView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/recyclerView"
+        android:layout_below="@+id/countdownTextView" />
 
-    <TextView
-        android:layout_width="165dp"
-        android:layout_height="100dp"
-        android:text="City 2"
-        android:id="@+id/cityTwoTextView"
-        android:layout_below="@+id/welcomeToGameTextView"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true"
-        android:background="@color/colorPrimaryDark"
-        android:layout_marginTop="40dp"
-        android:padding="30dp"
-        android:textColor="@color/colorTextIcons"
-        android:textStyle="bold"/>
 </RelativeLayout>

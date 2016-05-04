@@ -11,9 +11,9 @@ android:layout_height="match_parent"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Name"
-        android:shadowColor="@color/colorAccentDark"
+        android:shadowColor="@color/colorSecondaryDark"
         android:textStyle="bold"
-        android:textColor="@color/colorAccentDark" />
+        android:textColor="@color/colorSecondaryDark" />
 
     <TextView
         android:id="@+id/playerScore"

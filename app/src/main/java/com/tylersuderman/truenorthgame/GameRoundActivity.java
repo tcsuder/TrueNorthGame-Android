@@ -1,25 +1,41 @@
 package com.tylersuderman.truenorthgame;
 
 import android.content.Intent;
+import android.media.AudioManager;
+import android.media.MediaPlayer;
+import android.os.CountDownTimer;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
-import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import org.parceler.Parcels;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
 
 public class GameRoundActivity extends AppCompatActivity {
     public static final String TAG = GameRoundActivity.class.getSimpleName();
-    public City newYorkCity = new City("New York City", "40.7128° N", "74.0059° W");
-    public City newOrleans = new City("New Orleans", "29.9511° N", "90.0715° W");
-    public ArrayList<City> cityArray = new ArrayList<City>();
-    @Bind(R.id.welcomeToGameTextView) TextView mWelcomeToGameTextView;
-    @Bind(R.id.cityOneTextView) TextView mCityOneTextView;
-    @Bind(R.id.cityTwoTextView) TextView mCityTwoTextView;
+
+    @Bind(R.id.countdownTextView) TextView mCountdownTextView;
+    @Bind(R.id.recyclerView) RecyclerView mRecyclerView;
+
+    public Artist artist;
+    ArrayList<Song> songs = new ArrayList<>();
+    ArrayList<Song> allSongs = new ArrayList<>();
+    public MediaPlayer mediaPlayer;
+    public String audioPath;
+    public CountDownTimer countdownTimer;
+    public int playTime = 8000;
+    private MultipleChoiceAdapter mAdapter;
+
+
 
 
     @Override
@@ -27,22 +43,109 @@ public class GameRoundActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game_round);
         ButterKnife.bind(this);
-        cityArray.add(newOrleans);
-        cityArray.add(newYorkCity);
 
-        mCityOneTextView.setText(cityArray.get(0).getName());
-        mCityTwoTextView.setText(cityArray.get(1).getName());
-
-        Log.i(TAG, "NO PLACE LIKE " + newYorkCity.getName());
-        Log.i(TAG, "I PREFER " + newOrleans.getName());
         Intent intent = getIntent();
-        String username = intent.getStringExtra("username");
-        Log.i(TAG, "YOUR USERNAME IS:" + username + "!");
-        if (username.equals(" ")) {
-            mWelcomeToGameTextView.setText("WELCOME GUEST!");
-        } else {
-            mWelcomeToGameTextView.setText("HELLO " + username.toUpperCase() + "!");
+        artist = Parcels.unwrap(intent.getParcelableExtra("artist"));
+
+        Log.d(TAG, "ARTIST ID " + artist.getId());
+
+//        RETRIEVE SHUFFLE AND CHOOSE 4 RANDOM SONGS AND REMOVE CURRENT QUIZ SONG
+        allSongs = Parcels.unwrap(intent.getParcelableExtra("songs"));
+        Collections.shuffle(allSongs);
+        Log.d(TAG, "ALL SONGS SIZE: "+ allSongs.size());
+        for (int i=0; i<allSongs.size(); i++) {
+            Log.d(TAG, "SONGS: "+ songs);
+
+            Song song = allSongs.get(i);
+            if (songs.size() == 4) {
+                break;
+            } else if (songs.size() < 3) {
+                songs.add(song);
+            } else {
+                if (song.getPlayed() == true ) {
+                    Log.i(TAG, "Song skipped");
+                } else {
+                    song.setToPlayed();
+                    song.setRightAnswer();
+                    songs.add(song);
+                }
+            }
+
         }
+
+        //        ERROR HANDLING FOR SONG RETREIVAL
+        if (songs.size() > 0) {
+            audioPath = songs.get(3).getPreview();
+        } else {
+            Toast.makeText(GameRoundActivity.this, "Async error: please choose artist again.",
+                    Toast.LENGTH_SHORT).show();
+        }
+        Collections.shuffle(songs);
+
+
+//        SET UP MEDIA PLAYER
+
+        try {
+
+            mediaPlayer = new MediaPlayer();
+            mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+            mediaPlayer.setDataSource(audioPath);
+            mediaPlayer.prepare();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+//        DELAY PLAY OF SONG AND SHOWING OF CHOICES
+        new android.os.Handler().postDelayed(
+
+        new Runnable() {
+            public void run() {
+
+                //        PLAY SONG
+                mediaPlayer.start();
+
+
+                //        SET CHOICES INTO RECYCLERVIEW
+                mAdapter = new MultipleChoiceAdapter(getApplicationContext(), songs, allSongs,
+                        artist);
+                mRecyclerView.setAdapter(mAdapter);
+                RecyclerView.LayoutManager layoutManager =
+                        new LinearLayoutManager(GameRoundActivity.this);
+                mRecyclerView.setLayoutManager(layoutManager);
+                mRecyclerView.setHasFixedSize(true);
+            }
+        }, 500);
+
+//        END PLAY AFTER PLAYTIME IS UP
+
+        new android.os.Handler().postDelayed(
+                new Runnable() {
+                    public void run() {
+                        mediaPlayer.stop();
+                    }
+                },
+                playTime);
+
+//        SHOW COUNTDOWN IN VIEW
+        countdownTimer = new CountDownTimer(playTime, 1000) {
+
+            public void onTick(long millisUntilFinished) {
+                mCountdownTextView.setText("time: " + millisUntilFinished / 1000);
+            }
+
+            public void onFinish() {
+                mCountdownTextView.setText("OVER!");
+            }
+        }.start();
+
+
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        mediaPlayer.stop();
 
     }
 }
