@@ -7,8 +7,6 @@
         android:startColor="@color/colorPrimary"
         android:endColor="@color/colorPrimaryDark"/>
 
-    <corners
-        android:radius="10dp"/>
 
     <padding
         android:bottom="7dp"
