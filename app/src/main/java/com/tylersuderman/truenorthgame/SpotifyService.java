@@ -22,13 +22,6 @@ import okhttp3.Response;
  */
 public class SpotifyService {
     public static final String TAG = SpotifyService.class.getSimpleName();
-//    String SPOTIFY_CLIENT_ID = Constants.SPOTIFY_CLIENT_ID;
-//    String SPOTIFY_CLIENT_SECRET = Constants.SPOTIFY_CLIENT_SECRET;
-//    String SPOTIFY_BASE_URL = Constants.SPOTIFY_BASE_URL;
-//    String SPOTIFY_TRACKS_QUERY_PARAMETER_ = Constants.SPOTIFY_TRACKS_QUERY_PARAMETER;
-//    String ECHO_NEST_KEY = Constants.ECHO_NEST_KEY;
-//    Artist artist;
-
 
     public static void findArtist(String artistName, Callback callback) {
 
@@ -41,6 +34,7 @@ public class SpotifyService {
         urlBuilder.addQueryParameter("type", "artist");
         urlBuilder.addQueryParameter("limit", "1");
         String url = urlBuilder.build().toString();
+        Log.d(TAG, "URL " + url);
 
         Request request= new Request.Builder()
                 .url(url)
@@ -48,6 +42,41 @@ public class SpotifyService {
 
         Call call = client.newCall(request);
         call.enqueue(callback);
+    }
+
+    public static void findUserId(String token, Callback callback) {
+
+        OkHttpClient client = new OkHttpClient.Builder()
+                .build();
+
+        HttpUrl.Builder urlBuilder = HttpUrl.parse(Constants.SPOTIFY_BASE_URL).newBuilder();
+        urlBuilder.addPathSegment("me");
+        String url = urlBuilder.build().toString();
+
+        Request request= new Request.Builder()
+                .header("Authorization", "Bearer " + token)
+                .url(url)
+                .build();
+
+        Call call = client.newCall(request);
+        call.enqueue(callback);
+    }
+
+    public static String processUserResults(Response response) {
+        String userId = "";
+        try {
+            String jsonData = response.body().string();
+            if(response.isSuccessful()) {
+                JSONObject artistJSON = new JSONObject(jsonData);
+                userId = artistJSON.getString("id");
+
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return userId;
     }
 
 
@@ -70,6 +99,7 @@ public class SpotifyService {
                         .getString("spotify");
                 Artist instance = new Artist(name, imageUrl, id, page);
                 artist.add(instance);
+                Log.d(TAG, "THIS IS AN ARTIST OBJECT IN THE SERVICE: " + instance);
 
             }
         } catch (IOException e) {

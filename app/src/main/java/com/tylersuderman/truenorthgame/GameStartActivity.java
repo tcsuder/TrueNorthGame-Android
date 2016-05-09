@@ -2,13 +2,17 @@ package com.tylersuderman.truenorthgame;
 
 import android.content.Context;
 import android.content.Intent;
+import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
 
@@ -16,6 +20,7 @@ import org.parceler.Parcels;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.logging.Handler;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -36,6 +41,8 @@ public class GameStartActivity extends AppCompatActivity implements View.OnClick
     public ArrayList<Song> songs = new ArrayList<>();
     public boolean callBackDone = false;
     public Artist artist;
+    public String artistId;
+    public boolean success;
     Context mContext;
 
 
@@ -47,9 +54,9 @@ public class GameStartActivity extends AppCompatActivity implements View.OnClick
         ButterKnife.bind(this);
 
         Intent intent = getIntent();
-        String artistName = intent.getStringExtra("artistName");
-        getArtistTracks(artistName);
+        artist = Parcels.unwrap(intent.getParcelableExtra("artist"));
         mStartGameButton.setOnClickListener(GameStartActivity.this);
+
 
     }
 
@@ -62,44 +69,43 @@ public class GameStartActivity extends AppCompatActivity implements View.OnClick
 
             @Override
             public void onResponse(Call call, Response response) {
-                artist = SpotifyService
-                    .processArtistResults(response).get(0);
-                String artistId = artist.getId();
+                if (SpotifyService.processArtistResults(response).size() > 0) {
+                    success = true;
+                    artist = SpotifyService
+                            .processArtistResults(response).get(0);
+                    artistId = artist.getId();
 
-                GameStartActivity.this.runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        Picasso.with(mContext)
-                                .load(artist.getImage())
-                                .resize(MAX_WIDTH, MAX_HEIGHT)
-                                .centerCrop()
-                                .into(mArtistImageView);
-                        mArtistNameTextView.setText(artist.getName());
-                    }
+                    GameStartActivity.this.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Picasso.with(mContext)
+                                    .load(artist.getImage())
+                                    .resize(MAX_WIDTH, MAX_HEIGHT)
+                                    .centerCrop()
+                                    .into(mArtistImageView);
+                            mArtistNameTextView.setText(artist.getName());
+                        }
 
-                });
+                    });
+//                    getTrackIds(artist);
+                } else {
+                    success = false;
+                    Log.d(TAG, "that don't work no no no!");
 
-                getTrackIds(artistId);
-
-            }
-        });
-    }
-
-    private void getTrackIds(String artistId) {
-        SpotifyService.findSpotifySongs(artistId, new Callback() {
-            @Override
-            public void onFailure(Call call, IOException e) {
-                e.printStackTrace();
-            }
-
-            @Override
-            public void onResponse(Call call, Response response) throws IOException {
-                songs = SpotifyService.processSongIds(response);
-                callBackDone = true;
+                    GameStartActivity.this.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            mArtistNameTextView.setText("NO ARTIST FOUND");
+                            mStartGameButton.setText("");
+                        }
+                    });
+                }
 
             }
         });
     }
+
+
 
     @Override
     public void onClick(View v) {

@@ -5,94 +5,112 @@
     android:layout_height="match_parent"
     tools:context="com.tylersuderman.truenorthgame.MainActivity">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="TUNE PERSUIT"
-        android:id="@+id/appTitleTextView"
-        android:textStyle="bold"
-        android:textSize="50dp"
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="35dp"
-        android:textColor="@color/colorSecondaryDark" />
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_above="@+id/slide_menu_fragment">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="A MUSIC TRIVIA GAME!"
-        android:id="@+id/appSubtitleTextView"
-        android:layout_below="@+id/appTitleTextView"
-        android:layout_centerHorizontal="true"
-        android:textSize="30dp"
-        android:textColor="@color/colorSecondaryDark" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="TUNE PERSUIT"
+            android:id="@+id/appTitleTextView"
+            android:textStyle="bold"
+            android:textSize="50dp"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="35dp"
+            android:textColor="@color/colorSecondaryDark"
+            android:gravity="center"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="A MUSIC TRIVIA GAME!"
+            android:id="@+id/appSubtitleTextView"
+            android:layout_below="@+id/appTitleTextView"
+            android:layout_centerHorizontal="true"
+            android:textSize="30dp"
+            android:textColor="@color/colorSecondaryDark"
+            android:gravity="center"/>
+
+
+        <EditText
+            android:layout_width="292dp"
+            android:layout_height="wrap_content"
+            android:id="@+id/artistNameEditText"
+            android:layout_marginTop="39dp"
+            android:hint="artist name"
+            android:layout_below="@+id/appSubtitleTextView"
+            android:layout_alignLeft="@+id/appSubtitleTextView"
+            android:layout_alignStart="@+id/appSubtitleTextView"
+            android:layout_alignRight="@+id/appSubtitleTextView"
+            android:layout_alignEnd="@+id/appSubtitleTextView"
+            android:layout_gravity="center_horizontal"/>
+
+        <Button
+            android:layout_width="299dp"
+            android:layout_height="wrap_content"
+            android:text="play"
+            android:id="@+id/quickPlayButton"
+            android:background="@drawable/quick_play_button"
+            android:layout_marginTop="20dp"
+            android:layout_below="@+id/artistNameEditText"
+            android:layout_alignRight="@+id/artistNameEditText"
+            android:layout_alignEnd="@id/appTitleTextView"
+            android:layout_alignLeft="@+id/appTitleTextView"
+            android:layout_alignStart="@+id/appTitleTextView"
+            android:textSize="20sp"
+            android:layout_gravity="center_horizontal"/>
+
+    </LinearLayout>
+
 
     <Button
-        android:layout_width="wrap_content"
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:text="login"
         android:id="@+id/loginButton"
         android:background="@drawable/login_button"
-        android:layout_above="@+id/aboutButton"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
         android:textColor="@color/colorTextIcons"
-        android:textSize="20sp"/>
-
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="play"
-        android:id="@+id/quickPlayButton"
-        android:background="@drawable/quick_play_button"
-        android:layout_marginTop="20dp"
-        android:layout_below="@+id/artistNameEditText"
-        android:layout_alignRight="@+id/artistNameEditText"
-        android:layout_alignEnd="@id/appTitleTextView"
-        android:layout_alignLeft="@+id/appTitleTextView"
-        android:layout_alignStart="@+id/appTitleTextView"
-        android:textSize="20sp"/>
-
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="About"
-        android:id="@+id/aboutButton"
-        android:background="@drawable/about_button"
-        android:textColor="@color/colorTextIcons"
+        android:textSize="20sp"
         android:layout_above="@+id/topScoresButton"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:textSize="20sp"/>
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"/>
 
     <Button
-        android:layout_width="wrap_content"
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:text="Scores"
         android:id="@+id/topScoresButton"
         android:background="@drawable/top_scores_button"
         android:textColor="@color/colorTextIcons"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true"
+        android:textSize="20sp"
+        android:layout_above="@+id/aboutButton"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:textSize="20sp"/>
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"/>
 
-    <EditText
-        android:layout_width="wrap_content"
+    <Button
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/artistNameEditText"
-        android:layout_marginTop="39dp"
-        android:hint="artist name"
-        android:layout_below="@+id/appSubtitleTextView"
-        android:layout_alignLeft="@+id/appSubtitleTextView"
-        android:layout_alignStart="@+id/appSubtitleTextView"
-        android:layout_alignRight="@+id/appSubtitleTextView"
-        android:layout_alignEnd="@+id/appSubtitleTextView"/>
+        android:text="About"
+        android:id="@+id/aboutButton"
+        android:background="@drawable/about_button"
+        android:textColor="@color/colorTextIcons"
+        android:textSize="20sp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"/>
 
 </RelativeLayout>
