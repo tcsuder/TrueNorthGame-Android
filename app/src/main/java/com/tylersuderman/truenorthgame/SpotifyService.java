@@ -74,13 +74,9 @@ public class SpotifyService {
                 JSONObject artistJSON = new JSONObject(jsonData);
                 playerId = artistJSON.getString("id");
                 playerName = artistJSON.getString("display_name");
-                newPlayer = new Player(playerName, playerId);
+                newPlayer = new Player(playerName);
+                newPlayer.setPushId(playerId);
                 newPlayerArray.add(newPlayer);
-                Log.d(TAG, "THIS IS THE PARAMETERS FOR PLAYER INSTANTIATION: " + playerId +
-                        " and "
-                        + playerName);
-                Log.d(TAG, "THIS IS THE PLAYER OBJECT: " + newPlayer.getName() + " and " +
-                        newPlayer.getId() + " and " + newPlayer.getScore());
             }
         } catch (IOException e) {
             e.printStackTrace();

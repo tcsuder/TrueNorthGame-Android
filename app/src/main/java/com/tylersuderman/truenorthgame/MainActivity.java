@@ -44,6 +44,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Bind(R.id.artistNameEditText) EditText mArtistName;
     private Firebase mSpotifyPlayerId;
     private Firebase mFirebaseRef;
+    private Firebase mFirebasePlayersRef;
     private ValueEventListener mSpotifyPlayerIdEventListener;
     private Player mPlayer;
 
@@ -51,7 +52,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private static final String REDIRECT_URI = "truenorthgame.mainactivity://callback";
     String SPOTIFY_CLIENT_ID = Constants.SPOTIFY_CLIENT_ID;
     String SPOTIFY_ACCESS_TOKEN;
-    String UserId;
 
 
     private ArrayList<Song> songs = new ArrayList<>();
@@ -85,7 +85,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         AuthenticationRequest request = builder.build();
         AuthenticationClient.openLoginActivity(this, REQUEST_CODE, request);
 
-//        SAVE CURRENT USER ID AFTER SPOTIFY AUTH PROCESS
+//        SET CURRENT PLAYER ID AFTER SPOTIFY AUTH PROCESS
         mSpotifyPlayerIdEventListener = mSpotifyPlayerId.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -101,52 +101,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
         });
 
-
-//        Firebase ref = new Firebase(Constants.FIREBASE_URL_PLAYERS);
-//        ref.push().setValue(mPlayer);
     }
 
-//    @Override
-//    protected void onDestroy() {
-//        super.onDestroy();
-//        mSpotifyPlayerId.removeEventListener(mSpotifyPlayerIdEventListener);
-//    }
-
-
-//    public void createNewUser(String name, final String uid, String email) {
-//
-//        /*FIREBASE REFERENCE .createUser USUALLY TAKES EMAIL PASSWORD AND RESULTHANDLER AS ARGUMENTS
-//         BUT IN THIS CASE PASSWORD HAS BEEN CHANGED TO UID BECAUSE ALL SIGNIN IS HANDLED BY SPOTIFY
-//         AND ALL USERS CORISPOND WITH SPOTIFY USER ACCOUNTS.*/
-//
-//        mFirebaseRef.createUser(email, uid, new Firebase.ValueResultHandler<Map<String,
-//                Object>>
-//                () {
-//            @Override
-//            public void onSuccess(Map<String, Object> result) {
-//                String uid = result.get("uid").toString();
-//                String name = result.get("name").toString();
-//                String email = result.get("email").toString();
-//                createPlayerInFirebaseHelper(name, email, uid);
-//            }
-//
-//            @Override
-//            public void onError(FirebaseError firebaseError) {
-//                Log.d(TAG, "error occurred " +
-//                        firebaseError);
-//            }
-//        });
-//
-//    }
-//
-//
-//
-//    private void createPlayerInFirebaseHelper(final String name, final String
-//            email, final String uid) {
-//        final Firebase playerLocation = new Firebase(Constants.FIREBASE_URL_PLAYERS).child(uid);
-//        Player newPlayer = new Player(name, uid, email);
-//        playerLocation.setValue(newPlayer);
-//    }
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        mSpotifyPlayerId.removeEventListener(mSpotifyPlayerIdEventListener);
+    }
 
 
 
@@ -172,7 +133,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         @Override
                         public void onResponse(Call call, Response response) throws IOException {
                             mPlayer = SpotifyService.processUserResults(response).get(0);
-                            saveIdToFirebase(mPlayer.getId());
+                            saveIdToFirebase(mPlayer.getPushId());
+                            Firebase players = new Firebase(Constants
+                                    .FIREBASE_URL_PLAYERS);
+                            if (!mPlayer.alreadyExists()) {
+                                players.child(mPlayer.getPushId()).setValue(mPlayer);
+                            }
                         }
                     });
                     break;
