@@ -86,20 +86,20 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         AuthenticationClient.openLoginActivity(this, REQUEST_CODE, request);
 
 //        SAVE CURRENT USER ID AFTER SPOTIFY AUTH PROCESS
-//        mSpotifyPlayerIdEventListener = mSpotifyPlayerId.addValueEventListener(new ValueEventListener() {
-//            @Override
-//            public void onDataChange(DataSnapshot dataSnapshot) {
-//
-//                String playerId = dataSnapshot.getValue().toString();
-//                Log.d("Player id updated", playerId);
-//
-//            }
-//
-//            @Override
-//            public void onCancelled(FirebaseError firebaseError) {
-//
-//            }
-//        });
+        mSpotifyPlayerIdEventListener = mSpotifyPlayerId.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+
+                String playerId = dataSnapshot.getValue().toString();
+                Log.d("Player id updated", playerId);
+
+            }
+
+            @Override
+            public void onCancelled(FirebaseError firebaseError) {
+
+            }
+        });
 
 
 //        Firebase ref = new Firebase(Constants.FIREBASE_URL_PLAYERS);
