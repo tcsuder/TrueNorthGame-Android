@@ -27,6 +27,7 @@ package com.tylersuderman.truenorthgame;
 
         import java.io.IOException;
         import java.util.ArrayList;
+        import java.util.Map;
 
         import butterknife.Bind;
         import butterknife.ButterKnife;
@@ -42,7 +43,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Bind(R.id.quickPlayButton) Button mPlayButton;
     @Bind(R.id.artistNameEditText) EditText mArtistName;
     private Firebase mSpotifyPlayerId;
+    private Firebase mFirebaseRef;
     private ValueEventListener mSpotifyPlayerIdEventListener;
+    private Player mPlayer;
 
     private static final int REQUEST_CODE = 1337;
     private static final String REDIRECT_URI = "truenorthgame.mainactivity://callback";
@@ -66,10 +69,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         ButterKnife.bind(this);
 
         mSpotifyPlayerId = new Firebase(Constants.FIREBASE_URL_PLAYER_ID);
+        mFirebaseRef = new Firebase(Constants.FIREBASE_URL);
         mPlayButton.setOnClickListener(this);
         mAboutButton.setOnClickListener(this);
         mTopScoreButton.setOnClickListener(this);
         mLoginButton.setOnClickListener(this);
+
 
 
 //        SPOTIFY AUTHENTICATION BUILDER
@@ -80,34 +85,73 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         AuthenticationRequest request = builder.build();
         AuthenticationClient.openLoginActivity(this, REQUEST_CODE, request);
 
+//        SAVE CURRENT USER ID AFTER SPOTIFY AUTH PROCESS
+//        mSpotifyPlayerIdEventListener = mSpotifyPlayerId.addValueEventListener(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(DataSnapshot dataSnapshot) {
+//
+//                String playerId = dataSnapshot.getValue().toString();
+//                Log.d("Player id updated", playerId);
+//
+//            }
+//
+//            @Override
+//            public void onCancelled(FirebaseError firebaseError) {
+//
+//            }
+//        });
 
-        mSpotifyPlayerIdEventListener = mSpotifyPlayerId.addValueEventListener(new
-                                                                                       ValueEventListener
-                () {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                String userId = dataSnapshot.getValue().toString();
-                Log.d("Location updated", userId);
-            }
 
-            @Override
-            public void onCancelled(FirebaseError firebaseError) {
-
-            }
-        });
-
+//        Firebase ref = new Firebase(Constants.FIREBASE_URL_PLAYERS);
+//        ref.push().setValue(mPlayer);
     }
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        mSpotifyPlayerId.removeEventListener(mSpotifyPlayerIdEventListener);
-    }
+//    @Override
+//    protected void onDestroy() {
+//        super.onDestroy();
+//        mSpotifyPlayerId.removeEventListener(mSpotifyPlayerIdEventListener);
+//    }
+
+
+//    public void createNewUser(String name, final String uid, String email) {
+//
+//        /*FIREBASE REFERENCE .createUser USUALLY TAKES EMAIL PASSWORD AND RESULTHANDLER AS ARGUMENTS
+//         BUT IN THIS CASE PASSWORD HAS BEEN CHANGED TO UID BECAUSE ALL SIGNIN IS HANDLED BY SPOTIFY
+//         AND ALL USERS CORISPOND WITH SPOTIFY USER ACCOUNTS.*/
+//
+//        mFirebaseRef.createUser(email, uid, new Firebase.ValueResultHandler<Map<String,
+//                Object>>
+//                () {
+//            @Override
+//            public void onSuccess(Map<String, Object> result) {
+//                String uid = result.get("uid").toString();
+//                String name = result.get("name").toString();
+//                String email = result.get("email").toString();
+//                createPlayerInFirebaseHelper(name, email, uid);
+//            }
+//
+//            @Override
+//            public void onError(FirebaseError firebaseError) {
+//                Log.d(TAG, "error occurred " +
+//                        firebaseError);
+//            }
+//        });
+//
+//    }
+//
+//
+//
+//    private void createPlayerInFirebaseHelper(final String name, final String
+//            email, final String uid) {
+//        final Firebase playerLocation = new Firebase(Constants.FIREBASE_URL_PLAYERS).child(uid);
+//        Player newPlayer = new Player(name, uid, email);
+//        playerLocation.setValue(newPlayer);
+//    }
 
 
 
 
-//    SPOTIFY AUTH TOKEN REVIEVER
+//    SPOTIFY AUTH TOKEN RETRIEVER
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
         super.onActivityResult(requestCode, resultCode, intent);
@@ -120,16 +164,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 // Response was successful and contains auth token
                 case TOKEN:
                     SPOTIFY_ACCESS_TOKEN = response.getAccessToken();
+                    Log.d(TAG, "THIS IS AN ACCESS TOKEN: " + SPOTIFY_ACCESS_TOKEN);
                     SpotifyService.findUserId(SPOTIFY_ACCESS_TOKEN, new Callback() {
                         @Override
                         public void onFailure(Call call, IOException e) { e.printStackTrace(); }
 
                         @Override
                         public void onResponse(Call call, Response response) throws IOException {
-                            Log.d(TAG, "THIS IS THE RESPONSE FOR USER ID: " + response);
-                            UserId = SpotifyService.processUserResults(response);
-                            saveLocationToFirebase(UserId);
-                            Log.d(TAG, "THIS IS A USER ID FOR ME: " + UserId);
+                            mPlayer = SpotifyService.processUserResults(response).get(0);
+                            saveIdToFirebase(mPlayer.getId());
                         }
                     });
                     break;
@@ -145,9 +188,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
-    public void saveLocationToFirebase(String userId) {
-        Firebase searchedLocationRef = new Firebase(Constants.FIREBASE_URL_PLAYER_ID);
-        searchedLocationRef.setValue(userId);
+    public void saveIdToFirebase(String playerId) {
+        Firebase playerIdRef = new Firebase(Constants.FIREBASE_URL_PLAYER_ID);
+        playerIdRef.setValue(playerId);
     }
 
     private void searchArtist(final String userSearch) {

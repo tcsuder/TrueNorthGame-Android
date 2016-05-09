@@ -8,34 +8,37 @@ import java.util.Comparator;
  * Created by tylersuderman on 4/24/16.
  */
 public class Player {
-    private String mPlayerName;
-    private Integer mPlayerScore;
+    String playerName;
+    String playerId;
+    Integer playerScore;
 
-    public Player(String name) {
-        this.mPlayerName = name;
-        this.mPlayerScore = (int) Math.floor(Math.random() * 1001);
+    public Player(String name, String id) {
+        this.playerName = name;
+        this.playerId = id;
+        this.playerScore = (int) Math.floor(Math.random() * 1001);
     }
 
     public String getName() {
-        return mPlayerName;
+        return playerName;
     }
     public Integer getScore() {
-        return mPlayerScore;
+        return playerScore;
     }
-    public Integer addScore(int newScore) {
-        this.mPlayerScore += newScore;
-        return mPlayerScore;
+    public String getId() { return playerId; }
+    public Integer addToScore(int newScore) {
+        this.playerScore += newScore;
+        return playerScore;
     }
 
 
     //    FAKE DATA
 
     public static ArrayList<Player> getPlayers() {
-        Player tom = new Player("Tom");
-        Player tracy = new Player("Tracy");
-        Player tim = new Player("Tim");
-        Player devona = new Player("Devona");
-        Player lawdyJean = new Player("Lawdy-Jean");
+        Player tom = new Player("Tom", "1");
+        Player tracy = new Player("Tracy", "2");
+        Player tim = new Player("Tim", "3");
+        Player devona = new Player("Devona", "4");
+        Player lawdyJean = new Player("Lawdy-Jean", "5");
 
         ArrayList<Player> players = new ArrayList<>();
         players.add(tom);

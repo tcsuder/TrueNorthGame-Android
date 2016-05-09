@@ -9,6 +9,7 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -54,29 +55,39 @@ public class SpotifyService {
         String url = urlBuilder.build().toString();
 
         Request request= new Request.Builder()
-                .header("Authorization", "Bearer " + token)
                 .url(url)
+                .header("Authorization", "Bearer " + token)
                 .build();
 
         Call call = client.newCall(request);
         call.enqueue(callback);
     }
 
-    public static String processUserResults(Response response) {
-        String userId = "";
+    public static ArrayList<Player> processUserResults(Response response) {
+        ArrayList<Player> newPlayerArray = new ArrayList<>();
+        String playerId;
+        String playerName;
+        Player newPlayer;
         try {
             String jsonData = response.body().string();
             if(response.isSuccessful()) {
                 JSONObject artistJSON = new JSONObject(jsonData);
-                userId = artistJSON.getString("id");
-
+                playerId = artistJSON.getString("id");
+                playerName = artistJSON.getString("display_name");
+                newPlayer = new Player(playerName, playerId);
+                newPlayerArray.add(newPlayer);
+                Log.d(TAG, "THIS IS THE PARAMETERS FOR PLAYER INSTANTIATION: " + playerId +
+                        " and "
+                        + playerName);
+                Log.d(TAG, "THIS IS THE PLAYER OBJECT: " + newPlayer.getName() + " and " +
+                        newPlayer.getId() + " and " + newPlayer.getScore());
             }
         } catch (IOException e) {
             e.printStackTrace();
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        return userId;
+        return newPlayerArray;
     }
 
 
