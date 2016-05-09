@@ -42,11 +42,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Bind(R.id.topScoresButton) Button mTopScoreButton;
     @Bind(R.id.quickPlayButton) Button mPlayButton;
     @Bind(R.id.artistNameEditText) EditText mArtistName;
-    private Firebase mSpotifyPlayerId;
-    private Firebase mFirebaseRef;
-    private Firebase mFirebasePlayersRef;
+    private Firebase mPlayerId;
     private ValueEventListener mSpotifyPlayerIdEventListener;
     private Player mPlayer;
+    private boolean playerSaved;
+    private Firebase mFirebasePlayersRef;
 
     private static final int REQUEST_CODE = 1337;
     private static final String REDIRECT_URI = "truenorthgame.mainactivity://callback";
@@ -68,8 +68,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
 
-        mSpotifyPlayerId = new Firebase(Constants.FIREBASE_URL_PLAYER_ID);
-        mFirebaseRef = new Firebase(Constants.FIREBASE_URL);
+        mPlayerId = new Firebase(Constants.FIREBASE_URL_PLAYER_ID);
         mPlayButton.setOnClickListener(this);
         mAboutButton.setOnClickListener(this);
         mTopScoreButton.setOnClickListener(this);
@@ -86,7 +85,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         AuthenticationClient.openLoginActivity(this, REQUEST_CODE, request);
 
 //        SET CURRENT PLAYER ID AFTER SPOTIFY AUTH PROCESS
-        mSpotifyPlayerIdEventListener = mSpotifyPlayerId.addValueEventListener(new ValueEventListener() {
+        mSpotifyPlayerIdEventListener = mPlayerId.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
 
@@ -106,7 +105,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        mSpotifyPlayerId.removeEventListener(mSpotifyPlayerIdEventListener);
+        mPlayerId.removeEventListener(mSpotifyPlayerIdEventListener);
     }
 
 
@@ -134,11 +133,25 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         public void onResponse(Call call, Response response) throws IOException {
                             mPlayer = SpotifyService.processUserResults(response).get(0);
                             saveIdToFirebase(mPlayer.getPushId());
-                            Firebase players = new Firebase(Constants
-                                    .FIREBASE_URL_PLAYERS);
-                            if (!mPlayer.alreadyExists()) {
-                                players.child(mPlayer.getPushId()).setValue(mPlayer);
-                            }
+
+                            Log.d(TAG, "PUSH ID: " + mPlayer.getPushId());
+
+                            mFirebasePlayersRef = new Firebase(Constants.FIREBASE_URL_PLAYERS);
+                            mFirebasePlayersRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(DataSnapshot snapshot) {
+                                    Log.d("PUSH ID FROM PLAYER: ", ""+mPlayer.getPushId());
+                                    playerSaved = snapshot.child(mPlayer.getPushId()).exists();
+                                    Log.d("PLAYER CHECK: ", ""+playerSaved);
+
+                                    if (!playerSaved) {
+                                        mFirebasePlayersRef.child(mPlayer.getPushId()).setValue(mPlayer);
+                                    }
+                                }
+                                @Override
+                                public void onCancelled(FirebaseError firebaseError) {
+                                }
+                            });
                         }
                     });
                     break;
