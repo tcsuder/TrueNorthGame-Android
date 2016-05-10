@@ -1,5 +1,6 @@
 package com.tylersuderman.truenorthgame;
 
+import android.content.Context;
 import android.content.Intent;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
@@ -9,8 +10,11 @@ import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.squareup.picasso.Picasso;
 
 import org.parceler.Parcels;
 
@@ -22,8 +26,11 @@ import butterknife.ButterKnife;
 
 public class GameRoundActivity extends AppCompatActivity {
     public static final String TAG = GameRoundActivity.class.getSimpleName();
+    private static final int MAX_WIDTH = 700;
+    private static final int MAX_HEIGHT = 700;
 
     @Bind(R.id.countdownTextView) TextView mCountdownTextView;
+    @Bind(R.id.artistImageView) ImageView mArtistImageView;
     @Bind(R.id.recyclerView) RecyclerView mRecyclerView;
 
     private Artist mArtist;
@@ -50,8 +57,7 @@ public class GameRoundActivity extends AppCompatActivity {
         allSongs = Parcels.unwrap(intent.getParcelableExtra("songs"));
         guessingRoundSongs = createSongArray(allSongs);
         playRightAnswerSong(guessingRoundSongs);
-
-
+        setImage(this);
     }
 
     private ArrayList<Song> createSongArray(ArrayList<Song> allSongs) {
@@ -148,6 +154,14 @@ public class GameRoundActivity extends AppCompatActivity {
                 new LinearLayoutManager(GameRoundActivity.this);
         mRecyclerView.setLayoutManager(layoutManager);
         mRecyclerView.setHasFixedSize(true);
+    }
+
+    private void setImage(Context context) {
+        Picasso.with(context)
+                .load(mArtist.getImage())
+                .resize(MAX_WIDTH, MAX_HEIGHT)
+                .centerCrop()
+                .into(mArtistImageView);
     }
 
     @Override
