@@ -40,7 +40,6 @@ android {
 
     buildTypes.each {
         it.buildConfigField 'String', 'SPOTIFY_CLIENT_ID', SpotifyClientId
-        it.buildConfigField 'String', 'SPOTIFY_CLIENT_SECRET', SpotifyClientSecret
         it.buildConfigField 'String', 'FIREBASE_ROOT_URL', FirebaseRootUrl
     }
 }

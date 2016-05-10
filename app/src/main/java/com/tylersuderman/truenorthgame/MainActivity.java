@@ -41,30 +41,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Bind(R.id.aboutButton) Button mAboutButton;
     @Bind(R.id.topScoresButton) Button mTopScoreButton;
     @Bind(R.id.quickPlayButton) Button mPlayButton;
-    @Bind(R.id.artistNameEditText) EditText mArtistName;
-    private Firebase mPlayerId;
-    private ValueEventListener mSpotifyPlayerIdEventListener;
-    private Player mPlayer;
-    private Artist mArtist;
-    private String mCurrentPlayerId;
-    private boolean playerSaved;
-    private Firebase mFirebasePlayersRef;
-
-    private SharedPreferences mSharedPreferences;
-    private SharedPreferences.Editor mEditor;
-
-    private static final int REQUEST_CODE = 1337;
-    private static final String REDIRECT_URI = "truenorthgame.mainactivity://callback";
-    String SPOTIFY_CLIENT_ID = Constants.SPOTIFY_CLIENT_ID;
-    String SPOTIFY_ACCESS_TOKEN;
+    @Bind(R.id.artistNameEditText) EditText mArtistNameEditText;
 
 
-    private ArrayList<Song> songs = new ArrayList<>();
-    private ArrayList<Artist> artistPackage = new ArrayList<>();
-    private Artist artist;
-    private String artistName;
-    private TextView toastText;
-    private View layout;
+    private static final int REQUEST_CODE = Constants.REQUEST_CODE;
+    private static final String REDIRECT_URI = Constants.REDIRECT_URI;
+    private static final String SPOTIFY_CLIENT_ID = Constants.SPOTIFY_CLIENT_ID;
 
 
     @Override
@@ -73,109 +55,26 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
 
-        mPlayerId = new Firebase(Constants.FIREBASE_URL_PLAYER_ID);
         mPlayButton.setOnClickListener(this);
         mAboutButton.setOnClickListener(this);
         mTopScoreButton.setOnClickListener(this);
         mLoginButton.setOnClickListener(this);
 
-        mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-        mEditor = mSharedPreferences.edit();
 
-
-
-
-//        SPOTIFY AUTHENTICATION BUILDER
-        AuthenticationRequest.Builder builder =
-                new AuthenticationRequest.Builder(SPOTIFY_CLIENT_ID, AuthenticationResponse.Type.TOKEN, REDIRECT_URI);
-            builder.setScopes(new String[]{"streaming"});
-        AuthenticationRequest request = builder.build();
-        AuthenticationClient.openLoginActivity(this, REQUEST_CODE, request);
-
-//        SET CURRENT PLAYER ID AFTER SPOTIFY AUTH PROCESS
-//        mSpotifyPlayerIdEventListener = mPlayerId.addValueEventListener(new ValueEventListener() {
-//            @Override
-//            public void onDataChange(DataSnapshot dataSnapshot) {
-//
-//                String playerId = dataSnapshot.getValue().toString();
-//                Log.d("Player id updated", playerId);
-//
-//            }
-//
-//            @Override
-//            public void onCancelled(FirebaseError firebaseError) {
-//
-//            }
-//        });
+        SpotifyService.spotifyUserAuth(MainActivity.this, SPOTIFY_CLIENT_ID,
+                REDIRECT_URI, REQUEST_CODE);
 
     }
 
-
-    private void addToSharedPreferences(String uid) {
-        mEditor.putString(Constants.PREFERENCES_PLAYER_KEY, uid).apply();
-    }
-
-
-//    SPOTIFY AUTH TOKEN RETRIEVER
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
         super.onActivityResult(requestCode, resultCode, intent);
-        Log.d(TAG, "I'm here");
-        Log.d(TAG, ""+requestCode);
-        // Check if result comes from the correct activity
-        if (requestCode == REQUEST_CODE) {
-            AuthenticationResponse response = AuthenticationClient.getResponse(resultCode, intent);
-            Log.d(TAG, "TYPE: " + response.getType());
-            switch (response.getType()) {
-                // Response was successful and contains auth token
-                case TOKEN:
-                    SPOTIFY_ACCESS_TOKEN = response.getAccessToken();
-                    SpotifyService.findUserId(SPOTIFY_ACCESS_TOKEN, new Callback() {
-                        @Override
-                        public void onFailure(Call call, IOException e) { e.printStackTrace(); }
 
-                        @Override
-                        public void onResponse(Call call, Response response) throws IOException {
-                            mPlayer = SpotifyService.processUserResults(response).get(0);
-                            Log.d(TAG, "THIS IS THE CURRENT PLAYER: " + mPlayer);
-                            addToSharedPreferences(mPlayer.getPushId());
+        SpotifyService.saveAuthorizedUser(requestCode, resultCode, intent, MainActivity.this);
 
-                            mFirebasePlayersRef = new Firebase(Constants.FIREBASE_URL_PLAYERS);
-                            mFirebasePlayersRef.addListenerForSingleValueEvent(new ValueEventListener() {
-                                @Override
-                                public void onDataChange(DataSnapshot snapshot) {
-                                    playerSaved = snapshot.child(mPlayer.getPushId()).exists();
-
-                                    if (!playerSaved) {
-                                        mFirebasePlayersRef.child(mPlayer.getPushId()).setValue(mPlayer);
-                                    }
-
-                                    mCurrentPlayerId = mSharedPreferences.getString(Constants.PREFERENCES_PLAYER_KEY, null);
-                                    Log.d(TAG, "Current Player: " + mCurrentPlayerId);
-                                }
-                                @Override
-                                public void onCancelled(FirebaseError firebaseError) {
-                                }
-                            });
-                        }
-                    });
-                    break;
-
-                // Auth flow returned an error
-                case ERROR:
-                    break;
-
-                // Most likely auth flow was cancelled
-                default:
-                    // Handle other cases
-            }
-        }
     }
 
-    public void saveIdToFirebase(String playerId) {
-        Firebase playerIdRef = new Firebase(Constants.FIREBASE_URL_PLAYER_ID);
-        playerIdRef.setValue(playerId);
-    }
+
 
     private void searchArtist(final String userSearch) {
         SpotifyService.findArtist(userSearch, new Callback() {
@@ -188,11 +87,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             public void onResponse(Call call, Response response) {
                 ArrayList<Artist> responseArray = SpotifyService.processArtistResults(response);
                 int size = responseArray.size();
-                mArtist = responseArray.get(0);
+                final Artist artist = responseArray.get(0);
 
 //                  IF ARTIST SEARCH RETURNS SPOTIFY ARTIST OBJECT PACKAGE SONGS AND GO TO GAME
                 if (size > 0) {
-                    getTracks(mArtist);
+                    getTracks(artist);
 
 //                            IF ARTIST SEARCH IS UNSUCCESSFUL
                 } else {
@@ -211,8 +110,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
 
-    private void getTracks(Artist returnedArtist) {
-        String artistId = returnedArtist.getId();
+    private void getTracks(final Artist artist) {
+        String artistId = artist.getId();
         SpotifyService.findSpotifySongs(artistId, new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
@@ -221,7 +120,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
             @Override
             public void onResponse(Call call, Response response) throws IOException {
-                songs = SpotifyService.processSongIds(response);
+                ArrayList<Song> songs = SpotifyService.processSongIds(response);
                 Intent intent = new Intent(MainActivity.this, GameRoundActivity.class);
                 intent.putExtra("artist", Parcels.wrap(artist));
                 intent.putExtra("songs", Parcels.wrap(songs));
@@ -233,9 +132,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     public void toast(String string) {
         LayoutInflater inflater = getLayoutInflater();
-        layout = inflater.inflate(R.layout.no_artist_toast,
+        final View layout = inflater.inflate(R.layout.no_artist_toast,
                 (ViewGroup) findViewById(R.id.toast_layout_root));
-        toastText = (TextView) layout.findViewById(R.id
+        final TextView toastText = (TextView) layout.findViewById(R.id
                 .toastText);
         toastText.setText(string);
 
@@ -250,29 +149,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void onClick(View v) {
         switch (v.getId()) {
 /*            case R.id.loginButton:
-                InputMethodManager inputManager = (InputMethodManager)
-                        getSystemService(INPUT_METHOD_SERVICE);
-
-                inputManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(),
-                        InputMethodManager.HIDE_NOT_ALWAYS);
-
-
-//                String username = mUsernameEditText.getText().toString();
-//                String password = mPasswordEditText.getText().toString();
-//                if (username.equals("") || password.equals("")) {
-//                    Toast.makeText(MainActivity.this, "No Username/Password", Toast.LENGTH_SHORT).show();
-//                } else if (username.equals("tyler") && password.equals("password")) {
-//                    Intent loginIntent = new Intent(MainActivity.this, GameRoundActivity.class);
-//                    loginIntent.putExtra("username", username);
-//                    startActivity(loginIntent);
-//                } else {
-//                    Toast.makeText(MainActivity.this, "Invalid Username/Password", Toast.LENGTH_SHORT).show();
-//                }
 
                 break;*/
 
             case R.id.quickPlayButton:
-                artistName = mArtistName.getText().toString();
+                final String artistName = mArtistNameEditText.getText().toString();
 
                 if (artistName.equals("")) {
 
