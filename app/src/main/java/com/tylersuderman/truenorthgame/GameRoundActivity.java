@@ -27,12 +27,12 @@ public class GameRoundActivity extends AppCompatActivity {
     @Bind(R.id.recyclerView) RecyclerView mRecyclerView;
 
     private Artist mArtist;
-    ArrayList<Song> songs = new ArrayList<>();
-    ArrayList<Song> allSongs = new ArrayList<>();
-    public MediaPlayer mediaPlayer;
-    public String audioPath;
-    public CountDownTimer countdownTimer;
-    public int playTime = 8000;
+    private ArrayList<Song> guessingRoundSongs = new ArrayList<>();
+    private ArrayList<Song> allSongs = new ArrayList<>();
+    private MediaPlayer mediaPlayer;
+    private String audioPath;
+    private CountDownTimer countdownTimer;
+    private int playTime = 8000;
     private MultipleChoiceAdapter mAdapter;
 
 
@@ -47,42 +47,51 @@ public class GameRoundActivity extends AppCompatActivity {
         Intent intent = getIntent();
         mArtist = Parcels.unwrap(intent.getParcelableExtra("artist"));
 
-//        RETRIEVE SHUFFLE AND CHOOSE 4 RANDOM SONGS AND REMOVE CURRENT QUIZ SONG
         allSongs = Parcels.unwrap(intent.getParcelableExtra("songs"));
+        guessingRoundSongs = createSongArray(allSongs);
+        playRightAnswerSong(guessingRoundSongs);
+
+
+    }
+
+    private ArrayList<Song> createSongArray(ArrayList<Song> allSongs) {
         Collections.shuffle(allSongs);
-        Log.d(TAG, "ALL SONGS SIZE: "+ allSongs.size());
+        ArrayList<Song> roundSongs = new ArrayList<>();
         for (int i=0; i<allSongs.size(); i++) {
-            Log.d(TAG, "SONGS: "+ songs);
+            Log.d(TAG, "SONGS: "+ roundSongs);
 
             Song song = allSongs.get(i);
-            if (songs.size() == 4) {
+            if (roundSongs.size() == 4) {
                 break;
-            } else if (songs.size() < 3) {
-                songs.add(song);
+            } else if (roundSongs.size() < 3) {
+                roundSongs.add(song);
             } else {
                 if (song.getPlayed() == true ) {
                     Log.i(TAG, "Song skipped");
                 } else {
                     song.setToPlayed();
                     song.setRightAnswer();
-                    songs.add(song);
+                    roundSongs.add(song);
                 }
             }
 
         }
 
+        return roundSongs;
+    }
+
+    private void playRightAnswerSong(ArrayList<Song> roundSongs) {
+
         //        ERROR HANDLING FOR SONG RETREIVAL
-        if (songs.size() > 0) {
-            audioPath = songs.get(3).getPreview();
+        if (roundSongs.size() > 0) {
+            audioPath = roundSongs.get(3).getPreview();
         } else {
             Toast.makeText(GameRoundActivity.this, "Async error: please choose artist again.",
                     Toast.LENGTH_SHORT).show();
         }
-        Collections.shuffle(songs);
+        Collections.shuffle(roundSongs);
 
-
-//        SET UP MEDIA PLAYER
-
+        //        SET UP MEDIA PLAYER
         try {
 
             mediaPlayer = new MediaPlayer();
@@ -94,26 +103,19 @@ public class GameRoundActivity extends AppCompatActivity {
             e.printStackTrace();
         }
 
-//        DELAY PLAY OF SONG AND SHOWING OF CHOICES
+        //        DELAY PLAY OF SONG AND SHOWING OF CHOICES
         new android.os.Handler().postDelayed(
 
-        new Runnable() {
-            public void run() {
+                new Runnable() {
+                    public void run() {
 
-                //        PLAY SONG
-                mediaPlayer.start();
+                        //        PLAY SONG
+                        mediaPlayer.start();
 
+                        showGuessRoundSongs();
 
-                //        SET CHOICES INTO RECYCLERVIEW
-                mAdapter = new MultipleChoiceAdapter(getApplicationContext(), songs, allSongs,
-                        mArtist);
-                mRecyclerView.setAdapter(mAdapter);
-                RecyclerView.LayoutManager layoutManager =
-                        new LinearLayoutManager(GameRoundActivity.this);
-                mRecyclerView.setLayoutManager(layoutManager);
-                mRecyclerView.setHasFixedSize(true);
-            }
-        }, 500);
+                    }
+                }, 500);
 
 //        END PLAY AFTER PLAYTIME IS UP
 
@@ -136,8 +138,16 @@ public class GameRoundActivity extends AppCompatActivity {
                 mCountdownTextView.setText("OVER!");
             }
         }.start();
+    }
 
-
+    private void showGuessRoundSongs() {
+        mAdapter = new MultipleChoiceAdapter(getApplicationContext(), guessingRoundSongs, allSongs,
+                mArtist);
+        mRecyclerView.setAdapter(mAdapter);
+        RecyclerView.LayoutManager layoutManager =
+                new LinearLayoutManager(GameRoundActivity.this);
+        mRecyclerView.setLayoutManager(layoutManager);
+        mRecyclerView.setHasFixedSize(true);
     }
 
     @Override
@@ -147,3 +157,4 @@ public class GameRoundActivity extends AppCompatActivity {
 
     }
 }
+
