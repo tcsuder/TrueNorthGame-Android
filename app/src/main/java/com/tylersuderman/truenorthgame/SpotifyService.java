@@ -9,7 +9,6 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.List;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -25,6 +24,7 @@ public class SpotifyService {
     public static final String TAG = SpotifyService.class.getSimpleName();
 
     public static void findArtist(String artistName, Callback callback) {
+        Log.d(TAG, "I'm here");
 
         OkHttpClient client = new OkHttpClient.Builder()
                 .build();
@@ -35,11 +35,12 @@ public class SpotifyService {
         urlBuilder.addQueryParameter("type", "artist");
         urlBuilder.addQueryParameter("limit", "1");
         String url = urlBuilder.build().toString();
-        Log.d(TAG, "URL " + url);
 
         Request request= new Request.Builder()
                 .url(url)
                 .build();
+
+        Log.d(TAG, "FIND ARTIST URL " + url);
 
         Call call = client.newCall(request);
         call.enqueue(callback);
@@ -59,36 +60,41 @@ public class SpotifyService {
                 .header("Authorization", "Bearer " + token)
                 .build();
 
+        Log.d(TAG, "FIND USER REQUEST" + request);
+
         Call call = client.newCall(request);
         call.enqueue(callback);
     }
 
     public static ArrayList<Player> processUserResults(Response response) {
-        ArrayList<Player> newPlayerArray = new ArrayList<>();
+//        OBJECT MUST BE SENT IN ARRAY... WHY?
+        ArrayList<Player> playerArray = new ArrayList<>();
         String playerId;
         String playerName;
-        Player newPlayer;
+        Player instance;
         try {
             String jsonData = response.body().string();
             if(response.isSuccessful()) {
                 JSONObject artistJSON = new JSONObject(jsonData);
                 playerId = artistJSON.getString("id");
                 playerName = artistJSON.getString("display_name");
-                newPlayer = new Player(playerName);
-                newPlayer.setPushId(playerId);
-                newPlayerArray.add(newPlayer);
+                instance = new Player(playerName);
+                instance.setPushId(playerId);
+                playerArray.add(instance);
             }
         } catch (IOException e) {
             e.printStackTrace();
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        return newPlayerArray;
+        return playerArray;
     }
 
 
     public static ArrayList<Artist> processArtistResults(Response response) {
-        ArrayList<Artist> artist = new ArrayList<>();
+//        OBJECT MUST BE SENT IN ARRAY... WHY?
+        ArrayList<Artist> artistArray = new ArrayList<>();
+        Artist instance;
         try {
             String jsonData = response.body().string();
             if (response.isSuccessful()) {
@@ -104,9 +110,8 @@ public class SpotifyService {
                 String id = artistDetailsJSON.getString("id");
                 String page = artistDetailsJSON.getJSONObject("external_urls")
                         .getString("spotify");
-                Artist instance = new Artist(name, imageUrl, id, page);
-                artist.add(instance);
-                Log.d(TAG, "THIS IS AN ARTIST OBJECT IN THE SERVICE: " + instance);
+                instance = new Artist(name, imageUrl, id, page);
+                artistArray.add(instance);
 
             }
         } catch (IOException e) {
@@ -114,7 +119,7 @@ public class SpotifyService {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        return artist;
+        return artistArray;
     }
 
     public static void findSpotifySongs(String id, Callback callback) {

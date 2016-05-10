@@ -20,4 +20,7 @@ public class Constants {
     public static final String FIREBASE_URL_PLAYERS = FIREBASE_URL + "/" +
             FIREBASE_LOCATION_PLAYERS;
 
+    public static final String PREFERENCES_PLAYER_KEY = "currentPlayer";
+
+
 }

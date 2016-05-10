@@ -26,7 +26,7 @@ public class GameRoundActivity extends AppCompatActivity {
     @Bind(R.id.countdownTextView) TextView mCountdownTextView;
     @Bind(R.id.recyclerView) RecyclerView mRecyclerView;
 
-    public Artist artist;
+    private Artist mArtist;
     ArrayList<Song> songs = new ArrayList<>();
     ArrayList<Song> allSongs = new ArrayList<>();
     public MediaPlayer mediaPlayer;
@@ -45,9 +45,7 @@ public class GameRoundActivity extends AppCompatActivity {
         ButterKnife.bind(this);
 
         Intent intent = getIntent();
-        artist = Parcels.unwrap(intent.getParcelableExtra("artist"));
-
-        Log.d(TAG, "ARTIST ID " + artist.getId());
+        mArtist = Parcels.unwrap(intent.getParcelableExtra("artist"));
 
 //        RETRIEVE SHUFFLE AND CHOOSE 4 RANDOM SONGS AND REMOVE CURRENT QUIZ SONG
         allSongs = Parcels.unwrap(intent.getParcelableExtra("songs"));
@@ -108,7 +106,7 @@ public class GameRoundActivity extends AppCompatActivity {
 
                 //        SET CHOICES INTO RECYCLERVIEW
                 mAdapter = new MultipleChoiceAdapter(getApplicationContext(), songs, allSongs,
-                        artist);
+                        mArtist);
                 mRecyclerView.setAdapter(mAdapter);
                 RecyclerView.LayoutManager layoutManager =
                         new LinearLayoutManager(GameRoundActivity.this);

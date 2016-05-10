@@ -38,11 +38,6 @@
             android:name="com.spotify.sdk.android.authentication.LoginActivity"
             android:theme="@android:style/Theme.Translucent.NoTitleBar" />
 
-        <service
-            android:name=".SpotifyService"
-            android:enabled="true"
-            android:exported="true" />
-
         <activity android:name=".GameRoundActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"

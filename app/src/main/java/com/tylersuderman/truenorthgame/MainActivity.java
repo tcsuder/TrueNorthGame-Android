@@ -1,6 +1,8 @@
 package com.tylersuderman.truenorthgame;
 
         import android.content.Intent;
+        import android.content.SharedPreferences;
+        import android.preference.PreferenceManager;
         import android.support.v7.app.AppCompatActivity;
         import android.os.Bundle;
         import android.util.Log;
@@ -8,10 +10,8 @@ package com.tylersuderman.truenorthgame;
         import android.view.LayoutInflater;
         import android.view.View;
         import android.view.ViewGroup;
-        import android.view.inputmethod.InputMethodManager;
         import android.widget.Button;
         import android.widget.EditText;
-        import android.widget.ImageView;
         import android.widget.TextView;
         import android.widget.Toast;
 
@@ -45,8 +45,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private Firebase mPlayerId;
     private ValueEventListener mSpotifyPlayerIdEventListener;
     private Player mPlayer;
+    private Artist mArtist;
+    private String mCurrentPlayerId;
     private boolean playerSaved;
     private Firebase mFirebasePlayersRef;
+
+    private SharedPreferences mSharedPreferences;
+    private SharedPreferences.Editor mEditor;
 
     private static final int REQUEST_CODE = 1337;
     private static final String REDIRECT_URI = "truenorthgame.mainactivity://callback";
@@ -74,57 +79,57 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         mTopScoreButton.setOnClickListener(this);
         mLoginButton.setOnClickListener(this);
 
+        mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        mEditor = mSharedPreferences.edit();
+
+
 
 
 //        SPOTIFY AUTHENTICATION BUILDER
         AuthenticationRequest.Builder builder =
                 new AuthenticationRequest.Builder(SPOTIFY_CLIENT_ID, AuthenticationResponse.Type.TOKEN, REDIRECT_URI);
-        Log.d(TAG, SPOTIFY_CLIENT_ID);
-        builder.setScopes(new String[]{"streaming"});
+            builder.setScopes(new String[]{"streaming"});
         AuthenticationRequest request = builder.build();
         AuthenticationClient.openLoginActivity(this, REQUEST_CODE, request);
 
 //        SET CURRENT PLAYER ID AFTER SPOTIFY AUTH PROCESS
-        mSpotifyPlayerIdEventListener = mPlayerId.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-
-                String playerId = dataSnapshot.getValue().toString();
-                Log.d("Player id updated", playerId);
-
-            }
-
-            @Override
-            public void onCancelled(FirebaseError firebaseError) {
-
-            }
-        });
+//        mSpotifyPlayerIdEventListener = mPlayerId.addValueEventListener(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(DataSnapshot dataSnapshot) {
+//
+//                String playerId = dataSnapshot.getValue().toString();
+//                Log.d("Player id updated", playerId);
+//
+//            }
+//
+//            @Override
+//            public void onCancelled(FirebaseError firebaseError) {
+//
+//            }
+//        });
 
     }
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        mPlayerId.removeEventListener(mSpotifyPlayerIdEventListener);
+
+    private void addToSharedPreferences(String uid) {
+        mEditor.putString(Constants.PREFERENCES_PLAYER_KEY, uid).apply();
     }
-
-
 
 
 //    SPOTIFY AUTH TOKEN RETRIEVER
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
         super.onActivityResult(requestCode, resultCode, intent);
-
+        Log.d(TAG, "I'm here");
+        Log.d(TAG, ""+requestCode);
         // Check if result comes from the correct activity
         if (requestCode == REQUEST_CODE) {
             AuthenticationResponse response = AuthenticationClient.getResponse(resultCode, intent);
-
+            Log.d(TAG, "TYPE: " + response.getType());
             switch (response.getType()) {
                 // Response was successful and contains auth token
                 case TOKEN:
                     SPOTIFY_ACCESS_TOKEN = response.getAccessToken();
-                    Log.d(TAG, "THIS IS AN ACCESS TOKEN: " + SPOTIFY_ACCESS_TOKEN);
                     SpotifyService.findUserId(SPOTIFY_ACCESS_TOKEN, new Callback() {
                         @Override
                         public void onFailure(Call call, IOException e) { e.printStackTrace(); }
@@ -132,21 +137,21 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         @Override
                         public void onResponse(Call call, Response response) throws IOException {
                             mPlayer = SpotifyService.processUserResults(response).get(0);
-                            saveIdToFirebase(mPlayer.getPushId());
-
-                            Log.d(TAG, "PUSH ID: " + mPlayer.getPushId());
+                            Log.d(TAG, "THIS IS THE CURRENT PLAYER: " + mPlayer);
+                            addToSharedPreferences(mPlayer.getPushId());
 
                             mFirebasePlayersRef = new Firebase(Constants.FIREBASE_URL_PLAYERS);
                             mFirebasePlayersRef.addListenerForSingleValueEvent(new ValueEventListener() {
                                 @Override
                                 public void onDataChange(DataSnapshot snapshot) {
-                                    Log.d("PUSH ID FROM PLAYER: ", ""+mPlayer.getPushId());
                                     playerSaved = snapshot.child(mPlayer.getPushId()).exists();
-                                    Log.d("PLAYER CHECK: ", ""+playerSaved);
 
                                     if (!playerSaved) {
                                         mFirebasePlayersRef.child(mPlayer.getPushId()).setValue(mPlayer);
                                     }
+
+                                    mCurrentPlayerId = mSharedPreferences.getString(Constants.PREFERENCES_PLAYER_KEY, null);
+                                    Log.d(TAG, "Current Player: " + mCurrentPlayerId);
                                 }
                                 @Override
                                 public void onCancelled(FirebaseError firebaseError) {
@@ -181,22 +186,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
             @Override
             public void onResponse(Call call, Response response) {
-                int size = SpotifyService.processArtistResults(response).size();
-                artist = SpotifyService.processArtistResults(response).get(0);
+                ArrayList<Artist> responseArray = SpotifyService.processArtistResults(response);
+                int size = responseArray.size();
+                mArtist = responseArray.get(0);
 
-
-                Log.d(TAG, "THIS IS A RESPONSE: " + response);
-                Log.d(TAG, "THIS IS THE SIZE: " + size);
-                Log.d(TAG, "THIS IS AN ARTIST OBJECT: " + artist.getName());
-
-//                  SEND SONGS TO GAME ACTIVITY IF ARTIST SEARCH RETURNS SPOTIFY ARTIST OBJECT
+//                  IF ARTIST SEARCH RETURNS SPOTIFY ARTIST OBJECT PACKAGE SONGS AND GO TO GAME
                 if (size > 0) {
-                    Log.d(TAG, "THIS IS THE SIZE INSIDE BRANCH: " + SpotifyService
-                            .processArtistResults
-                            (response)
-                            .size());
-//                            artist = SpotifyService.processArtistResults(response).get(0);
-//                            getTracks(artist);
+                    getTracks(mArtist);
 
 //                            IF ARTIST SEARCH IS UNSUCCESSFUL
                 } else {
@@ -284,7 +280,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
                 } else {
 
-//                    SEARCH CONTAINS SONGS RETRIEVAL UPON SUCCESS AND NEW INTENT
+//                    SEARCH CONTAINS SONGS RETRIEVAL AND NEW INTEN UPON SUCCESS
                     searchArtist(artistName);
                 }
                 break;
