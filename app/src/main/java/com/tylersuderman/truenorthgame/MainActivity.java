@@ -87,10 +87,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             public void onResponse(Call call, Response response) {
                 ArrayList<Artist> responseArray = SpotifyService.processArtistResults(response);
                 int size = responseArray.size();
-                final Artist artist = responseArray.get(0);
 
 //                  IF ARTIST SEARCH RETURNS SPOTIFY ARTIST OBJECT PACKAGE SONGS AND GO TO GAME
                 if (size > 0) {
+                    final Artist artist = responseArray.get(0);
                     getTracks(artist);
 
 //                            IF ARTIST SEARCH IS UNSUCCESSFUL
@@ -140,7 +140,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         Toast toast = new Toast(getApplicationContext());
         toast.setGravity(Gravity.CENTER_VERTICAL, 0, 275);
-        toast.setDuration(Toast.LENGTH_LONG);
+        toast.setDuration(Toast.LENGTH_SHORT);
         toast.setView(layout);
         toast.show();
     }

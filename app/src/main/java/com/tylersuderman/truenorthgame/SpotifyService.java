@@ -87,10 +87,11 @@ public class SpotifyService extends AppCompatActivity {
                                     Boolean playerSaved = snapshot.child(authorizedPlayer
                                             .getPushId()).exists();
 
-                                    firebasePlayersRef.child(authorizedPlayer.getPushId()).setValue
-                                            (authorizedPlayer);
 
                                     if (!playerSaved) {
+
+                                        firebasePlayersRef.child(authorizedPlayer.getPushId()).setValue
+                                                (authorizedPlayer);
 
                                     }
 
@@ -202,7 +203,7 @@ public class SpotifyService extends AppCompatActivity {
 
                 String name = artistDetailsJSON.getString("name");
                 String imageUrl = artistDetailsJSON.getJSONArray("images")
-                        .getJSONObject(1).getString("url");
+                        .getJSONObject(0).getString("url");
                 String id = artistDetailsJSON.getString("id");
                 String page = artistDetailsJSON.getJSONObject("external_urls")
                         .getString("spotify");
