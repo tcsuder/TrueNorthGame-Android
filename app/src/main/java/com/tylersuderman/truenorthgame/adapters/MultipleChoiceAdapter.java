@@ -1,4 +1,4 @@
-package com.tylersuderman.truenorthgame;
+package com.tylersuderman.truenorthgame.adapters;
 
 import android.content.Context;
 import android.content.Intent;
@@ -7,6 +7,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+
+import com.tylersuderman.truenorthgame.R;
+import com.tylersuderman.truenorthgame.models.Artist;
+import com.tylersuderman.truenorthgame.models.Song;
+import com.tylersuderman.truenorthgame.ui.GameRoundActivity;
 
 import org.parceler.Parcels;
 

@@ -1,4 +1,4 @@
-package com.tylersuderman.truenorthgame;
+package com.tylersuderman.truenorthgame.ui;
 
 import android.content.Context;
 import android.content.Intent;
@@ -15,6 +15,10 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
+import com.tylersuderman.truenorthgame.R;
+import com.tylersuderman.truenorthgame.adapters.MultipleChoiceAdapter;
+import com.tylersuderman.truenorthgame.models.Artist;
+import com.tylersuderman.truenorthgame.models.Song;
 
 import org.parceler.Parcels;
 
@@ -39,7 +43,7 @@ public class GameRoundActivity extends AppCompatActivity {
     private MediaPlayer mediaPlayer;
     private String audioPath;
     private CountDownTimer countdownTimer;
-    private int playTime = 8000;
+    private int playTime = 9000;
     private MultipleChoiceAdapter mAdapter;
 
 

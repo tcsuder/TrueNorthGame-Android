@@ -1,5 +1,7 @@
 package com.tylersuderman.truenorthgame;
 
+import com.tylersuderman.truenorthgame.models.Player;
+
 import java.util.Comparator;
 
 /**

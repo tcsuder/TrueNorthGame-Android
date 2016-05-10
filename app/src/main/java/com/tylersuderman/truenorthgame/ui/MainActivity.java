@@ -1,11 +1,8 @@
-package com.tylersuderman.truenorthgame;
+package com.tylersuderman.truenorthgame.ui;
 
         import android.content.Intent;
-        import android.content.SharedPreferences;
-        import android.preference.PreferenceManager;
         import android.support.v7.app.AppCompatActivity;
         import android.os.Bundle;
-        import android.util.Log;
         import android.view.Gravity;
         import android.view.LayoutInflater;
         import android.view.View;
@@ -15,19 +12,16 @@ package com.tylersuderman.truenorthgame;
         import android.widget.TextView;
         import android.widget.Toast;
 
-        import com.firebase.client.DataSnapshot;
-        import com.firebase.client.Firebase;
-        import com.firebase.client.FirebaseError;
-        import com.firebase.client.ValueEventListener;
-        import com.spotify.sdk.android.authentication.AuthenticationClient;
-        import com.spotify.sdk.android.authentication.AuthenticationRequest;
-        import com.spotify.sdk.android.authentication.AuthenticationResponse;
+        import com.tylersuderman.truenorthgame.Constants;
+        import com.tylersuderman.truenorthgame.R;
+        import com.tylersuderman.truenorthgame.models.Artist;
+        import com.tylersuderman.truenorthgame.models.Song;
+        import com.tylersuderman.truenorthgame.services.SpotifyService;
 
         import org.parceler.Parcels;
 
         import java.io.IOException;
         import java.util.ArrayList;
-        import java.util.Map;
 
         import butterknife.Bind;
         import butterknife.ButterKnife;

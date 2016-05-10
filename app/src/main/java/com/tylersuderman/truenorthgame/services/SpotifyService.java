@@ -1,4 +1,4 @@
-package com.tylersuderman.truenorthgame;
+package com.tylersuderman.truenorthgame.services;
 
 import android.app.Activity;
 import android.content.Context;
@@ -15,6 +15,10 @@ import com.firebase.client.ValueEventListener;
 import com.spotify.sdk.android.authentication.AuthenticationClient;
 import com.spotify.sdk.android.authentication.AuthenticationRequest;
 import com.spotify.sdk.android.authentication.AuthenticationResponse;
+import com.tylersuderman.truenorthgame.Constants;
+import com.tylersuderman.truenorthgame.models.Artist;
+import com.tylersuderman.truenorthgame.models.Player;
+import com.tylersuderman.truenorthgame.models.Song;
 
 import org.json.JSONArray;
 import org.json.JSONException;
