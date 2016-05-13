@@ -62,11 +62,13 @@ public class GameRoundActivity extends AppCompatActivity {
         setContentView(R.layout.activity_game_round);
         ButterKnife.bind(this);
 
-        checkRound();
+
         Intent intent = getIntent();
         mArtist = Parcels.unwrap(intent.getParcelableExtra("artist"));
         setImage(this);
         mAllSongs = Parcels.unwrap(intent.getParcelableExtra("songs"));
+//        CHECK ROUND USES ALL SONGS LENGTH TO END GAME SO IT MUST BE UNDER ALLSONGS INSTANTIATION
+        checkRound();
         mGuessingRoundSongs = createSongArray(mAllSongs);
         playRightAnswerSong(mGuessingRoundSongs);
 
@@ -81,7 +83,8 @@ public class GameRoundActivity extends AppCompatActivity {
         final int previousRound = mSharedPreferences.getInt(Constants.PREFERENCES_ROUND_NUMBER_KEY,
                 0);
         Log.d(TAG, "Previous round: " + previousRound);
-        if (previousRound == 10) {
+        Log.d(TAG, "SONGS ARRAY SIZE: " + mAllSongs.size());
+        if (previousRound == mAllSongs.size()) {
             Intent intent = new Intent(GameRoundActivity.this, TopScoresActivity.class);
             startActivity(intent);
         } else {
