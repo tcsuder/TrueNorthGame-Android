@@ -3,10 +3,12 @@ package com.tylersuderman.truenorthgame.adapters;
 import android.content.Context;
 import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.tylersuderman.truenorthgame.R;
 import com.tylersuderman.truenorthgame.models.Artist;
@@ -29,6 +31,7 @@ public class MultipleChoiceAdapter  extends RecyclerView.Adapter<MultipleChoiceA
     private Artist mArtist = new Artist();
     private Context mContext;
     private ArrayList<Song> mAllSongs = new ArrayList<>();
+
 
     public MultipleChoiceAdapter(Context context, ArrayList<Song> songs, ArrayList<Song> allSongs,
                                  Artist artist) {
@@ -65,16 +68,36 @@ public class MultipleChoiceAdapter  extends RecyclerView.Adapter<MultipleChoiceA
             ButterKnife.bind(this, itemView);
             mContext = itemView.getContext();
 
+            Log.d("THIS IS SOME CONTEXT! ", "" + mContext);
+
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     int itemPosition = getLayoutPosition();
                     Song song = mSongs.get(itemPosition);
+
+                    if(song.isRightAnswer()){
+                        Toast.makeText(mContext, "YEP!", Toast.LENGTH_SHORT).show();
+
+
+                    } else {
+                        Toast.makeText(mContext, "NOPE!", Toast.LENGTH_SHORT).show();
+                    }
+
                     song.unsetRightAnswer();
-                    Intent intent = new Intent(mContext, GameRoundActivity.class);
+                    final Intent intent = new Intent(mContext, GameRoundActivity.class);
                     intent.putExtra("songs", Parcels.wrap(mAllSongs));
                     intent.putExtra("artist", Parcels.wrap(mArtist));
-                    mContext.startActivity(intent);
+
+                    new android.os.Handler().postDelayed(
+
+                        new Runnable() {
+                            public void run() {
+
+                                mContext.startActivity(intent);
+
+                            }
+                        }, 1500);
                 }
             });
         }

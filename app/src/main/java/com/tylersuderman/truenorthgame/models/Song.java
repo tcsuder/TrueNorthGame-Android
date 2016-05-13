@@ -47,6 +47,8 @@ public class Song {
         return mTrackId;
     }
 
+    public boolean isRightAnswer() { return mRightAnswerSong; }
+
     public boolean getPlayed() {
         return mPlayed;
     }

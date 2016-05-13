@@ -19,6 +19,7 @@ import com.tylersuderman.truenorthgame.Constants;
 import com.tylersuderman.truenorthgame.models.Artist;
 import com.tylersuderman.truenorthgame.models.Player;
 import com.tylersuderman.truenorthgame.models.Song;
+import com.tylersuderman.truenorthgame.ui.GameRoundActivity;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -26,6 +27,7 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 
 import okhttp3.Call;
@@ -39,7 +41,13 @@ import okhttp3.Response;
  * Created by tylersuderman on 5/2/16.
  */
 public class SpotifyService extends AppCompatActivity {
+    private static final String SPOTIFY_CLIENT_SECRET = Constants.SPOTIFY_CLIENT_SECRET;
     public static final String TAG = SpotifyService.class.getSimpleName();
+
+    public static void unauthorizeUser(Context context) {
+        AuthenticationClient.clearCookies(context);
+        Log.d(TAG, "LOGOUT");
+    }
 
     public static void spotifyUserAuth(Activity activity, String clientId, String redirectUri,
                                        int requestCode) {
@@ -49,15 +57,19 @@ public class SpotifyService extends AppCompatActivity {
         builder.setScopes(new String[]{"streaming"});
         AuthenticationRequest request = builder.build();
         AuthenticationClient.openLoginActivity(activity, requestCode, request);
+
     }
 
     public static void saveAuthorizedUser(int requestCode, int resultCode, Intent intent, final
     Context context) {
+
+
         final String accessToken;
         // Check if result comes from the correct activity
         if (requestCode == Constants.REQUEST_CODE) {
+
             AuthenticationResponse response = AuthenticationClient.getResponse(resultCode, intent);
-            Log.d(TAG, "TYPE: " + response.getType());
+            Log.d(TAG, "RESPONSE TOKEN TYPE: " + response.getType());
             switch (response.getType()) {
                 // Response was successful and contains auth token
                 case TOKEN:
@@ -114,6 +126,7 @@ public class SpotifyService extends AppCompatActivity {
 
                 // Auth flow returned an error
                 case ERROR:
+                    Log.d(TAG, "Something's wrong here");
                     break;
 
                 // Most likely auth flow was cancelled
@@ -122,6 +135,9 @@ public class SpotifyService extends AppCompatActivity {
             }
         }
     }
+
+
+//    API REQUESTS
 
 
     public static void findArtist(String artistName, Callback callback) {
@@ -146,6 +162,38 @@ public class SpotifyService extends AppCompatActivity {
         Call call = client.newCall(request);
         call.enqueue(callback);
     }
+
+    public static ArrayList<Artist> processArtistResults(Response response) {
+//        OBJECT MUST BE SENT IN ARRAY... WHY?
+        ArrayList<Artist> artistArray = new ArrayList<>();
+        Artist instance;
+        try {
+            String jsonData = response.body().string();
+            if (response.isSuccessful()) {
+
+//                CREATE ARTIST OBJECT FROM SUCCESSFUL CALL
+                JSONObject spotifyJSON = new JSONObject(jsonData);
+                JSONObject artistDetailsJSON = spotifyJSON.getJSONObject("artists")
+                        .getJSONArray("items").getJSONObject(0);
+
+                String name = artistDetailsJSON.getString("name");
+                String imageUrl = artistDetailsJSON.getJSONArray("images")
+                        .getJSONObject(0).getString("url");
+                String id = artistDetailsJSON.getString("id");
+                String page = artistDetailsJSON.getJSONObject("external_urls")
+                        .getString("spotify");
+                instance = new Artist(name, imageUrl, id, page);
+                artistArray.add(instance);
+
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return artistArray;
+    }
+
 
     public static void findUserId(String token, Callback callback) {
 
@@ -192,36 +240,7 @@ public class SpotifyService extends AppCompatActivity {
     }
 
 
-    public static ArrayList<Artist> processArtistResults(Response response) {
-//        OBJECT MUST BE SENT IN ARRAY... WHY?
-        ArrayList<Artist> artistArray = new ArrayList<>();
-        Artist instance;
-        try {
-            String jsonData = response.body().string();
-            if (response.isSuccessful()) {
 
-//                CREATE ARTIST OBJECT FROM SUCCESSFUL CALL
-                JSONObject spotifyJSON = new JSONObject(jsonData);
-                JSONObject artistDetailsJSON = spotifyJSON.getJSONObject("artists")
-                        .getJSONArray("items").getJSONObject(0);
-
-                String name = artistDetailsJSON.getString("name");
-                String imageUrl = artistDetailsJSON.getJSONArray("images")
-                        .getJSONObject(0).getString("url");
-                String id = artistDetailsJSON.getString("id");
-                String page = artistDetailsJSON.getJSONObject("external_urls")
-                        .getString("spotify");
-                instance = new Artist(name, imageUrl, id, page);
-                artistArray.add(instance);
-
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        return artistArray;
-    }
 
     public static void findSpotifySongs(String id, Callback callback) {
 
@@ -244,7 +263,7 @@ public class SpotifyService extends AppCompatActivity {
     }
 
 
-    public static ArrayList<Song> processSongIds(Response response) {
+    public static ArrayList<Song> processSongResults(Response response) {
         ArrayList<Song> songs = new ArrayList<>();
         try {
             String jsonData = response.body().string();
@@ -258,11 +277,20 @@ public class SpotifyService extends AppCompatActivity {
 
                     String id = song.getString("id");
                     String title = song.getString("name");
+
+                    ArrayList<String> noDashTitleArray = new ArrayList<>(Arrays.asList(title.split
+                            ("-")));
+                    String noDashTitle = noDashTitleArray.get(0);
+                    ArrayList<String> shortTitleArray = new ArrayList<>(Arrays.asList(noDashTitle.split
+                            ("\\(")));
+                    String shortTitle = shortTitleArray.get(0);
+
+
                     String artist = artistArray.getJSONObject(0).getString("name");
                     String album = song.getJSONObject("album").getString("name");
                     String preview = song.getString("preview_url");
 
-                    Song newSong = new Song(id, title, artist, album, preview);
+                    Song newSong = new Song(id, shortTitle, artist, album, preview);
                     songs.add(newSong);
                 }
             }

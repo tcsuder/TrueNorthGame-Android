@@ -43,10 +43,8 @@ public class GameRoundActivity extends AppCompatActivity {
     private MediaPlayer mediaPlayer;
     private String audioPath;
     private CountDownTimer countdownTimer;
-    private int playTime = 9000;
+    private int playTime = 10000;
     private MultipleChoiceAdapter mAdapter;
-
-
 
 
     @Override
@@ -57,18 +55,18 @@ public class GameRoundActivity extends AppCompatActivity {
 
         Intent intent = getIntent();
         mArtist = Parcels.unwrap(intent.getParcelableExtra("artist"));
-
+        setImage(this);
         allSongs = Parcels.unwrap(intent.getParcelableExtra("songs"));
         guessingRoundSongs = createSongArray(allSongs);
         playRightAnswerSong(guessingRoundSongs);
-        setImage(this);
     }
 
     private ArrayList<Song> createSongArray(ArrayList<Song> allSongs) {
+        Log.d(TAG, "ALL SONGS: "+ allSongs.size());
+
         Collections.shuffle(allSongs);
         ArrayList<Song> roundSongs = new ArrayList<>();
         for (int i=0; i<allSongs.size(); i++) {
-            Log.d(TAG, "SONGS: "+ roundSongs);
 
             Song song = allSongs.get(i);
             if (roundSongs.size() == 4) {
@@ -167,6 +165,7 @@ public class GameRoundActivity extends AppCompatActivity {
                 .centerCrop()
                 .into(mArtistImageView);
     }
+
 
     @Override
     protected void onPause() {

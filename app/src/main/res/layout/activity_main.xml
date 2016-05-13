@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.tylersuderman.truenorthgame.MainActivity">
+    tools:context="com.tylersuderman.truenorthgame.ui.MainActivity">
 
     <LinearLayout
         android:orientation="vertical"
@@ -74,7 +74,7 @@
     <Button
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:text="login"
+        android:text="LOGOUT/CHANGE USER"
         android:id="@+id/loginButton"
         android:background="@drawable/login_button"
         android:textColor="@color/colorTextIcons"

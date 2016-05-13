@@ -1,33 +1,33 @@
 package com.tylersuderman.truenorthgame.ui;
 
-        import android.content.Intent;
-        import android.support.v7.app.AppCompatActivity;
-        import android.os.Bundle;
-        import android.view.Gravity;
-        import android.view.LayoutInflater;
-        import android.view.View;
-        import android.view.ViewGroup;
-        import android.widget.Button;
-        import android.widget.EditText;
-        import android.widget.TextView;
-        import android.widget.Toast;
+import android.content.Intent;
+import android.support.v7.app.AppCompatActivity;
+import android.os.Bundle;
+import android.view.Gravity;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.TextView;
+import android.widget.Toast;
 
-        import com.tylersuderman.truenorthgame.Constants;
-        import com.tylersuderman.truenorthgame.R;
-        import com.tylersuderman.truenorthgame.models.Artist;
-        import com.tylersuderman.truenorthgame.models.Song;
-        import com.tylersuderman.truenorthgame.services.SpotifyService;
+import com.tylersuderman.truenorthgame.Constants;
+import com.tylersuderman.truenorthgame.R;
+import com.tylersuderman.truenorthgame.models.Artist;
+import com.tylersuderman.truenorthgame.models.Song;
+import com.tylersuderman.truenorthgame.services.SpotifyService;
 
-        import org.parceler.Parcels;
+import org.parceler.Parcels;
 
-        import java.io.IOException;
-        import java.util.ArrayList;
+import java.io.IOException;
+import java.util.ArrayList;
 
-        import butterknife.Bind;
-        import butterknife.ButterKnife;
-        import okhttp3.Call;
-        import okhttp3.Callback;
-        import okhttp3.Response;
+import butterknife.Bind;
+import butterknife.ButterKnife;
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.Response;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
     public static final String TAG = MainActivity.class.getSimpleName();
@@ -40,6 +40,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private static final int REQUEST_CODE = Constants.REQUEST_CODE;
     private static final String REDIRECT_URI = Constants.REDIRECT_URI;
+    private static final String SPOTIFY_CLIENT_SECRET = Constants.SPOTIFY_CLIENT_SECRET;
     private static final String SPOTIFY_CLIENT_ID = Constants.SPOTIFY_CLIENT_ID;
 
 
@@ -93,7 +94,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     MainActivity.this.runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            toast("NO ARTIST FOUND");
+                            customToast("NO ARTIST FOUND");
                         }
 
                     });
@@ -114,7 +115,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
             @Override
             public void onResponse(Call call, Response response) throws IOException {
-                ArrayList<Song> songs = SpotifyService.processSongIds(response);
+                ArrayList<Song> songs = SpotifyService.processSongResults(response);
                 Intent intent = new Intent(MainActivity.this, GameRoundActivity.class);
                 intent.putExtra("artist", Parcels.wrap(artist));
                 intent.putExtra("songs", Parcels.wrap(songs));
@@ -124,7 +125,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
 
-    public void toast(String string) {
+    public void customToast(String string) {
         LayoutInflater inflater = getLayoutInflater();
         final View layout = inflater.inflate(R.layout.no_artist_toast,
                 (ViewGroup) findViewById(R.id.toast_layout_root));
@@ -142,16 +143,18 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
-/*            case R.id.loginButton:
-
-                break;*/
+            case R.id.loginButton:
+                SpotifyService.unauthorizeUser(MainActivity.this);
+                finish();
+                startActivity(getIntent());
+                break;
 
             case R.id.quickPlayButton:
                 final String artistName = mArtistNameEditText.getText().toString();
 
                 if (artistName.equals("")) {
 
-                    toast("NO ARTIST GIVEN");
+                    customToast("NO ARTIST GIVEN");
 
                 } else {
 

@@ -6,19 +6,19 @@
 
 
     <LinearLayout
-        android:orientation="vertical"
+        android:orientation="horizontal"
         android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:background="@drawable/background_gradient"
         android:layout_marginTop="20dp"
         android:layout_marginBottom="20dp"
-        android:layout_height="70dp"
         android:padding="10dp">
 
         <TextView
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:id="@+id/songTitleTextView"
-            android:textSize="45dp"
+            android:textSize="45sp"
             android:textStyle="bold"
             android:gravity="center_vertical"
             android:text="song name"
