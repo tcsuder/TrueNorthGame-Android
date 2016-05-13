@@ -145,15 +145,19 @@ public class MultipleChoiceAdapter  extends RecyclerView.Adapter<MultipleChoiceA
                         Toast.makeText(mContext, "NOPE!", Toast.LENGTH_SHORT).show();
                     }
 
-                    int round = mSharedPreferences.getInt(Constants.PREFERENCES_ROUND_NUMBER_KEY, 15);
-                    Log.i(TAG, "ROUND ROUND ROUND fROM ADAPTER: " + round);
+                    int round = mSharedPreferences.getInt(Constants.PREFERENCES_ROUND_NUMBER_KEY,
+                            mAllSongs.size());
+                    mPlayerRef = new Firebase(Constants.FIREBASE_URL_PLAYERS);
 
                     if (round == 10) {
+
+                        if (mCurrentPlayer.getScore() > mCurrentPlayer.getTopScore()) {
+                            mCurrentPlayer.setTopScore(mCurrentPlayer.getScore());
+                        }
                         mCurrentPlayer.resetScore();
 
                     }
 
-                    mPlayerRef = new Firebase(Constants.FIREBASE_URL_PLAYERS);
                     mPlayerRef.child(mCurrentPlayerId).setValue(mCurrentPlayer);
 
 

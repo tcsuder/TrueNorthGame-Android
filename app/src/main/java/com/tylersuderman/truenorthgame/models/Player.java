@@ -10,12 +10,14 @@ public class Player {
     String name;
     Integer score;
     String pushId;
+    Integer topScore;
 
     public Player() {}
 
     public Player(String name) {
         this.name = name;
         this.score = 0;
+        this.topScore = 0;
     }
 
     public String getName() {
@@ -39,6 +41,8 @@ public class Player {
         this.pushId = pushId;
     }
     public void resetScore() { score = 0; }
+    public Integer getTopScore() { return topScore; }
+    public void setTopScore(int score) { topScore = score; }
 
 
     //    FAKE DATA
