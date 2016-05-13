@@ -26,7 +26,6 @@ import com.tylersuderman.truenorthgame.ui.GameRoundActivity;
 import org.parceler.Parcels;
 
 import java.util.ArrayList;
-import java.util.Timer;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -43,6 +42,7 @@ public class MultipleChoiceAdapter  extends RecyclerView.Adapter<MultipleChoiceA
     private ArrayList<Song> mAllSongs = new ArrayList<>();
 
     private SharedPreferences mSharedPreferences;
+    private SharedPreferences.Editor mPreferenceEditor;
     private String mCurrentPlayerId;
     private Firebase mPlayerRef;
     private Player mCurrentPlayer;
@@ -68,16 +68,18 @@ public class MultipleChoiceAdapter  extends RecyclerView.Adapter<MultipleChoiceA
                         if (mRoundPoints > 215) {
                             mRoundPoints -= 215;
                             decreaseRoundPointsTimer();
+                        } else {
+                            mRoundPoints = 0;
                         }
                     }
                 }, 500);
-        Log.d(TAG, "ROUND POINTS DECREASING: " + mRoundPoints);
         return mRoundPoints;
     }
 
 
     private Player getCurrentPlayer() {
         mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(mContext);
+        mPreferenceEditor = mSharedPreferences.edit();
         mCurrentPlayerId = mSharedPreferences.getString(Constants
                 .PREFERENCES_PLAYER_KEY, null);
         Log.d(TAG, "CURRENT PLAYER ID: " + mCurrentPlayerId);
@@ -144,6 +146,11 @@ public class MultipleChoiceAdapter  extends RecyclerView.Adapter<MultipleChoiceA
 
                     mPlayerRef = new Firebase(Constants.FIREBASE_URL_PLAYERS);
                     mPlayerRef.child(mCurrentPlayerId).setValue(mCurrentPlayer);
+                    int round = mSharedPreferences.getInt(Constants.PREFERENCES_ROUND_NUMBER_KEY,
+                            0);
+                    int nextRound = round++;
+                    mPreferenceEditor.putInt(Constants.PREFERENCES_ROUND_NUMBER_KEY, nextRound).apply();
+                    Log.i(TAG, "ROUND ROUND ROUND fROM ADAPTER: " + round);
                     song.unsetRightAnswer();
                     final Intent intent = new Intent(mContext, GameRoundActivity.class);
                     intent.putExtra("songs", Parcels.wrap(mAllSongs));

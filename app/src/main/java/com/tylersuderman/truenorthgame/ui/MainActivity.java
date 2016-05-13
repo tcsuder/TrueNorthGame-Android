@@ -79,7 +79,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     public void resetRounds() {
-        mPreferencesEditor.putInt(Constants.PREFERENCES_ROUND_NUMBER_KEY, 1);
+        mPreferencesEditor.putInt(Constants.PREFERENCES_ROUND_NUMBER_KEY, 0).apply();
+        Log.i(TAG, "ROUND NUMBER FROM EDITOR: " + mSharedPreferences.getInt(Constants
+                .PREFERENCES_ROUND_NUMBER_KEY, 666));
     }
 
 
@@ -170,11 +172,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     customToast("NO ARTIST GIVEN");
 
                 } else {
+                    Log.i(TAG, "ROUND NUMBER FROM INTENT: " + mSharedPreferences.getInt(Constants
+                            .PREFERENCES_ROUND_NUMBER_KEY, 100));
 
 //                    SEARCH CONTAINS SONGS RETRIEVAL AND NEW INTEN UPON SUCCESS
                     resetRounds();
-                    Log.i(TAG, "ROUND NUMBER: " + mSharedPreferences.getInt(Constants
-                            .PREFERENCES_ROUND_NUMBER_KEY, 100));
                     searchArtist(artistName);
                 }
                 break;

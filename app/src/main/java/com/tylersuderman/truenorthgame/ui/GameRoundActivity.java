@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.CountDownTimer;
+import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -16,6 +17,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
+import com.tylersuderman.truenorthgame.Constants;
 import com.tylersuderman.truenorthgame.R;
 import com.tylersuderman.truenorthgame.adapters.MultipleChoiceAdapter;
 import com.tylersuderman.truenorthgame.models.Artist;
@@ -25,6 +27,7 @@ import org.parceler.Parcels;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.prefs.PreferenceChangeEvent;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -46,6 +49,7 @@ public class GameRoundActivity extends AppCompatActivity {
     private int playSongForTime = 10000;
     private MultipleChoiceAdapter mAdapter;
     private SharedPreferences mSharedPreferences;
+    private SharedPreferences.Editor mPreferenceEditor;
     private boolean unplayedSongLoaded;
 
 
@@ -58,16 +62,31 @@ public class GameRoundActivity extends AppCompatActivity {
         Intent intent = getIntent();
         mArtist = Parcels.unwrap(intent.getParcelableExtra("artist"));
         setImage(this);
-
-
         mAllSongs = Parcels.unwrap(intent.getParcelableExtra("songs"));
         mGuessingRoundSongs = createSongArray(mAllSongs);
         playRightAnswerSong(mGuessingRoundSongs);
+        checkRound();
+
+//        ALL GAME AND SCORING LOGIC LIVES WITH THE CLICK FUNCTION IN MULTIPLE CHOICE ADAPTER
+
+    }
+
+    private void checkRound() {
+        mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(GameRoundActivity.this);
+        mPreferenceEditor = mSharedPreferences.edit();
+        int prevousRound = mSharedPreferences.getInt(Constants.PREFERENCES_ROUND_NUMBER_KEY, 0);
+        if (prevousRound == 10) {
+            Intent
+        }
+        Log.d(TAG, "ROUND FROM PREFERENCES: " + prevousRound);
+        int currentRound = prevousRound + 1;
+        Log.d(TAG, "NEXT ROUND: " + currentRound);
+        mPreferenceEditor.putInt(Constants.PREFERENCES_ROUND_NUMBER_KEY, currentRound).apply();
     }
 
     private ArrayList<Song> createSongArray(ArrayList<Song> allSongs) {
         unplayedSongLoaded = false;
-        Log.d(TAG, "ALL SONGS: "+ allSongs.size());
+        Log.d(TAG, "ALL SONGS SIZE: "+ allSongs.size());
 
         Collections.shuffle(allSongs);
         ArrayList<Song> roundSongs = new ArrayList<>();
