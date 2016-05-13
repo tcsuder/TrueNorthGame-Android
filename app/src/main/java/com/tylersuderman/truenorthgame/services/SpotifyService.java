@@ -84,7 +84,7 @@ public class SpotifyService extends AppCompatActivity {
                                     PreferenceManager.getDefaultSharedPreferences(context);
                             final SharedPreferences.Editor preferencesEditor = sharedPreferences
                                     .edit();
-                            final Player authorizedPlayer = SpotifyService.processUserResults
+                            final Player authorizedPlayer = SpotifyService.processPlayerResults
                                     (response).get
                                     (0);
 
@@ -96,8 +96,7 @@ public class SpotifyService extends AppCompatActivity {
 //                            UPDATE DATABASE WITH NEW USE IF APPLICABLE
                             final Firebase firebasePlayersRef = new Firebase(Constants
                                     .FIREBASE_URL_PLAYERS);
-                            firebasePlayersRef.addListenerForSingleValueEvent(new
-                                                                                      ValueEventListener() {
+                            firebasePlayersRef.addListenerForSingleValueEvent(new ValueEventListener() {
                                 @Override
                                 public void onDataChange(DataSnapshot snapshot) {
                                     Boolean playerSaved = snapshot.child(authorizedPlayer
@@ -113,7 +112,7 @@ public class SpotifyService extends AppCompatActivity {
 
                                     String playerId = sharedPreferences.getString(Constants
                                             .PREFERENCES_PLAYER_KEY, null);
-                                    Log.d(TAG, "Current Player: " + playerId);
+                                    Log.d(TAG, "Current Player ID: " + playerId);
                                 }
                                 @Override
                                 public void onCancelled(FirebaseError firebaseError) {
@@ -126,12 +125,9 @@ public class SpotifyService extends AppCompatActivity {
 
                 // Auth flow returned an error
                 case ERROR:
-                    Log.d(TAG, "Something's wrong here");
+                    Log.d(TAG, "Something went wrong while trying to log in: " + response.getError
+                            ());
                     break;
-
-                // Most likely auth flow was cancelled
-                default:
-                    // Handle other cases
             }
         }
     }
@@ -215,7 +211,7 @@ public class SpotifyService extends AppCompatActivity {
         call.enqueue(callback);
     }
 
-    public static ArrayList<Player> processUserResults(Response response) {
+    public static ArrayList<Player> processPlayerResults(Response response) {
 //        OBJECT MUST BE SENT IN ARRAY... WHY?
         ArrayList<Player> playerArray = new ArrayList<>();
         String playerId;

@@ -7,26 +7,34 @@ import java.util.ArrayList;
  * Created by tylersuderman on 4/24/16.
  */
 public class Player {
-    String playerName;
-    Integer playerScore;
-    private String pushId;
+    String name;
+    Integer score;
+    String pushId;
+
+    public Player() {}
 
     public Player(String name) {
-        this.playerName = name;
-        this.playerScore = (int) Math.floor(Math.random() * 1001);
+        this.name = name;
+        this.score = 0;
     }
 
     public String getName() {
-        return playerName;
+        return name;
     }
     public Integer getScore() {
-        return playerScore;
+        return score;
     }
     public String getPushId() { return pushId; }
-    public Integer addToScore(int newScore) {
-        this.playerScore += newScore;
-        return playerScore;
+    public Integer addToScore(int roundPoints) {
+        this.score += roundPoints;
+        return score;
     }
+
+    public void subtractFromScore(int roundPoints) {
+        final int score = (int) Math.floor(roundPoints/5);
+        this.score -= score;
+    }
+
     public void setPushId(String pushId) {
         this.pushId = pushId;
     }

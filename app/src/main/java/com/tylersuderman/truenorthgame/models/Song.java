@@ -49,7 +49,7 @@ public class Song {
 
     public boolean isRightAnswer() { return mRightAnswerSong; }
 
-    public boolean getPlayed() {
+    public boolean hasBeenPlayed() {
         return mPlayed;
     }
 

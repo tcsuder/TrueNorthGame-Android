@@ -1,8 +1,11 @@
 package com.tylersuderman.truenorthgame.ui;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -43,12 +46,18 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private static final String SPOTIFY_CLIENT_SECRET = Constants.SPOTIFY_CLIENT_SECRET;
     private static final String SPOTIFY_CLIENT_ID = Constants.SPOTIFY_CLIENT_ID;
 
+    private SharedPreferences mSharedPreferences;
+    private SharedPreferences.Editor mPreferencesEditor;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
+
+        mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(MainActivity.this);
+        mPreferencesEditor = mSharedPreferences.edit();
 
         mPlayButton.setOnClickListener(this);
         mAboutButton.setOnClickListener(this);
@@ -67,6 +76,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         SpotifyService.saveAuthorizedUser(requestCode, resultCode, intent, MainActivity.this);
 
+    }
+
+    public void resetRounds() {
+        mPreferencesEditor.putInt(Constants.PREFERENCES_ROUND_NUMBER_KEY, 1);
     }
 
 
@@ -159,6 +172,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 } else {
 
 //                    SEARCH CONTAINS SONGS RETRIEVAL AND NEW INTEN UPON SUCCESS
+                    resetRounds();
+                    Log.i(TAG, "ROUND NUMBER: " + mSharedPreferences.getInt(Constants
+                            .PREFERENCES_ROUND_NUMBER_KEY, 100));
                     searchArtist(artistName);
                 }
                 break;

@@ -2,6 +2,7 @@ package com.tylersuderman.truenorthgame.ui;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.CountDownTimer;
@@ -38,13 +39,14 @@ public class GameRoundActivity extends AppCompatActivity {
     @Bind(R.id.recyclerView) RecyclerView mRecyclerView;
 
     private Artist mArtist;
-    private ArrayList<Song> guessingRoundSongs = new ArrayList<>();
-    private ArrayList<Song> allSongs = new ArrayList<>();
-    private MediaPlayer mediaPlayer;
-    private String audioPath;
-    private CountDownTimer countdownTimer;
-    private int playTime = 10000;
+    private ArrayList<Song> mGuessingRoundSongs = new ArrayList<>();
+    private ArrayList<Song> mAllSongs = new ArrayList<>();
+    private MediaPlayer mMediaPlayer;
+    private String mAudioPath;
+    private int playSongForTime = 10000;
     private MultipleChoiceAdapter mAdapter;
+    private SharedPreferences mSharedPreferences;
+    private boolean unplayedSongLoaded;
 
 
     @Override
@@ -56,12 +58,15 @@ public class GameRoundActivity extends AppCompatActivity {
         Intent intent = getIntent();
         mArtist = Parcels.unwrap(intent.getParcelableExtra("artist"));
         setImage(this);
-        allSongs = Parcels.unwrap(intent.getParcelableExtra("songs"));
-        guessingRoundSongs = createSongArray(allSongs);
-        playRightAnswerSong(guessingRoundSongs);
+
+
+        mAllSongs = Parcels.unwrap(intent.getParcelableExtra("songs"));
+        mGuessingRoundSongs = createSongArray(mAllSongs);
+        playRightAnswerSong(mGuessingRoundSongs);
     }
 
     private ArrayList<Song> createSongArray(ArrayList<Song> allSongs) {
+        unplayedSongLoaded = false;
         Log.d(TAG, "ALL SONGS: "+ allSongs.size());
 
         Collections.shuffle(allSongs);
@@ -73,8 +78,14 @@ public class GameRoundActivity extends AppCompatActivity {
                 break;
             } else if (roundSongs.size() < 3) {
                 roundSongs.add(song);
+                if(song.hasBeenPlayed() == false) {
+                    song.setToPlayed();
+                    song.setRightAnswer();
+                    roundSongs.add(song);
+                    unplayedSongLoaded = true;
+                }
             } else {
-                if (song.getPlayed() == true ) {
+                if (song.hasBeenPlayed() == true && unplayedSongLoaded == false) {
                     Log.i(TAG, "Song skipped");
                 } else {
                     song.setToPlayed();
@@ -89,10 +100,11 @@ public class GameRoundActivity extends AppCompatActivity {
     }
 
     private void playRightAnswerSong(ArrayList<Song> roundSongs) {
+        final CountDownTimer countdownTimer;
 
         //        ERROR HANDLING FOR SONG RETREIVAL
         if (roundSongs.size() > 0) {
-            audioPath = roundSongs.get(3).getPreview();
+            mAudioPath = roundSongs.get(3).getPreview();
         } else {
             Toast.makeText(GameRoundActivity.this, "Async error: please choose artist again.",
                     Toast.LENGTH_SHORT).show();
@@ -102,10 +114,10 @@ public class GameRoundActivity extends AppCompatActivity {
         //        SET UP MEDIA PLAYER
         try {
 
-            mediaPlayer = new MediaPlayer();
-            mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
-            mediaPlayer.setDataSource(audioPath);
-            mediaPlayer.prepare();
+            mMediaPlayer = new MediaPlayer();
+            mMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+            mMediaPlayer.setDataSource(mAudioPath);
+            mMediaPlayer.prepare();
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -118,25 +130,25 @@ public class GameRoundActivity extends AppCompatActivity {
                     public void run() {
 
                         //        PLAY SONG
-                        mediaPlayer.start();
+                        mMediaPlayer.start();
 
                         showGuessRoundSongs();
 
                     }
-                }, 500);
+                }, 100);
 
 //        END PLAY AFTER PLAYTIME IS UP
 
         new android.os.Handler().postDelayed(
                 new Runnable() {
                     public void run() {
-                        mediaPlayer.stop();
+                        mMediaPlayer.stop();
                     }
                 },
-                playTime);
+                playSongForTime);
 
 //        SHOW COUNTDOWN IN VIEW
-        countdownTimer = new CountDownTimer(playTime, 1000) {
+        countdownTimer = new CountDownTimer(playSongForTime, 1000) {
 
             public void onTick(long millisUntilFinished) {
                 mCountdownTextView.setText("time: " + millisUntilFinished / 1000);
@@ -149,7 +161,7 @@ public class GameRoundActivity extends AppCompatActivity {
     }
 
     private void showGuessRoundSongs() {
-        mAdapter = new MultipleChoiceAdapter(getApplicationContext(), guessingRoundSongs, allSongs,
+        mAdapter = new MultipleChoiceAdapter(getApplicationContext(), mGuessingRoundSongs, mAllSongs,
                 mArtist);
         mRecyclerView.setAdapter(mAdapter);
         RecyclerView.LayoutManager layoutManager =
@@ -170,7 +182,7 @@ public class GameRoundActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
-        mediaPlayer.stop();
+        mMediaPlayer.stop();
 
     }
 }

@@ -2,6 +2,8 @@ package com.tylersuderman.truenorthgame.adapters;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -10,14 +12,21 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.firebase.client.DataSnapshot;
+import com.firebase.client.Firebase;
+import com.firebase.client.FirebaseError;
+import com.firebase.client.ValueEventListener;
+import com.tylersuderman.truenorthgame.Constants;
 import com.tylersuderman.truenorthgame.R;
 import com.tylersuderman.truenorthgame.models.Artist;
+import com.tylersuderman.truenorthgame.models.Player;
 import com.tylersuderman.truenorthgame.models.Song;
 import com.tylersuderman.truenorthgame.ui.GameRoundActivity;
 
 import org.parceler.Parcels;
 
 import java.util.ArrayList;
+import java.util.Timer;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -27,10 +36,17 @@ import butterknife.ButterKnife;
  */
 public class MultipleChoiceAdapter  extends RecyclerView.Adapter<MultipleChoiceAdapter
         .ChoiceViewHolder>{
+    public static final String TAG = MultipleChoiceAdapter.class.getSimpleName();
     private ArrayList<Song> mSongs = new ArrayList<>();
     private Artist mArtist = new Artist();
     private Context mContext;
     private ArrayList<Song> mAllSongs = new ArrayList<>();
+
+    private SharedPreferences mSharedPreferences;
+    private String mCurrentPlayerId;
+    private Firebase mPlayerRef;
+    private Player mCurrentPlayer;
+    private int mRoundPoints;
 
 
     public MultipleChoiceAdapter(Context context, ArrayList<Song> songs, ArrayList<Song> allSongs,
@@ -39,6 +55,48 @@ public class MultipleChoiceAdapter  extends RecyclerView.Adapter<MultipleChoiceA
         mSongs = songs;
         mAllSongs = allSongs;
         mArtist = artist;
+        mCurrentPlayer = getCurrentPlayer();
+        mRoundPoints = 3000;
+        decreaseRoundPointsTimer();
+    }
+
+
+    private int decreaseRoundPointsTimer() {
+        new android.os.Handler().postDelayed(
+                new Runnable() {
+                    public void run() {
+                        if (mRoundPoints > 215) {
+                            mRoundPoints -= 215;
+                            decreaseRoundPointsTimer();
+                        }
+                    }
+                }, 500);
+        Log.d(TAG, "ROUND POINTS DECREASING: " + mRoundPoints);
+        return mRoundPoints;
+    }
+
+
+    private Player getCurrentPlayer() {
+        mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(mContext);
+        mCurrentPlayerId = mSharedPreferences.getString(Constants
+                .PREFERENCES_PLAYER_KEY, null);
+        Log.d(TAG, "CURRENT PLAYER ID: " + mCurrentPlayerId);
+        mPlayerRef = new Firebase(Constants.FIREBASE_URL_PLAYERS);
+
+        mPlayerRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                mCurrentPlayer = dataSnapshot.child(mCurrentPlayerId).getValue(Player
+                        .class);
+            }
+
+            @Override
+            public void onCancelled(FirebaseError firebaseError) {
+
+            }
+        });
+
+        return mCurrentPlayer;
     }
 
     @Override
@@ -68,8 +126,6 @@ public class MultipleChoiceAdapter  extends RecyclerView.Adapter<MultipleChoiceA
             ButterKnife.bind(this, itemView);
             mContext = itemView.getContext();
 
-            Log.d("THIS IS SOME CONTEXT! ", "" + mContext);
-
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -77,13 +133,17 @@ public class MultipleChoiceAdapter  extends RecyclerView.Adapter<MultipleChoiceA
                     Song song = mSongs.get(itemPosition);
 
                     if(song.isRightAnswer()){
+                        mCurrentPlayer.addToScore(mRoundPoints);
                         Toast.makeText(mContext, "YEP!", Toast.LENGTH_SHORT).show();
-
-
                     } else {
+                        if (mCurrentPlayer.getScore() > 50) {
+                            mCurrentPlayer.subtractFromScore(mRoundPoints);
+                        }
                         Toast.makeText(mContext, "NOPE!", Toast.LENGTH_SHORT).show();
                     }
 
+                    mPlayerRef = new Firebase(Constants.FIREBASE_URL_PLAYERS);
+                    mPlayerRef.child(mCurrentPlayerId).setValue(mCurrentPlayer);
                     song.unsetRightAnswer();
                     final Intent intent = new Intent(mContext, GameRoundActivity.class);
                     intent.putExtra("songs", Parcels.wrap(mAllSongs));
@@ -97,7 +157,7 @@ public class MultipleChoiceAdapter  extends RecyclerView.Adapter<MultipleChoiceA
                                 mContext.startActivity(intent);
 
                             }
-                        }, 1500);
+                        }, 350);
                 }
             });
         }
