@@ -27,7 +27,6 @@ import org.parceler.Parcels;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.prefs.PreferenceChangeEvent;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -76,7 +75,8 @@ public class GameRoundActivity extends AppCompatActivity {
         mPreferenceEditor = mSharedPreferences.edit();
         int prevousRound = mSharedPreferences.getInt(Constants.PREFERENCES_ROUND_NUMBER_KEY, 0);
         if (prevousRound == 10) {
-            Intent
+            Intent intent = new Intent(GameRoundActivity.this, TopScoresActivity.class);
+            startActivity(intent);
         }
         Log.d(TAG, "ROUND FROM PREFERENCES: " + prevousRound);
         int currentRound = prevousRound + 1;
@@ -91,13 +91,16 @@ public class GameRoundActivity extends AppCompatActivity {
         Collections.shuffle(allSongs);
         ArrayList<Song> roundSongs = new ArrayList<>();
         for (int i=0; i<allSongs.size(); i++) {
-
+            Log.d(TAG, "ALL SONGS: " + allSongs);
+            Log.d(TAG, "ROUND SONGS: " + roundSongs);
             Song song = allSongs.get(i);
+            Log.d(TAG,"SONG TITLE: " + song.getTitle());
             if (roundSongs.size() == 4) {
                 break;
             } else if (roundSongs.size() < 3) {
                 roundSongs.add(song);
-                if(song.hasBeenPlayed() == false) {
+                song.setToAdded();
+                if(song.hasBeenPlayed() == false && !song.isAdded()) {
                     song.setToPlayed();
                     song.setRightAnswer();
                     roundSongs.add(song);
@@ -113,6 +116,12 @@ public class GameRoundActivity extends AppCompatActivity {
                 }
             }
 
+        }
+
+        for (int i = 0; i<roundSongs.size(); i++) {
+            Song song = roundSongs.get(i);
+            song.unsetAdded();
+            Log.d(TAG, "ADDED? " + song.isAdded());
         }
 
         return roundSongs;
