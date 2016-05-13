@@ -16,11 +16,16 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.firebase.client.DataSnapshot;
+import com.firebase.client.Firebase;
+import com.firebase.client.FirebaseError;
+import com.firebase.client.ValueEventListener;
 import com.squareup.picasso.Picasso;
 import com.tylersuderman.truenorthgame.Constants;
 import com.tylersuderman.truenorthgame.R;
 import com.tylersuderman.truenorthgame.adapters.MultipleChoiceAdapter;
 import com.tylersuderman.truenorthgame.models.Artist;
+import com.tylersuderman.truenorthgame.models.Player;
 import com.tylersuderman.truenorthgame.models.Song;
 
 import org.parceler.Parcels;
@@ -51,50 +56,46 @@ public class GameRoundActivity extends AppCompatActivity {
     private SharedPreferences.Editor mPreferenceEditor;
     private boolean unplayedSongLoaded;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game_round);
         ButterKnife.bind(this);
 
+        checkRound();
         Intent intent = getIntent();
         mArtist = Parcels.unwrap(intent.getParcelableExtra("artist"));
         setImage(this);
         mAllSongs = Parcels.unwrap(intent.getParcelableExtra("songs"));
         mGuessingRoundSongs = createSongArray(mAllSongs);
         playRightAnswerSong(mGuessingRoundSongs);
-        checkRound();
 
 //        ALL GAME AND SCORING LOGIC LIVES WITH THE CLICK FUNCTION IN MULTIPLE CHOICE ADAPTER
 
     }
 
+
     private void checkRound() {
         mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(GameRoundActivity.this);
         mPreferenceEditor = mSharedPreferences.edit();
-        int prevousRound = mSharedPreferences.getInt(Constants.PREFERENCES_ROUND_NUMBER_KEY, 0);
-        if (prevousRound == 10) {
+        final int previousRound = mSharedPreferences.getInt(Constants.PREFERENCES_ROUND_NUMBER_KEY,
+                0);
+        Log.d(TAG, "Previous round: " + previousRound);
+        if (previousRound == 10) {
             Intent intent = new Intent(GameRoundActivity.this, TopScoresActivity.class);
             startActivity(intent);
+        } else {
+            int currentRound = previousRound + 1;
+            mPreferenceEditor.putInt(Constants.PREFERENCES_ROUND_NUMBER_KEY, currentRound).apply();
         }
-        Log.d(TAG, "ROUND FROM PREFERENCES: " + prevousRound);
-        int currentRound = prevousRound + 1;
-        Log.d(TAG, "NEXT ROUND: " + currentRound);
-        mPreferenceEditor.putInt(Constants.PREFERENCES_ROUND_NUMBER_KEY, currentRound).apply();
     }
 
     private ArrayList<Song> createSongArray(ArrayList<Song> allSongs) {
         unplayedSongLoaded = false;
-        Log.d(TAG, "ALL SONGS SIZE: "+ allSongs.size());
-
         Collections.shuffle(allSongs);
         ArrayList<Song> roundSongs = new ArrayList<>();
         for (int i=0; i<allSongs.size(); i++) {
-            Log.d(TAG, "ALL SONGS: " + allSongs);
-            Log.d(TAG, "ROUND SONGS: " + roundSongs);
             Song song = allSongs.get(i);
-            Log.d(TAG,"SONG TITLE: " + song.getTitle());
             if (roundSongs.size() == 4) {
                 break;
             } else if (roundSongs.size() < 3) {
@@ -108,7 +109,6 @@ public class GameRoundActivity extends AppCompatActivity {
                 }
             } else {
                 if (song.hasBeenPlayed() == true && unplayedSongLoaded == false) {
-                    Log.i(TAG, "Song skipped");
                 } else {
                     song.setToPlayed();
                     song.setRightAnswer();
@@ -121,7 +121,6 @@ public class GameRoundActivity extends AppCompatActivity {
         for (int i = 0; i<roundSongs.size(); i++) {
             Song song = roundSongs.get(i);
             song.unsetAdded();
-            Log.d(TAG, "ADDED? " + song.isAdded());
         }
 
         return roundSongs;
@@ -131,8 +130,14 @@ public class GameRoundActivity extends AppCompatActivity {
         final CountDownTimer countdownTimer;
 
         //        ERROR HANDLING FOR SONG RETREIVAL
+
         if (roundSongs.size() > 0) {
-            mAudioPath = roundSongs.get(3).getPreview();
+            for (int i=0; i<roundSongs.size(); i++) {
+                Song song = roundSongs.get(i);
+                if (song.isRightAnswer()) {
+                    mAudioPath = song.getPreview();
+                }
+            }
         } else {
             Toast.makeText(GameRoundActivity.this, "Async error: please choose artist again.",
                     Toast.LENGTH_SHORT).show();

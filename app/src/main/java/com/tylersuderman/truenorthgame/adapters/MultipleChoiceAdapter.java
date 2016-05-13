@@ -22,6 +22,7 @@ import com.tylersuderman.truenorthgame.models.Artist;
 import com.tylersuderman.truenorthgame.models.Player;
 import com.tylersuderman.truenorthgame.models.Song;
 import com.tylersuderman.truenorthgame.ui.GameRoundActivity;
+import com.tylersuderman.truenorthgame.ui.TopScoresActivity;
 
 import org.parceler.Parcels;
 
@@ -82,7 +83,7 @@ public class MultipleChoiceAdapter  extends RecyclerView.Adapter<MultipleChoiceA
         mPreferenceEditor = mSharedPreferences.edit();
         mCurrentPlayerId = mSharedPreferences.getString(Constants
                 .PREFERENCES_PLAYER_KEY, null);
-        Log.d(TAG, "CURRENT PLAYER ID: " + mCurrentPlayerId);
+//        Log.d(TAG, "CURRENT PLAYER ID: " + mCurrentPlayerId);
         mPlayerRef = new Firebase(Constants.FIREBASE_URL_PLAYERS);
 
         mPlayerRef.addValueEventListener(new ValueEventListener() {
@@ -144,14 +145,21 @@ public class MultipleChoiceAdapter  extends RecyclerView.Adapter<MultipleChoiceA
                         Toast.makeText(mContext, "NOPE!", Toast.LENGTH_SHORT).show();
                     }
 
+                    int round = mSharedPreferences.getInt(Constants.PREFERENCES_ROUND_NUMBER_KEY, 15);
+                    Log.i(TAG, "ROUND ROUND ROUND fROM ADAPTER: " + round);
+
+                    if (round == 10) {
+                        mCurrentPlayer.resetScore();
+
+                    }
+
                     mPlayerRef = new Firebase(Constants.FIREBASE_URL_PLAYERS);
                     mPlayerRef.child(mCurrentPlayerId).setValue(mCurrentPlayer);
-                    int round = mSharedPreferences.getInt(Constants.PREFERENCES_ROUND_NUMBER_KEY,
-                            0);
-                    int nextRound = round++;
-                    mPreferenceEditor.putInt(Constants.PREFERENCES_ROUND_NUMBER_KEY, nextRound).apply();
-                    Log.i(TAG, "ROUND ROUND ROUND fROM ADAPTER: " + round);
+
+
                     song.unsetRightAnswer();
+
+
                     final Intent intent = new Intent(mContext, GameRoundActivity.class);
                     intent.putExtra("songs", Parcels.wrap(mAllSongs));
                     intent.putExtra("artist", Parcels.wrap(mArtist));
@@ -164,7 +172,7 @@ public class MultipleChoiceAdapter  extends RecyclerView.Adapter<MultipleChoiceA
                                 mContext.startActivity(intent);
 
                             }
-                        }, 350);
+                        }, 250);
                 }
             });
         }

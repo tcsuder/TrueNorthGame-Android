@@ -38,6 +38,7 @@ public class Player {
     public void setPushId(String pushId) {
         this.pushId = pushId;
     }
+    public void resetScore() { score = 0; }
 
 
     //    FAKE DATA
