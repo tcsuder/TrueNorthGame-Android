@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,7 +21,6 @@ import com.tylersuderman.truenorthgame.models.Artist;
 import com.tylersuderman.truenorthgame.models.Player;
 import com.tylersuderman.truenorthgame.models.Song;
 import com.tylersuderman.truenorthgame.ui.GameRoundActivity;
-import com.tylersuderman.truenorthgame.ui.TopScoresActivity;
 
 import org.parceler.Parcels;
 
@@ -58,17 +56,18 @@ public class MultipleChoiceAdapter  extends RecyclerView.Adapter<MultipleChoiceA
         mArtist = artist;
         mCurrentPlayer = getCurrentPlayer();
         mRoundPoints = 3000;
-        decreaseRoundPointsTimer();
+        recursiveDecreaseRoundPointsTimer();
     }
 
 
-    private int decreaseRoundPointsTimer() {
+//    RECURSIVE METHOD AS INTERVAL TIMER
+    private int recursiveDecreaseRoundPointsTimer() {
         new android.os.Handler().postDelayed(
                 new Runnable() {
                     public void run() {
                         if (mRoundPoints > 215) {
                             mRoundPoints -= 215;
-                            decreaseRoundPointsTimer();
+                            recursiveDecreaseRoundPointsTimer();
                         } else {
                             mRoundPoints = 0;
                         }

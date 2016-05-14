@@ -19,7 +19,6 @@ import com.tylersuderman.truenorthgame.Constants;
 import com.tylersuderman.truenorthgame.models.Artist;
 import com.tylersuderman.truenorthgame.models.Player;
 import com.tylersuderman.truenorthgame.models.Song;
-import com.tylersuderman.truenorthgame.ui.GameRoundActivity;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -43,6 +42,8 @@ import okhttp3.Response;
 public class SpotifyService extends AppCompatActivity {
     private static final String SPOTIFY_CLIENT_SECRET = Constants.SPOTIFY_CLIENT_SECRET;
     public static final String TAG = SpotifyService.class.getSimpleName();
+    private String finalTitle;
+    private ArrayList<String> characterArray;
 
     public static void unauthorizeUser(Context context) {
         AuthenticationClient.clearCookies(context);
@@ -236,8 +237,6 @@ public class SpotifyService extends AppCompatActivity {
     }
 
 
-
-
     public static void findSpotifySongs(String id, Callback callback) {
 
         OkHttpClient spotify = new OkHttpClient.Builder()
@@ -258,9 +257,62 @@ public class SpotifyService extends AppCompatActivity {
         call.enqueue(callback);
     }
 
+//    RECURSIVE METHOD CHECKING FOR PRINS
+
+    private static String recursiveRemovePrins(String title) {
+        title = title.replaceAll("[\\[]", "(");
+        title = title.replaceAll("[\\]]", ")");
+
+        int firstPrin = title.indexOf("(");
+        Log.d(TAG, "FIRST PRIN" + firstPrin);
+        int secondPrin = title.indexOf(")");
+
+        if (firstPrin >= 0 && secondPrin > 0) {
+            ArrayList<String> characterArray = new ArrayList<>
+                    (Arrays.asList(title.split("")));
+            final StringBuilder resultWord = new StringBuilder(characterArray.size());
+
+            for (int i=secondPrin+1; i>=firstPrin; i--) {
+                characterArray.remove(i);
+                Log.d(TAG, "CHARACTER ARRAY BEING SHORTENED: " + characterArray);
+            }
+            for (String s : characterArray) {
+                resultWord.append(s);
+            }
+            final String newTitle = resultWord.toString();
+            return recursiveRemovePrins(newTitle);
+        } else {
+            return title;
+        }
+    }
+
+    private static String removeUnwantedSubstrings(String title) {
+        ArrayList<String> chopItUp;
+        String[] takeOutStrings = {" - Single", " - Pt", "Part 1", "part 1", " - From", " - 200",
+                " - Live", " - Feat", " - feat", ";"};
+
+        for (int i=0; i<takeOutStrings.length; i++) {
+            chopItUp = new ArrayList<>(Arrays.asList(title.split
+                    (takeOutStrings[i])));
+            title = chopItUp.get(0);
+            Log.d(TAG, "CHOP CHOP: " + chopItUp);
+        }
+
+        return title;
+    }
+
+    private static String shortenTitle(String title) {
+        Log.d(TAG, "OLD TITLE: " + title);
+        String noUnwantedSubstringstitle = removeUnwantedSubstrings(title);
+        String noPrinsTitle = recursiveRemovePrins(noUnwantedSubstringstitle);
+        Log.d(TAG, "NEW TITLE: " + noPrinsTitle);
+        return noPrinsTitle;
+    }
+
 
     public static ArrayList<Song> processSongResults(Response response) {
         ArrayList<Song> songs = new ArrayList<>();
+        Boolean songAlreadyAdded = false;
         try {
             String jsonData = response.body().string();
             if (response.isSuccessful()) {
@@ -273,21 +325,35 @@ public class SpotifyService extends AppCompatActivity {
 
                     String id = song.getString("id");
                     String title = song.getString("name");
-
-                    ArrayList<String> noDashTitleArray = new ArrayList<>(Arrays.asList(title.split
-                            ("-")));
-                    String noDashTitle = noDashTitleArray.get(0);
-                    ArrayList<String> shortTitleArray = new ArrayList<>(Arrays.asList(noDashTitle.split
-                            ("\\(")));
-                    String shortTitle = shortTitleArray.get(0);
-
+                    String shortTitle = shortenTitle(title);
 
                     String artist = artistArray.getJSONObject(0).getString("name");
                     String album = song.getJSONObject("album").getString("name");
                     String preview = song.getString("preview_url");
 
                     Song newSong = new Song(id, shortTitle, artist, album, preview);
-                    songs.add(newSong);
+
+                    if (songs.size() == 0) {
+                        songs.add(newSong);
+                        Log.d(TAG, "SONGS IN BUILDER " + songs);
+                    } else {
+                        for (int j=0; j<songs.size(); j++) {
+                            String newSongTitle = newSong.getTitle();
+                            Log.d(TAG, "SONGS IN BUILDER AGAIN: " + songs);
+                            Log.d(TAG, "SONG IS SONG: " + (songs.get(j) == null));
+                            Log.d(TAG, "SONG TITLE IS TITLE: " + (songs.get(j).getTitle() == null));
+                            Song songInList = songs.get(j);
+                            String addedSongTitle = songInList.getTitle();
+                            if (newSongTitle.equalsIgnoreCase(addedSongTitle)) {
+                                songAlreadyAdded = true;
+                            }
+                        }
+
+                        if (!songAlreadyAdded) {
+                            songs.add(newSong);
+                        }
+                    }
+                    songAlreadyAdded = false;
                 }
             }
         } catch (IOException e) {
@@ -296,6 +362,7 @@ public class SpotifyService extends AppCompatActivity {
             e.printStackTrace();
         }
         Collections.shuffle(songs);
+        Log.d(TAG, "SONG LIST LENGTH FROM BUILDER: " + songs.size());
         return songs;
     }
 }
