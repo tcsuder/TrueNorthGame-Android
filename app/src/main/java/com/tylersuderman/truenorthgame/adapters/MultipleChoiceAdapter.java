@@ -18,6 +18,7 @@ import com.tylersuderman.truenorthgame.R;
 import com.tylersuderman.truenorthgame.models.Artist;
 import com.tylersuderman.truenorthgame.models.Player;
 import com.tylersuderman.truenorthgame.models.Song;
+import com.tylersuderman.truenorthgame.util.OnChoiceSelectedListener;
 
 import java.util.ArrayList;
 
@@ -26,6 +27,8 @@ import java.util.ArrayList;
  */
 public class MultipleChoiceAdapter  extends RecyclerView.Adapter<ChoiceViewHolder>{
     public static final String TAG = MultipleChoiceAdapter.class.getSimpleName();
+    public ChoiceViewHolder viewHolder;
+    private OnChoiceSelectedListener mOnChoiceSelectedListener;
     private ArrayList<Song> mRoundSongs = new ArrayList<>();
     private Artist mArtist = new Artist();
     private Context mContext;
@@ -41,13 +44,16 @@ public class MultipleChoiceAdapter  extends RecyclerView.Adapter<ChoiceViewHolde
     private Runnable mPointTimer;
 
 
-    public MultipleChoiceAdapter(Context context, ArrayList<Song> songs, ArrayList<Song> allSongs,
-                                 Artist artist) {
+    public MultipleChoiceAdapter(Context context, Player currentPlayer, ArrayList<Song> songs,
+                                 ArrayList<Song>
+            allSongs,
+                                 Artist artist, OnChoiceSelectedListener onChoiceSelectedListener) {
         mContext = context;
         mRoundSongs = songs;
+        mCurrentPlayer = currentPlayer;
         mAllSongs = allSongs;
         mArtist = artist;
-        mCurrentPlayer = getCurrentPlayer();
+        mOnChoiceSelectedListener = onChoiceSelectedListener;
         mRoundPoints = 3500;
         recursiveDecreaseRoundPointsTimer();
         mPointTimerHandler = new android.os.Handler();
@@ -77,35 +83,11 @@ public class MultipleChoiceAdapter  extends RecyclerView.Adapter<ChoiceViewHolde
     }
 
 
-    private Player getCurrentPlayer() {
-        mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(mContext);
-        mPreferenceEditor = mSharedPreferences.edit();
-        mCurrentPlayerId = mSharedPreferences.getString(Constants
-                .PREFERENCES_PLAYER_KEY, null);
-//        Log.d(TAG, "CURRENT PLAYER ID: " + mCurrentPlayerId);
-        mPlayerRef = new Firebase(Constants.FIREBASE_URL_PLAYERS);
-
-        mPlayerRef.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                mCurrentPlayer = dataSnapshot.child(mCurrentPlayerId).getValue(Player
-                        .class);
-            }
-
-            @Override
-            public void onCancelled(FirebaseError firebaseError) {
-
-            }
-        });
-
-        return mCurrentPlayer;
-    }
-
     @Override
-    public ChoiceViewHolder onCreateViewHolder(ViewGroup parent, int
-            viewType) {
+    public ChoiceViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.song_multiple_choice_item, parent, false);
-        ChoiceViewHolder viewHolder = new ChoiceViewHolder(view, mRoundSongs, mCurrentPlayer, mRoundPoints);
+        viewHolder = new ChoiceViewHolder(view, mRoundSongs, mAllSongs, mCurrentPlayer, mArtist,
+                mRoundPoints, mOnChoiceSelectedListener);
         return viewHolder;
     }
 
