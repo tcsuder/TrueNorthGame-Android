@@ -40,6 +40,7 @@ import okhttp3.Response;
  * Created by tylersuderman on 5/2/16.
  */
 public class SpotifyService extends AppCompatActivity {
+    private static final int NUMBER_OF_ROUNDS = Constants.NUMBER_OF_ROUNDS;
     private static final String SPOTIFY_CLIENT_SECRET = Constants.SPOTIFY_CLIENT_SECRET;
     public static final String TAG = SpotifyService.class.getSimpleName();
     private String finalTitle;
@@ -335,18 +336,20 @@ public class SpotifyService extends AppCompatActivity {
                     if (songs.size() == 0) {
                         songs.add(newSong);
                     } else {
-                        for (int j=0; j<songs.size(); j++) {
-                            String newSongTitle = newSong.getTitle();
-                            Song songInList = songs.get(j);
-                            String addedSongTitle = songInList.getTitle();
-                            if (newSongTitle.equalsIgnoreCase(addedSongTitle)) {
-                                songAlreadyAdded = true;
+                        if (songs.size() < NUMBER_OF_ROUNDS) {
+                            for (int j=0; j<songs.size(); j++) {
+                                String newSongTitle = newSong.getTitle();
+                                Song songInList = songs.get(j);
+                                String addedSongTitle = songInList.getTitle();
+                                if (newSongTitle.equalsIgnoreCase(addedSongTitle)) {
+                                    songAlreadyAdded = true;
+                                }
+                            }
+                            if (!songAlreadyAdded) {
+                                songs.add(newSong);
                             }
                         }
 
-                        if (!songAlreadyAdded) {
-                            songs.add(newSong);
-                        }
                     }
                     songAlreadyAdded = false;
                 }

@@ -1,0 +1,13 @@
+package com.tylersuderman.truenorthgame.util;
+
+import com.tylersuderman.truenorthgame.models.Player;
+import com.tylersuderman.truenorthgame.models.Song;
+
+import java.util.ArrayList;
+
+/**
+ * Created by tylersuderman on 5/15/16.
+ */
+public interface OnChoiceSelectedListener {
+    void onChoiceSelected(Song selectedSong);
+}

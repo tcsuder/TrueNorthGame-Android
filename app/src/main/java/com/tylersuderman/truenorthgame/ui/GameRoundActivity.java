@@ -16,27 +16,33 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.firebase.client.DataSnapshot;
+import com.firebase.client.Firebase;
+import com.firebase.client.FirebaseError;
+import com.firebase.client.ValueEventListener;
 import com.squareup.picasso.Picasso;
 import com.tylersuderman.truenorthgame.Constants;
 import com.tylersuderman.truenorthgame.R;
 import com.tylersuderman.truenorthgame.adapters.MultipleChoiceAdapter;
 import com.tylersuderman.truenorthgame.models.Artist;
+import com.tylersuderman.truenorthgame.models.Player;
 import com.tylersuderman.truenorthgame.models.Song;
+import com.tylersuderman.truenorthgame.util.OnChoiceSelectedListener;
 
 import org.parceler.Parcels;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.concurrent.RunnableFuture;
-import java.util.logging.Handler;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
 
-public class GameRoundActivity extends AppCompatActivity {
+public class GameRoundActivity extends AppCompatActivity implements OnChoiceSelectedListener{
     public static final String TAG = GameRoundActivity.class.getSimpleName();
     private static final int MAX_WIDTH = 700;
     private static final int MAX_HEIGHT = 700;
+    private static final int POINTS_PER_ROUND = Constants.POINTS_PER_ROUND;
+    private static final int MILLIS_PER_ROUND = Constants.MILLIS_PER_ROUND;
 
     @Bind(R.id.countdownTextView) TextView mCountdownTextView;
     @Bind(R.id.pointsTextView) TextView mPointsTextView;
@@ -44,18 +50,27 @@ public class GameRoundActivity extends AppCompatActivity {
     @Bind(R.id.recyclerView) RecyclerView mRecyclerView;
 
     private Artist mArtist;
-    private ArrayList<Song> mGuessingRoundSongs = new ArrayList<>();
+    private Integer mPosition;
+    private ArrayList<Song> mRoundSongs = new ArrayList<>();
     private ArrayList<Song> mAllSongs = new ArrayList<>();
-    private MediaPlayer mMediaPlayer;
-    private String mAudioPath;
-    private int mPlaySongForTime;
-    private MultipleChoiceAdapter mAdapter;
-    private SharedPreferences mSharedPreferences;
-    private SharedPreferences.Editor mPreferenceEditor;
+    private Player mCurrentPlayer;
+    private String mCurrentPlayerId;
+    private Firebase mFirebasePlayerRef;
+
     private boolean unplayedSongLoaded;
-    private int mRoundPoints;
+    private MediaPlayer mMediaPlayer;
+    private int mCurrentRound;
+    private String mAudioPath;
+    private int mCountdownTime;
+    private int mPointsScorable;
     private android.os.Handler mTimerHandler;
     private Runnable mTimer;
+    private Song mSelectedSong;
+
+    private MultipleChoiceAdapter mAdapter;
+    private OnChoiceSelectedListener mOnChoiceSelectedListener;
+    private SharedPreferences mSharedPreferences;
+    private SharedPreferences.Editor mPreferenceEditor;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,13 +83,13 @@ public class GameRoundActivity extends AppCompatActivity {
         mArtist = Parcels.unwrap(intent.getParcelableExtra("artist"));
         setImage(this);
         mAllSongs = Parcels.unwrap(intent.getParcelableExtra("songs"));
-//        CHECK ROUND USES ALL SONGS LENGTH TO END GAME SO IT MUST BE UNDER ALLSONGS INSTANTIATION
-        checkRound();
-        mPlaySongForTime = 10000;
-        mRoundPoints = 3500;
-        mGuessingRoundSongs = createSongArray(mAllSongs);
-        mPointsTextView.setText("points: "+ mRoundPoints);
-        mCountdownTextView.setText("time: " + ((mPlaySongForTime/1000) - 1));
+        mCurrentPlayer = getCurrentPlayer();
+        mCurrentRound = checkRound();
+        mCountdownTime = MILLIS_PER_ROUND;
+        mPointsScorable = POINTS_PER_ROUND;
+        mRoundSongs = createSongArray(mAllSongs);
+        mPointsTextView.setText("points: "+ mPointsScorable);
+        mCountdownTextView.setText("time: " + (mCountdownTime/1000));
         mTimerHandler = new android.os.Handler();
         mTimer = new Runnable() {
             @Override
@@ -82,57 +97,116 @@ public class GameRoundActivity extends AppCompatActivity {
                 runTimer();
             }
         };
-        syncRoundTimerWithSongAndPoints(mGuessingRoundSongs);
+        syncRoundTimerWithSongAndPoints(mRoundSongs);
 
-//        ALL GAME AND SCORING LOGIC LIVES WITH THE CLICK FUNCTION IN MULTIPLE CHOICE ADAPTER
-
-
-    }
-
-    private void runTimer() {
-        if (mPlaySongForTime > 500) {
-            Log.d(TAG, "Round points Time" + mPlaySongForTime);
-            mPlaySongForTime -= 100;
-            if ((mPlaySongForTime % 1000) == 0 && mPlaySongForTime < 9500) {
-                mCountdownTextView.setText("time: "+ mPlaySongForTime/1000);
-            }
-            if ((mPlaySongForTime % 300) == 0) {
-                if (mRoundPoints > 115) {
-                    mRoundPoints -= 115;
-                    mPointsTextView.setText("points: "+ mRoundPoints);
-                } else {
-                    mRoundPoints = 50;
-                }
-            }
-            recursiveDisplayRoundPointsTimer();
-        } else {
-            Intent intent = new Intent(GameRoundActivity.this, GameRoundActivity.class);
-            intent.putExtra("songs", Parcels.wrap(mAllSongs));
-            intent.putExtra("artist", Parcels.wrap(mArtist));
-            startActivity(intent);
+        try {
+            mOnChoiceSelectedListener = (OnChoiceSelectedListener) this;
+        } catch (ClassCastException e) {
+            throw new ClassCastException(this.toString() + e.getMessage());
         }
+
     }
 
-    private void recursiveDisplayRoundPointsTimer() {
-        mTimerHandler.postDelayed(mTimer, 100);
-    }
-
-
-    private void checkRound() {
+    private int checkRound() {
         mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(GameRoundActivity.this);
         mPreferenceEditor = mSharedPreferences.edit();
-        final int previousRound = mSharedPreferences.getInt(Constants.PREFERENCES_ROUND_NUMBER_KEY,
-                0);
-        Log.d(TAG, "Previous round: " + previousRound);
-        Log.d(TAG, "SONGS ARRAY SIZE: " + mAllSongs.size());
+        final int previousRound = mSharedPreferences.getInt(Constants.PREFERENCES_ROUND_NUMBER_KEY, 0);
+        Log.d(TAG, "PREVIOUS ROUND: " + previousRound);
         if (previousRound == mAllSongs.size()) {
+            Log.d(TAG, "DONE WITH GAME");
             Intent intent = new Intent(GameRoundActivity.this, TopScoresActivity.class);
             startActivity(intent);
         } else {
             int currentRound = previousRound + 1;
+            Log.d(TAG, "CURRENT ROUND: " + currentRound);
             mPreferenceEditor.putInt(Constants.PREFERENCES_ROUND_NUMBER_KEY, currentRound).apply();
         }
+        return mCurrentRound;
     }
+
+    private Player getCurrentPlayer() {
+        mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        mPreferenceEditor = mSharedPreferences.edit();
+        mCurrentPlayerId = mSharedPreferences.getString(Constants.PREFERENCES_PLAYER_KEY, null);
+//        Log.d(TAG, "CURRENT PLAYER ID: " + mCurrentPlayerId);
+        mFirebasePlayerRef = new Firebase(Constants.FIREBASE_URL_PLAYERS);
+
+        mFirebasePlayerRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                mCurrentPlayer = dataSnapshot.child(mCurrentPlayerId).getValue(Player
+                        .class);
+            }
+
+            @Override
+            public void onCancelled(FirebaseError firebaseError) {
+
+            }
+        });
+
+        return mCurrentPlayer;
+    }
+
+
+    @Override
+    public void onChoiceSelected(Song selectedSong) {
+        mSelectedSong = selectedSong;
+
+        Log.d(TAG, "SELECTED SONG: " + selectedSong.getTitle());
+
+
+        if(selectedSong.isRightAnswer()){
+            mCurrentPlayer.addToScore(mPointsScorable);
+            Toast.makeText(GameRoundActivity.this, "YEP!", Toast.LENGTH_SHORT).show();
+        } else {
+            if (mCurrentPlayer.getScore() > 50) {
+                mCurrentPlayer.subtractFromScore(mPointsScorable);
+            }
+            Toast.makeText(GameRoundActivity.this, "NOPE!", Toast.LENGTH_SHORT).show();
+        }
+
+        int round = mSharedPreferences.getInt(Constants.PREFERENCES_ROUND_NUMBER_KEY,
+                mAllSongs.size());
+        mFirebasePlayerRef = new Firebase(Constants.FIREBASE_URL_PLAYERS);
+
+        if (round == 10) {
+
+            if (mCurrentPlayer.getScore() > mCurrentPlayer.getTopScore()) {
+                mCurrentPlayer.setTopScore(mCurrentPlayer.getScore());
+            }
+            mCurrentPlayer.resetScore();
+
+        }
+
+        mFirebasePlayerRef.child(mCurrentPlayerId).setValue(mCurrentPlayer);
+
+
+        for (int i=0; i<mRoundSongs.size(); i++) {
+            Song song = mRoundSongs.get(i);
+            if (song.isRightAnswer()) {
+                song.unsetRightAnswer();
+            }
+        }
+
+
+        final Intent intent = new Intent(GameRoundActivity.this, GameRoundActivity.class);
+        intent.putExtra("songs", Parcels.wrap(mAllSongs));
+        intent.putExtra("artist", Parcels.wrap(mArtist));
+
+        new android.os.Handler().postDelayed(
+
+                new Runnable() {
+                    public void run() {
+
+                        startActivity(intent);
+
+                    }
+                }, 250);
+
+
+
+    }
+
 
     private ArrayList<Song> createSongArray(ArrayList<Song> allSongs) {
         unplayedSongLoaded = false;
@@ -199,48 +273,61 @@ public class GameRoundActivity extends AppCompatActivity {
             e.printStackTrace();
         }
 
-        //        DELAY PLAY OF SONG AND SHOWING OF CHOICES
-        new android.os.Handler().postDelayed(
+        if (mCurrentRound != mAllSongs.size()) {
+            //        DELAY PLAY OF SONG AND SHOWING OF CHOICES
+            new android.os.Handler().postDelayed(
 
-                new Runnable() {
-                    public void run() {
+                    new Runnable() {
+                        public void run() {
 
-                        //        PLAY SONG
-                        mMediaPlayer.start();
-                        showGuessRoundSongs();
-                        recursiveDisplayRoundPointsTimer();
+                            //        PLAY SONG
+                            mMediaPlayer.start();
+                            showGuessRoundSongs();
+                            recursiveDisplayRoundPointsTimer();
 
-                    }
-                }, 100);
+                        }
+                    }, 100);
+        }
 
-////        SHOW COUNTDOWN IN VIEW
-//        countdownTimer = new CountDownTimer(mPlaySongForTime, 1000) {
-//
-//            public void onTick(long millisUntilFinished) {
-//                mCountdownTextView.setText("time: " + millisUntilFinished / 1000);
-//                Long millis = millisUntilFinished;
-//                if (millis < 1000f) {
-//
-//                }
-//            }
-//
-//            public void onFinish() {
-//                Intent intent = new Intent(GameRoundActivity.this, GameRoundActivity.class);
-//                intent.putExtra("songs", Parcels.wrap(mAllSongs));
-//                intent.putExtra("artist", Parcels.wrap(mArtist));
-//                startActivity(intent);
-//            }
-//        }.start();
     }
 
     private void showGuessRoundSongs() {
-        mAdapter = new MultipleChoiceAdapter(getApplicationContext(), mGuessingRoundSongs, mAllSongs,
-                mArtist);
+        mAdapter = new MultipleChoiceAdapter(getApplicationContext(), mRoundSongs,
+                mOnChoiceSelectedListener);
         mRecyclerView.setAdapter(mAdapter);
         RecyclerView.LayoutManager layoutManager =
                 new LinearLayoutManager(GameRoundActivity.this);
         mRecyclerView.setLayoutManager(layoutManager);
         mRecyclerView.setHasFixedSize(true);
+    }
+
+    private void runTimer() {
+        if (mCountdownTime > 500) {
+            mCountdownTime -= Math.floor(MILLIS_PER_ROUND/60);
+            if ((mCountdownTime % 1000) == 0 && mCountdownTime < (MILLIS_PER_ROUND - 50)) {
+                mCountdownTextView.setText("time: "+ mCountdownTime/1000);
+                Log.d(TAG, "TICK TOCK " + mCountdownTime);
+            }
+            if ((mCountdownTime % 300) == 0) {
+                if (mPointsScorable > Math.floor(POINTS_PER_ROUND /15)) {
+                    mPointsScorable -= ((POINTS_PER_ROUND /15) + 5);
+                    mPointsTextView.setText("points: "+ mPointsScorable);
+                } else {
+                    mPointsScorable = POINTS_PER_ROUND /60;
+                    mPointsTextView.setText("points: "+ mPointsScorable);
+                }
+            }
+            recursiveDisplayRoundPointsTimer();
+        } else {
+            Intent intent = new Intent(GameRoundActivity.this, GameRoundActivity.class);
+            intent.putExtra("songs", Parcels.wrap(mAllSongs));
+            intent.putExtra("artist", Parcels.wrap(mArtist));
+            startActivity(intent);
+        }
+    }
+
+    private void recursiveDisplayRoundPointsTimer() {
+        mTimerHandler.postDelayed(mTimer, 100);
     }
 
     private void setImage(Context context) {
@@ -251,13 +338,11 @@ public class GameRoundActivity extends AppCompatActivity {
                 .into(mArtistImageView);
     }
 
-
     @Override
     protected void onPause() {
-        mTimerHandler.removeCallbacks(mTimer);
         super.onPause();
+        mTimerHandler.removeCallbacks(mTimer);
         mMediaPlayer.stop();
-
     }
 }
 
