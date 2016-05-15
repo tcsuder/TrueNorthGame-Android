@@ -22,4 +22,10 @@ public class Constants {
 
     public static final String PREFERENCES_PLAYER_KEY = "currentPlayerId";
     public static final String PREFERENCES_ROUND_NUMBER_KEY = "roundNumber";
+
+    public static final int POINTS_PER_ROUND = 3000;
+//    THIS NUMBER MUST BE BETWEEN 2 AND 10 (INCLUSIVE)
+    public static final int NUMBER_OF_ROUNDS = 6;
+//    TIME IN MILLIS - THIS NUMBER MUST BE A MULTIPLE OF 1000
+    public static final int MILLIS_PER_ROUND = 6000;
 }

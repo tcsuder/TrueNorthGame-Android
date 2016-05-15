@@ -37,60 +37,17 @@ import butterknife.ButterKnife;
 public class MultipleChoiceAdapter  extends RecyclerView.Adapter<MultipleChoiceAdapter
 .ChoiceViewHolder>{
     public static final String TAG = MultipleChoiceAdapter.class.getSimpleName();
-    public ChoiceViewHolder viewHolder;
     private OnChoiceSelectedListener mOnChoiceSelectedListener;
     private ArrayList<Song> mRoundSongs = new ArrayList<>();
-    private Artist mArtist = new Artist();
     private Context mContext;
-    private ArrayList<Song> mAllSongs = new ArrayList<>();
-
-    private SharedPreferences mSharedPreferences;
-    private SharedPreferences.Editor mPreferenceEditor;
-    private String mCurrentPlayerId;
-    private Firebase mPlayerRef;
-    private Player mCurrentPlayer;
-    private int mRoundPoints;
-    private android.os.Handler mPointTimerHandler;
-    private Runnable mPointTimer;
 
 
-    public MultipleChoiceAdapter(Context context, Player currentPlayer, ArrayList<Song> songs,
-                                ArrayList<Song> allSongs, Artist artist, OnChoiceSelectedListener
+    public MultipleChoiceAdapter(Context context, ArrayList<Song> songs,
+                                 OnChoiceSelectedListener
                                 onChoiceSelectedListener) {
         mContext = context;
         mRoundSongs = songs;
-        mCurrentPlayer = currentPlayer;
-        mAllSongs = allSongs;
-        mArtist = artist;
         mOnChoiceSelectedListener = onChoiceSelectedListener;
-        mRoundPoints = 3500;
-        recursiveDecreaseRoundPointsTimer();
-        mPointTimerHandler = new android.os.Handler();
-        mPointTimer = new Runnable() {
-            @Override
-            public void run() {
-                runPointTimer();
-            }
-        };
-        recursiveDecreaseRoundPointsTimer();
-    }
-
-    private void runPointTimer() {
-        if (mRoundPoints > 115) {
-            Log.d(TAG, "POINTS FROM ADAPTER: " + mRoundPoints);
-            mRoundPoints -= 115;
-            recursiveDecreaseRoundPointsTimer();
-        } else {
-            mRoundPoints = 50;
-        }
-    }
-
-    public int getRoundPoints() { return mRoundPoints; }
-
-
-//    RECURSIVE METHOD AS INTERVAL TIMER
-    private void recursiveDecreaseRoundPointsTimer() {
-        new android.os.Handler().postDelayed(mPointTimer, 100);
     }
 
     

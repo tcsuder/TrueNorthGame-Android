@@ -41,8 +41,8 @@ public class GameRoundActivity extends AppCompatActivity implements OnChoiceSele
     public static final String TAG = GameRoundActivity.class.getSimpleName();
     private static final int MAX_WIDTH = 700;
     private static final int MAX_HEIGHT = 700;
-    private static final int POINTS_PER_ROUND = 3000;
-    private static final int MILLIS_PER_ROUND = 6000;
+    private static final int POINTS_PER_ROUND = Constants.POINTS_PER_ROUND;
+    private static final int MILLIS_PER_ROUND = Constants.MILLIS_PER_ROUND;
 
     @Bind(R.id.countdownTextView) TextView mCountdownTextView;
     @Bind(R.id.pointsTextView) TextView mPointsTextView;
@@ -59,6 +59,7 @@ public class GameRoundActivity extends AppCompatActivity implements OnChoiceSele
 
     private boolean unplayedSongLoaded;
     private MediaPlayer mMediaPlayer;
+    private int mCurrentRound;
     private String mAudioPath;
     private int mCountdownTime;
     private int mPointsScorable;
@@ -82,9 +83,8 @@ public class GameRoundActivity extends AppCompatActivity implements OnChoiceSele
         mArtist = Parcels.unwrap(intent.getParcelableExtra("artist"));
         setImage(this);
         mAllSongs = Parcels.unwrap(intent.getParcelableExtra("songs"));
-//        CHECK ROUND USES ALL SONGS LENGTH TO END GAME SO IT MUST BE UNDER ALLSONGS INSTANTIATION
-        checkRound();
         mCurrentPlayer = getCurrentPlayer();
+        mCurrentRound = checkRound();
         mCountdownTime = MILLIS_PER_ROUND;
         mPointsScorable = POINTS_PER_ROUND;
         mRoundSongs = createSongArray(mAllSongs);
@@ -105,9 +105,46 @@ public class GameRoundActivity extends AppCompatActivity implements OnChoiceSele
             throw new ClassCastException(this.toString() + e.getMessage());
         }
 
-//        ALL GAME AND SCORING LOGIC LIVES WITH THE CLICK FUNCTION IN MULTIPLE CHOICE ADAPTER
+    }
 
+    private int checkRound() {
+        mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(GameRoundActivity.this);
+        mPreferenceEditor = mSharedPreferences.edit();
+        final int previousRound = mSharedPreferences.getInt(Constants.PREFERENCES_ROUND_NUMBER_KEY, 0);
+        Log.d(TAG, "PREVIOUS ROUND: " + previousRound);
+        if (previousRound == mAllSongs.size()) {
+            Log.d(TAG, "DONE WITH GAME");
+            Intent intent = new Intent(GameRoundActivity.this, TopScoresActivity.class);
+            startActivity(intent);
+        } else {
+            int currentRound = previousRound + 1;
+            Log.d(TAG, "CURRENT ROUND: " + currentRound);
+            mPreferenceEditor.putInt(Constants.PREFERENCES_ROUND_NUMBER_KEY, currentRound).apply();
+        }
+        return mCurrentRound;
+    }
 
+    private Player getCurrentPlayer() {
+        mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        mPreferenceEditor = mSharedPreferences.edit();
+        mCurrentPlayerId = mSharedPreferences.getString(Constants.PREFERENCES_PLAYER_KEY, null);
+//        Log.d(TAG, "CURRENT PLAYER ID: " + mCurrentPlayerId);
+        mFirebasePlayerRef = new Firebase(Constants.FIREBASE_URL_PLAYERS);
+
+        mFirebasePlayerRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                mCurrentPlayer = dataSnapshot.child(mCurrentPlayerId).getValue(Player
+                        .class);
+            }
+
+            @Override
+            public void onCancelled(FirebaseError firebaseError) {
+
+            }
+        });
+
+        return mCurrentPlayer;
     }
 
 
@@ -170,42 +207,6 @@ public class GameRoundActivity extends AppCompatActivity implements OnChoiceSele
 
     }
 
-    private Player getCurrentPlayer() {
-        mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-        mPreferenceEditor = mSharedPreferences.edit();
-        mCurrentPlayerId = mSharedPreferences.getString(Constants.PREFERENCES_PLAYER_KEY, null);
-//        Log.d(TAG, "CURRENT PLAYER ID: " + mCurrentPlayerId);
-        mFirebasePlayerRef = new Firebase(Constants.FIREBASE_URL_PLAYERS);
-
-        mFirebasePlayerRef.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                mCurrentPlayer = dataSnapshot.child(mCurrentPlayerId).getValue(Player
-                        .class);
-            }
-
-            @Override
-            public void onCancelled(FirebaseError firebaseError) {
-
-            }
-        });
-
-        return mCurrentPlayer;
-    }
-
-
-    private void checkRound() {
-        mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(GameRoundActivity.this);
-        mPreferenceEditor = mSharedPreferences.edit();
-        final int previousRound = mSharedPreferences.getInt(Constants.PREFERENCES_ROUND_NUMBER_KEY, 0);
-        if (previousRound == mAllSongs.size()) {
-            Intent intent = new Intent(GameRoundActivity.this, TopScoresActivity.class);
-            startActivity(intent);
-        } else {
-            int currentRound = previousRound + 1;
-            mPreferenceEditor.putInt(Constants.PREFERENCES_ROUND_NUMBER_KEY, currentRound).apply();
-        }
-    }
 
     private ArrayList<Song> createSongArray(ArrayList<Song> allSongs) {
         unplayedSongLoaded = false;
@@ -272,31 +273,32 @@ public class GameRoundActivity extends AppCompatActivity implements OnChoiceSele
             e.printStackTrace();
         }
 
-        //        DELAY PLAY OF SONG AND SHOWING OF CHOICES
-        new android.os.Handler().postDelayed(
+        if (mCurrentRound != mAllSongs.size()) {
+            //        DELAY PLAY OF SONG AND SHOWING OF CHOICES
+            new android.os.Handler().postDelayed(
 
-                new Runnable() {
-                    public void run() {
+                    new Runnable() {
+                        public void run() {
 
-                        //        PLAY SONG
-                        mMediaPlayer.start();
-                        showGuessRoundSongs();
-                        recursiveDisplayRoundPointsTimer();
+                            //        PLAY SONG
+                            mMediaPlayer.start();
+                            showGuessRoundSongs();
+                            recursiveDisplayRoundPointsTimer();
 
-                    }
-                }, 100);
+                        }
+                    }, 100);
+        }
 
     }
 
     private void showGuessRoundSongs() {
-        mAdapter = new MultipleChoiceAdapter(getApplicationContext(), mCurrentPlayer, mRoundSongs, mAllSongs,
-                mArtist, mOnChoiceSelectedListener);
+        mAdapter = new MultipleChoiceAdapter(getApplicationContext(), mRoundSongs,
+                mOnChoiceSelectedListener);
         mRecyclerView.setAdapter(mAdapter);
         RecyclerView.LayoutManager layoutManager =
                 new LinearLayoutManager(GameRoundActivity.this);
         mRecyclerView.setLayoutManager(layoutManager);
         mRecyclerView.setHasFixedSize(true);
-
     }
 
     private void runTimer() {
@@ -304,10 +306,10 @@ public class GameRoundActivity extends AppCompatActivity implements OnChoiceSele
             mCountdownTime -= Math.floor(MILLIS_PER_ROUND/60);
             if ((mCountdownTime % 1000) == 0 && mCountdownTime < (MILLIS_PER_ROUND - 50)) {
                 mCountdownTextView.setText("time: "+ mCountdownTime/1000);
+                Log.d(TAG, "TICK TOCK " + mCountdownTime);
             }
             if ((mCountdownTime % 300) == 0) {
                 if (mPointsScorable > Math.floor(POINTS_PER_ROUND /15)) {
-                    Log.d(TAG, "POINTS FROM ACTIVITY: " + mPointsScorable);
                     mPointsScorable -= ((POINTS_PER_ROUND /15) + 5);
                     mPointsTextView.setText("points: "+ mPointsScorable);
                 } else {
@@ -336,13 +338,11 @@ public class GameRoundActivity extends AppCompatActivity implements OnChoiceSele
                 .into(mArtistImageView);
     }
 
-
     @Override
     protected void onPause() {
-        mTimerHandler.removeCallbacks(mTimer);
         super.onPause();
+        mTimerHandler.removeCallbacks(mTimer);
         mMediaPlayer.stop();
-
     }
 }
 
