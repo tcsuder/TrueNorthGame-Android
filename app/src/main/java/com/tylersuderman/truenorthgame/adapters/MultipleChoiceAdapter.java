@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -32,8 +33,7 @@ import butterknife.ButterKnife;
 /**
  * Created by tylersuderman on 5/3/16.
  */
-public class MultipleChoiceAdapter  extends RecyclerView.Adapter<MultipleChoiceAdapter
-        .ChoiceViewHolder>{
+public class MultipleChoiceAdapter  extends RecyclerView.Adapter<MultipleChoiceAdapter.ChoiceViewHolder>{
     public static final String TAG = MultipleChoiceAdapter.class.getSimpleName();
     private ArrayList<Song> mSongs = new ArrayList<>();
     private Artist mArtist = new Artist();
@@ -46,6 +46,8 @@ public class MultipleChoiceAdapter  extends RecyclerView.Adapter<MultipleChoiceA
     private Firebase mPlayerRef;
     private Player mCurrentPlayer;
     private int mRoundPoints;
+    private android.os.Handler mPointTimerHandler;
+    private Runnable mPointTimer;
 
 
     public MultipleChoiceAdapter(Context context, ArrayList<Song> songs, ArrayList<Song> allSongs,
@@ -57,23 +59,30 @@ public class MultipleChoiceAdapter  extends RecyclerView.Adapter<MultipleChoiceA
         mCurrentPlayer = getCurrentPlayer();
         mRoundPoints = 3500;
         recursiveDecreaseRoundPointsTimer();
+        mPointTimerHandler = new android.os.Handler();
+        mPointTimer = new Runnable() {
+            @Override
+            public void run() {
+                runPointTimer();
+            }
+        };
+        recursiveDecreaseRoundPointsTimer();
+    }
+
+    private void runPointTimer() {
+        if (mRoundPoints > 115) {
+            Log.d(TAG, "POINTS FROM ADAPTER: " + mRoundPoints);
+            mRoundPoints -= 115;
+            recursiveDecreaseRoundPointsTimer();
+        } else {
+            mRoundPoints = 50;
+        }
     }
 
 
 //    RECURSIVE METHOD AS INTERVAL TIMER
-    private int recursiveDecreaseRoundPointsTimer() {
-        new android.os.Handler().postDelayed(
-                new Runnable() {
-                    public void run() {
-                        if (mRoundPoints > 215) {
-                            mRoundPoints -= 215;
-                            recursiveDecreaseRoundPointsTimer();
-                        } else {
-                            mRoundPoints = 0;
-                        }
-                    }
-                }, 500);
-        return mRoundPoints;
+    private void recursiveDecreaseRoundPointsTimer() {
+        new android.os.Handler().postDelayed(mPointTimer, 100);
     }
 
 
@@ -136,9 +145,12 @@ public class MultipleChoiceAdapter  extends RecyclerView.Adapter<MultipleChoiceA
 
                     if(song.isRightAnswer()){
                         mCurrentPlayer.addToScore(mRoundPoints);
+                        Log.d(TAG, "ROUND POINTS ON CLICK: " + mRoundPoints);
                         Toast.makeText(mContext, "YEP!", Toast.LENGTH_SHORT).show();
                     } else {
                         if (mCurrentPlayer.getScore() > 50) {
+                            Log.d(TAG, "ROUND POINTS ON CLICK: " + mRoundPoints);
+
                             mCurrentPlayer.subtractFromScore(mRoundPoints);
                         }
                         Toast.makeText(mContext, "NOPE!", Toast.LENGTH_SHORT).show();
@@ -161,7 +173,7 @@ public class MultipleChoiceAdapter  extends RecyclerView.Adapter<MultipleChoiceA
 
 
                     song.unsetRightAnswer();
-
+                    mPointTimerHandler.removeCallbacks(mPointTimer);
 
                     final Intent intent = new Intent(mContext, GameRoundActivity.class);
                     intent.putExtra("songs", Parcels.wrap(mAllSongs));
@@ -175,7 +187,7 @@ public class MultipleChoiceAdapter  extends RecyclerView.Adapter<MultipleChoiceA
                                 mContext.startActivity(intent);
 
                             }
-                        }, 250);
+                        }, 200);
                 }
             });
         }

@@ -27,8 +27,6 @@ import org.parceler.Parcels;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.concurrent.RunnableFuture;
-import java.util.logging.Handler;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -37,6 +35,8 @@ public class GameRoundActivity extends AppCompatActivity {
     public static final String TAG = GameRoundActivity.class.getSimpleName();
     private static final int MAX_WIDTH = 700;
     private static final int MAX_HEIGHT = 700;
+    private static final int POINTS_PER_ROUND = 3000;
+    private static final int MILLIS_PER_ROUND = 6000;
 
     @Bind(R.id.countdownTextView) TextView mCountdownTextView;
     @Bind(R.id.pointsTextView) TextView mPointsTextView;
@@ -53,7 +53,7 @@ public class GameRoundActivity extends AppCompatActivity {
     private SharedPreferences mSharedPreferences;
     private SharedPreferences.Editor mPreferenceEditor;
     private boolean unplayedSongLoaded;
-    private int mRoundPoints;
+    private int mPointsScorable;
     private android.os.Handler mTimerHandler;
     private Runnable mTimer;
 
@@ -70,11 +70,11 @@ public class GameRoundActivity extends AppCompatActivity {
         mAllSongs = Parcels.unwrap(intent.getParcelableExtra("songs"));
 //        CHECK ROUND USES ALL SONGS LENGTH TO END GAME SO IT MUST BE UNDER ALLSONGS INSTANTIATION
         checkRound();
-        mPlaySongForTime = 10000;
-        mRoundPoints = 3500;
+        mPlaySongForTime = MILLIS_PER_ROUND;
+        mPointsScorable = POINTS_PER_ROUND;
         mGuessingRoundSongs = createSongArray(mAllSongs);
-        mPointsTextView.setText("points: "+ mRoundPoints);
-        mCountdownTextView.setText("time: " + ((mPlaySongForTime/1000) - 1));
+        mPointsTextView.setText("points: "+ mPointsScorable);
+        mCountdownTextView.setText("time: " + (mPlaySongForTime/1000));
         mTimerHandler = new android.os.Handler();
         mTimer = new Runnable() {
             @Override
@@ -91,17 +91,18 @@ public class GameRoundActivity extends AppCompatActivity {
 
     private void runTimer() {
         if (mPlaySongForTime > 500) {
-            Log.d(TAG, "Round points Time" + mPlaySongForTime);
-            mPlaySongForTime -= 100;
-            if ((mPlaySongForTime % 1000) == 0 && mPlaySongForTime < 9500) {
+            mPlaySongForTime -= Math.floor(MILLIS_PER_ROUND/60);
+            if ((mPlaySongForTime % 1000) == 0 && mPlaySongForTime < (MILLIS_PER_ROUND - 50)) {
                 mCountdownTextView.setText("time: "+ mPlaySongForTime/1000);
             }
             if ((mPlaySongForTime % 300) == 0) {
-                if (mRoundPoints > 115) {
-                    mRoundPoints -= 115;
-                    mPointsTextView.setText("points: "+ mRoundPoints);
+                if (mPointsScorable > Math.floor(POINTS_PER_ROUND /15)) {
+                    Log.d(TAG, "POINTS FROM ACTIVITY: " + mPointsScorable);
+                    mPointsScorable -= ((POINTS_PER_ROUND /15) + 5);
+                    mPointsTextView.setText("points: "+ mPointsScorable);
                 } else {
-                    mRoundPoints = 50;
+                    mPointsScorable = POINTS_PER_ROUND /60;
+                    mPointsTextView.setText("points: "+ mPointsScorable);
                 }
             }
             recursiveDisplayRoundPointsTimer();
@@ -123,8 +124,6 @@ public class GameRoundActivity extends AppCompatActivity {
         mPreferenceEditor = mSharedPreferences.edit();
         final int previousRound = mSharedPreferences.getInt(Constants.PREFERENCES_ROUND_NUMBER_KEY,
                 0);
-        Log.d(TAG, "Previous round: " + previousRound);
-        Log.d(TAG, "SONGS ARRAY SIZE: " + mAllSongs.size());
         if (previousRound == mAllSongs.size()) {
             Intent intent = new Intent(GameRoundActivity.this, TopScoresActivity.class);
             startActivity(intent);
@@ -213,24 +212,6 @@ public class GameRoundActivity extends AppCompatActivity {
                     }
                 }, 100);
 
-////        SHOW COUNTDOWN IN VIEW
-//        countdownTimer = new CountDownTimer(mPlaySongForTime, 1000) {
-//
-//            public void onTick(long millisUntilFinished) {
-//                mCountdownTextView.setText("time: " + millisUntilFinished / 1000);
-//                Long millis = millisUntilFinished;
-//                if (millis < 1000f) {
-//
-//                }
-//            }
-//
-//            public void onFinish() {
-//                Intent intent = new Intent(GameRoundActivity.this, GameRoundActivity.class);
-//                intent.putExtra("songs", Parcels.wrap(mAllSongs));
-//                intent.putExtra("artist", Parcels.wrap(mArtist));
-//                startActivity(intent);
-//            }
-//        }.start();
     }
 
     private void showGuessRoundSongs() {
@@ -241,6 +222,7 @@ public class GameRoundActivity extends AppCompatActivity {
                 new LinearLayoutManager(GameRoundActivity.this);
         mRecyclerView.setLayoutManager(layoutManager);
         mRecyclerView.setHasFixedSize(true);
+
     }
 
     private void setImage(Context context) {
