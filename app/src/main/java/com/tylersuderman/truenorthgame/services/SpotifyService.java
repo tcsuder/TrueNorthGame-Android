@@ -40,7 +40,7 @@ import okhttp3.Response;
  * Created by tylersuderman on 5/2/16.
  */
 public class SpotifyService extends AppCompatActivity {
-    private static final int NUMBER_OF_ROUNDS = Constants.NUMBER_OF_ROUNDS;
+    private static final int NUMBER_OF_ROUNDS = Constants.ROUNDS_PER_GAME;
     private static final String SPOTIFY_CLIENT_SECRET = Constants.SPOTIFY_CLIENT_SECRET;
     public static final String TAG = SpotifyService.class.getSimpleName();
     private String finalTitle;
