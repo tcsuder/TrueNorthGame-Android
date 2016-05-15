@@ -3,24 +3,66 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingBottom="@dimen/activity_vertical_margin"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context="com.tylersuderman.truenorthgame.GameRoundActivity">
+    tools:context="com.tylersuderman.truenorthgame.ui.GameRoundActivity">
 
-    <TextView
+    <ImageView
         android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/countdownTextView"
-        android:layout_centerHorizontal="true"
-        android:textSize="30sp"
-        android:textAlignment="center" />
+        android:layout_height="fill_parent"
+        android:id="@+id/artistImageView"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:scaleType="centerCrop" />
 
-    <android.support.v7.widget.RecyclerView
+    <ImageView
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:id="@+id/backgroundGradientImageView"
+        android:layout_alignTop="@+id/artistImageView"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:src="@drawable/background_gradient" />
+
+    <LinearLayout
+        android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:id="@+id/recyclerView"
-        android:layout_below="@+id/countdownTextView" />
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:id="@+id/countdownTextView"
+                android:layout_centerHorizontal="true"
+                android:textSize="30sp"
+                android:textAlignment="center"
+                android:textColor="@color/colorTextIcons"
+                android:layout_weight=".7"
+                android:gravity="center_vertical"
+                android:text="time"/>
+
+            <TextView
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:text="points"
+                android:id="@+id/pointsTextView"
+                android:layout_weight=".5"
+                android:textAlignment="center"
+                android:gravity="center_vertical"
+                android:textColor="@color/colorTextIcons"
+                android:textSize="30sp"/>
+        </LinearLayout>
+
+        <android.support.v7.widget.RecyclerView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="10dp"
+            android:id="@+id/recyclerView"
+            />
+    </LinearLayout>
 
 </RelativeLayout>

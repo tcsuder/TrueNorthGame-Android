@@ -1,4 +1,4 @@
-package com.tylersuderman.truenorthgame;
+package com.tylersuderman.truenorthgame.models;
 
 import org.parceler.Parcel;
 
@@ -13,6 +13,7 @@ public class Song {
     private String mAlbumTitle;
     private String mPreviewUrl;
     private String mTrackId;
+    private boolean mAdded;
     private boolean mPlayed;
     private boolean mRightAnswerSong;
 
@@ -27,6 +28,7 @@ public class Song {
         this.mPreviewUrl = previewUrl;
         this.mPlayed = false;
         this.mRightAnswerSong = false;
+        this.mAdded = false;
     }
 
     public String getTitle() {
@@ -47,7 +49,9 @@ public class Song {
         return mTrackId;
     }
 
-    public boolean getPlayed() {
+    public boolean isRightAnswer() { return mRightAnswerSong; }
+
+    public boolean hasBeenPlayed() {
         return mPlayed;
     }
 
@@ -57,4 +61,8 @@ public class Song {
 
     public void unsetRightAnswer() { mRightAnswerSong = false; }
 
+    public boolean isAdded() { return mAdded; }
+
+    public void setToAdded() { mAdded = true; }
+    public void unsetAdded() { mAdded = false; }
 }

@@ -1,4 +1,4 @@
-package com.tylersuderman.truenorthgame;
+package com.tylersuderman.truenorthgame.adapters;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -6,6 +6,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
+
+import com.tylersuderman.truenorthgame.R;
+import com.tylersuderman.truenorthgame.models.Player;
 
 import java.util.ArrayList;
 
