@@ -264,7 +264,6 @@ public class SpotifyService extends AppCompatActivity {
         title = title.replaceAll("[\\]]", ")");
 
         int firstPrin = title.indexOf("(");
-        Log.d(TAG, "FIRST PRIN" + firstPrin);
         int secondPrin = title.indexOf(")");
 
         if (firstPrin >= 0 && secondPrin > 0) {
@@ -288,8 +287,8 @@ public class SpotifyService extends AppCompatActivity {
 
     private static String removeUnwantedSubstrings(String title) {
         ArrayList<String> chopItUp;
-        String[] takeOutStrings = {" - Single", " - Pt", "Part 1", "part 1", " - From", " - 200",
-                " - Live", " - Feat", " - feat", ";"};
+        String[] takeOutStrings = {" - Single", " - Pt", "Part 1", "part 1", " - From", " - 20",
+                " - Live", " - Feat", " - feat", ";", "/L", " - Remastered"};
 
         for (int i=0; i<takeOutStrings.length; i++) {
             chopItUp = new ArrayList<>(Arrays.asList(title.split
@@ -335,13 +334,9 @@ public class SpotifyService extends AppCompatActivity {
 
                     if (songs.size() == 0) {
                         songs.add(newSong);
-                        Log.d(TAG, "SONGS IN BUILDER " + songs);
                     } else {
                         for (int j=0; j<songs.size(); j++) {
                             String newSongTitle = newSong.getTitle();
-                            Log.d(TAG, "SONGS IN BUILDER AGAIN: " + songs);
-                            Log.d(TAG, "SONG IS SONG: " + (songs.get(j) == null));
-                            Log.d(TAG, "SONG TITLE IS TITLE: " + (songs.get(j).getTitle() == null));
                             Song songInList = songs.get(j);
                             String addedSongTitle = songInList.getTitle();
                             if (newSongTitle.equalsIgnoreCase(addedSongTitle)) {

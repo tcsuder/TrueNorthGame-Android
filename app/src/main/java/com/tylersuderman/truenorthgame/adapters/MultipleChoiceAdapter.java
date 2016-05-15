@@ -55,7 +55,7 @@ public class MultipleChoiceAdapter  extends RecyclerView.Adapter<MultipleChoiceA
         mAllSongs = allSongs;
         mArtist = artist;
         mCurrentPlayer = getCurrentPlayer();
-        mRoundPoints = 3000;
+        mRoundPoints = 3500;
         recursiveDecreaseRoundPointsTimer();
     }
 
