@@ -64,6 +64,7 @@ public class GameRoundActivity extends AppCompatActivity implements OnChoiceSele
     private int mPointsScorable;
     private android.os.Handler mTimerHandler;
     private Runnable mTimer;
+    private Song mSelectedSong;
 
     private MultipleChoiceAdapter mAdapter;
     private OnChoiceSelectedListener mOnChoiceSelectedListener;
@@ -111,16 +112,60 @@ public class GameRoundActivity extends AppCompatActivity implements OnChoiceSele
 
 
     @Override
-    public void onChoiceSelected(Integer position, ArrayList<Song> roundSongs, Integer
-            roundPoints, Player currentPlayer) {
-        mPosition = position;
-        mRoundSongs = roundSongs;
-        mPointsScorable = roundPoints;
-        mCurrentPlayer = currentPlayer;
-        Log.d(TAG, "POSITION: " + position);
-        Log.d(TAG, "SONGS: " + roundSongs);
-        Log.d(TAG, "POINTS: " + position);
-        Log.d(TAG, "PLAYER: " + currentPlayer.getName());
+    public void onChoiceSelected(Song selectedSong) {
+        mSelectedSong = selectedSong;
+
+        Log.d(TAG, "SELECTED SONG: " + selectedSong.getTitle());
+
+
+        if(selectedSong.isRightAnswer()){
+            mCurrentPlayer.addToScore(mPointsScorable);
+            Toast.makeText(GameRoundActivity.this, "YEP!", Toast.LENGTH_SHORT).show();
+        } else {
+            if (mCurrentPlayer.getScore() > 50) {
+                mCurrentPlayer.subtractFromScore(mPointsScorable);
+            }
+            Toast.makeText(GameRoundActivity.this, "NOPE!", Toast.LENGTH_SHORT).show();
+        }
+
+        int round = mSharedPreferences.getInt(Constants.PREFERENCES_ROUND_NUMBER_KEY,
+                mAllSongs.size());
+        mFirebasePlayerRef = new Firebase(Constants.FIREBASE_URL_PLAYERS);
+
+        if (round == 10) {
+
+            if (mCurrentPlayer.getScore() > mCurrentPlayer.getTopScore()) {
+                mCurrentPlayer.setTopScore(mCurrentPlayer.getScore());
+            }
+            mCurrentPlayer.resetScore();
+
+        }
+
+        mFirebasePlayerRef.child(mCurrentPlayerId).setValue(mCurrentPlayer);
+
+
+        for (int i=0; i<mRoundSongs.size(); i++) {
+            Song song = mRoundSongs.get(i);
+            if (song.isRightAnswer()) {
+                song.unsetRightAnswer();
+            }
+        }
+
+
+        final Intent intent = new Intent(GameRoundActivity.this, GameRoundActivity.class);
+        intent.putExtra("songs", Parcels.wrap(mAllSongs));
+        intent.putExtra("artist", Parcels.wrap(mArtist));
+
+        new android.os.Handler().postDelayed(
+
+                new Runnable() {
+                    public void run() {
+
+                        startActivity(intent);
+
+                    }
+                }, 250);
+
 
 
     }
@@ -152,8 +197,7 @@ public class GameRoundActivity extends AppCompatActivity implements OnChoiceSele
     private void checkRound() {
         mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(GameRoundActivity.this);
         mPreferenceEditor = mSharedPreferences.edit();
-        final int previousRound = mSharedPreferences.getInt(Constants.PREFERENCES_ROUND_NUMBER_KEY,
-                0);
+        final int previousRound = mSharedPreferences.getInt(Constants.PREFERENCES_ROUND_NUMBER_KEY, 0);
         if (previousRound == mAllSongs.size()) {
             Intent intent = new Intent(GameRoundActivity.this, TopScoresActivity.class);
             startActivity(intent);
