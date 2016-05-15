@@ -43,6 +43,7 @@ public class GameRoundActivity extends AppCompatActivity implements OnChoiceSele
     private static final int MAX_HEIGHT = 700;
     private static final int POINTS_PER_ROUND = Constants.POINTS_PER_ROUND;
     private static final int MILLIS_PER_ROUND = Constants.MILLIS_PER_ROUND;
+    private static final int ROUNDS_PER_GAME = Constants.ROUNDS_PER_GAME;
 
     @Bind(R.id.countdownTextView) TextView mCountdownTextView;
     @Bind(R.id.pointsTextView) TextView mPointsTextView;
@@ -60,6 +61,7 @@ public class GameRoundActivity extends AppCompatActivity implements OnChoiceSele
     private boolean unplayedSongLoaded;
     private MediaPlayer mMediaPlayer;
     private int mCurrentRound;
+    private int mPreviousRound;
     private String mAudioPath;
     private int mCountdownTime;
     private int mPointsScorable;
@@ -84,6 +86,7 @@ public class GameRoundActivity extends AppCompatActivity implements OnChoiceSele
         setImage(this);
         mAllSongs = Parcels.unwrap(intent.getParcelableExtra("songs"));
         mCurrentPlayer = getCurrentPlayer();
+
         mCurrentRound = checkRound();
         mCountdownTime = MILLIS_PER_ROUND;
         mPointsScorable = POINTS_PER_ROUND;
@@ -110,16 +113,13 @@ public class GameRoundActivity extends AppCompatActivity implements OnChoiceSele
     private int checkRound() {
         mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(GameRoundActivity.this);
         mPreferenceEditor = mSharedPreferences.edit();
-        final int previousRound = mSharedPreferences.getInt(Constants.PREFERENCES_ROUND_NUMBER_KEY, 0);
-        Log.d(TAG, "PREVIOUS ROUND: " + previousRound);
-        if (previousRound == mAllSongs.size()) {
+        mPreviousRound = mSharedPreferences.getInt(Constants.PREFERENCES_ROUND_NUMBER_KEY, 0);
+        mCurrentRound = mPreviousRound + 1;
+        mPreferenceEditor.putInt(Constants.PREFERENCES_ROUND_NUMBER_KEY, mCurrentRound).apply();
+        if (mCurrentRound == ROUNDS_PER_GAME) {
             Log.d(TAG, "DONE WITH GAME");
             Intent intent = new Intent(GameRoundActivity.this, TopScoresActivity.class);
             startActivity(intent);
-        } else {
-            int currentRound = previousRound + 1;
-            Log.d(TAG, "CURRENT ROUND: " + currentRound);
-            mPreferenceEditor.putInt(Constants.PREFERENCES_ROUND_NUMBER_KEY, currentRound).apply();
         }
         return mCurrentRound;
     }
@@ -128,7 +128,6 @@ public class GameRoundActivity extends AppCompatActivity implements OnChoiceSele
         mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         mPreferenceEditor = mSharedPreferences.edit();
         mCurrentPlayerId = mSharedPreferences.getString(Constants.PREFERENCES_PLAYER_KEY, null);
-//        Log.d(TAG, "CURRENT PLAYER ID: " + mCurrentPlayerId);
         mFirebasePlayerRef = new Firebase(Constants.FIREBASE_URL_PLAYERS);
 
         mFirebasePlayerRef.addValueEventListener(new ValueEventListener() {
@@ -145,6 +144,45 @@ public class GameRoundActivity extends AppCompatActivity implements OnChoiceSele
         });
 
         return mCurrentPlayer;
+    }
+
+
+    private ArrayList<Song> createSongArray(ArrayList<Song> allSongs) {
+        unplayedSongLoaded = false;
+        Collections.shuffle(allSongs);
+        ArrayList<Song> roundSongs = new ArrayList<>();
+        for (int i=0; i<allSongs.size(); i++) {
+            Song song = allSongs.get(i);
+            if (roundSongs.size() == 4) {
+                break;
+            } else if (roundSongs.size() < 3) {
+                roundSongs.add(song);
+                song.setToAdded();
+                if(!song.hasBeenPlayed() && !unplayedSongLoaded) {
+                    song.setToPlayed();
+                    song.setRightAnswer();
+                    unplayedSongLoaded = true;
+                }
+            } else {
+                if (unplayedSongLoaded) {
+                    roundSongs.add(song);
+                } else if (!song.hasBeenPlayed()) {
+                    song.setToPlayed();
+                    song.setRightAnswer();
+                    roundSongs.add(song);
+                } else {
+                    Log.d(TAG, "skipped song");
+                }
+            }
+
+        }
+
+        for (int i = 0; i<roundSongs.size(); i++) {
+            Song song = roundSongs.get(i);
+            song.unsetAdded();
+        }
+
+        return roundSongs;
     }
 
 
@@ -165,21 +203,9 @@ public class GameRoundActivity extends AppCompatActivity implements OnChoiceSele
             Toast.makeText(GameRoundActivity.this, "NOPE!", Toast.LENGTH_SHORT).show();
         }
 
-        int round = mSharedPreferences.getInt(Constants.PREFERENCES_ROUND_NUMBER_KEY,
-                mAllSongs.size());
+
         mFirebasePlayerRef = new Firebase(Constants.FIREBASE_URL_PLAYERS);
-
-        if (round == 10) {
-
-            if (mCurrentPlayer.getScore() > mCurrentPlayer.getTopScore()) {
-                mCurrentPlayer.setTopScore(mCurrentPlayer.getScore());
-            }
-            mCurrentPlayer.resetScore();
-
-        }
-
         mFirebasePlayerRef.child(mCurrentPlayerId).setValue(mCurrentPlayer);
-
 
         for (int i=0; i<mRoundSongs.size(); i++) {
             Song song = mRoundSongs.get(i);
@@ -188,60 +214,26 @@ public class GameRoundActivity extends AppCompatActivity implements OnChoiceSele
             }
         }
 
+        if (mCurrentPlayer.getScore() > mCurrentPlayer.getTopScore()) {
+            mCurrentPlayer.setTopScore(mCurrentPlayer.getScore());
+        }
+        mCurrentPlayer.resetScore();
 
-        final Intent intent = new Intent(GameRoundActivity.this, GameRoundActivity.class);
-        intent.putExtra("songs", Parcels.wrap(mAllSongs));
-        intent.putExtra("artist", Parcels.wrap(mArtist));
+        if (mCurrentRound != ROUNDS_PER_GAME) {
+            final Intent intent = getIntent();
+            intent.putExtra("songs", Parcels.wrap(mAllSongs));
+            intent.putExtra("artist", Parcels.wrap(mArtist));
 
-        new android.os.Handler().postDelayed(
+            new android.os.Handler().postDelayed(
+                    new Runnable() {
+                        public void run() {
 
-                new Runnable() {
-                    public void run() {
+                            startActivity(intent);
 
-                        startActivity(intent);
-
-                    }
-                }, 250);
-
-
-
-    }
-
-
-    private ArrayList<Song> createSongArray(ArrayList<Song> allSongs) {
-        unplayedSongLoaded = false;
-        Collections.shuffle(allSongs);
-        ArrayList<Song> roundSongs = new ArrayList<>();
-        for (int i=0; i<allSongs.size(); i++) {
-            Song song = allSongs.get(i);
-            if (roundSongs.size() == 4) {
-                break;
-            } else if (roundSongs.size() < 3) {
-                roundSongs.add(song);
-                song.setToAdded();
-                if(song.hasBeenPlayed() == false && !song.isAdded()) {
-                    song.setToPlayed();
-                    song.setRightAnswer();
-                    roundSongs.add(song);
-                    unplayedSongLoaded = true;
-                }
-            } else {
-                if (song.hasBeenPlayed() == true && unplayedSongLoaded == false) {
-                } else {
-                    song.setToPlayed();
-                    song.setRightAnswer();
-                    roundSongs.add(song);
-                }
-            }
-
+                        }
+                    }, 200);
         }
 
-        for (int i = 0; i<roundSongs.size(); i++) {
-            Song song = roundSongs.get(i);
-            song.unsetAdded();
-        }
-
-        return roundSongs;
     }
 
     private void syncRoundTimerWithSongAndPoints(ArrayList<Song> roundSongs) {
