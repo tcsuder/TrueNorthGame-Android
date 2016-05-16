@@ -40,7 +40,7 @@ import okhttp3.Response;
  * Created by tylersuderman on 5/2/16.
  */
 public class SpotifyService extends AppCompatActivity {
-    private static final int NUMBER_OF_ROUNDS = Constants.ROUNDS_PER_GAME;
+    private static final int ROUNDS_PER_GAME = Constants.MAX_ROUNDS_PER_GAME;
     private static final String SPOTIFY_CLIENT_SECRET = Constants.SPOTIFY_CLIENT_SECRET;
     public static final String TAG = SpotifyService.class.getSimpleName();
     private String finalTitle;
@@ -62,9 +62,8 @@ public class SpotifyService extends AppCompatActivity {
 
     }
 
-    public static void saveAuthorizedUser(int requestCode, int resultCode, Intent intent, final
+    public static boolean saveAuthorizedUser(int requestCode, int resultCode, Intent intent, final
     Context context) {
-
 
         final String accessToken;
         // Check if result comes from the correct activity
@@ -109,13 +108,13 @@ public class SpotifyService extends AppCompatActivity {
 
                                         firebasePlayersRef.child(authorizedPlayer.getPushId()).setValue
                                                 (authorizedPlayer);
-
                                     }
 
                                     String playerId = sharedPreferences.getString(Constants
                                             .PREFERENCES_PLAYER_KEY, null);
-                                    Log.d(TAG, "Current Player ID: " + playerId);
                                 }
+
+
                                 @Override
                                 public void onCancelled(FirebaseError firebaseError) {
                                 }
@@ -132,6 +131,7 @@ public class SpotifyService extends AppCompatActivity {
                     break;
             }
         }
+        return true;
     }
 
 
@@ -139,8 +139,6 @@ public class SpotifyService extends AppCompatActivity {
 
 
     public static void findArtist(String artistName, Callback callback) {
-        Log.d(TAG, "I'm here");
-
         OkHttpClient client = new OkHttpClient.Builder()
                 .build();
 
@@ -225,9 +223,20 @@ public class SpotifyService extends AppCompatActivity {
                 JSONObject artistJSON = new JSONObject(jsonData);
                 playerId = artistJSON.getString("id");
                 playerName = artistJSON.getString("display_name");
-                instance = new Player(playerName);
-                instance.setPushId(playerId);
-                playerArray.add(instance);
+                int index = playerName.indexOf(" ");
+
+                if (index > 0) {
+                    final String shortName = playerName.substring(0, index + 2);
+                    instance = new Player(shortName);
+                    instance.setPushId(playerId);
+                    playerArray.add(instance);
+
+                } else {
+                    instance = new Player(playerName);
+                    instance.setPushId(playerId);
+                    playerArray.add(instance);
+                }
+
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -336,7 +345,7 @@ public class SpotifyService extends AppCompatActivity {
                     if (songs.size() == 0) {
                         songs.add(newSong);
                     } else {
-                        if (songs.size() < NUMBER_OF_ROUNDS) {
+                        if (songs.size() < ROUNDS_PER_GAME) {
                             for (int j=0; j<songs.size(); j++) {
                                 String newSongTitle = newSong.getTitle();
                                 Song songInList = songs.get(j);

@@ -15,9 +15,14 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.firebase.client.DataSnapshot;
+import com.firebase.client.Firebase;
+import com.firebase.client.FirebaseError;
+import com.firebase.client.ValueEventListener;
 import com.tylersuderman.truenorthgame.Constants;
 import com.tylersuderman.truenorthgame.R;
 import com.tylersuderman.truenorthgame.models.Artist;
+import com.tylersuderman.truenorthgame.models.Player;
 import com.tylersuderman.truenorthgame.models.Song;
 import com.tylersuderman.truenorthgame.services.SpotifyService;
 
@@ -46,8 +51,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private static final String SPOTIFY_CLIENT_SECRET = Constants.SPOTIFY_CLIENT_SECRET;
     private static final String SPOTIFY_CLIENT_ID = Constants.SPOTIFY_CLIENT_ID;
 
+    private String mCurrentPlayerId;
+    private Player mCurrentPlayer;
     private SharedPreferences mSharedPreferences;
-    private SharedPreferences.Editor mPreferencesEditor;
+    private SharedPreferences.Editor mPreferenceEditor;
+    private Firebase mFirebasePlayerRef;
 
 
     @Override
@@ -57,14 +65,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         ButterKnife.bind(this);
 
         mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(MainActivity.this);
-        mPreferencesEditor = mSharedPreferences.edit();
+        mPreferenceEditor = mSharedPreferences.edit();
 
         mPlayButton.setOnClickListener(this);
         mAboutButton.setOnClickListener(this);
         mTopScoreButton.setOnClickListener(this);
         mLoginButton.setOnClickListener(this);
-
-
         SpotifyService.spotifyUserAuth(MainActivity.this, SPOTIFY_CLIENT_ID,
                 REDIRECT_URI, REQUEST_CODE);
 
@@ -79,14 +85,36 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     public void resetRounds() {
-        mPreferencesEditor.putInt(Constants.PREFERENCES_ROUND_NUMBER_KEY, 0).apply();
+        mPreferenceEditor.putInt(Constants.PREFERENCES_ROUND_NUMBER_KEY, 0).apply();
         Log.i(TAG, "ROUND NUMBER FROM EDITOR: " + mSharedPreferences.getInt(Constants
                 .PREFERENCES_ROUND_NUMBER_KEY, 666));
+    }
+
+    private Player getCurrentPlayer() {
+        mCurrentPlayerId = mSharedPreferences.getString(Constants.PREFERENCES_PLAYER_KEY, null);
+
+        mFirebasePlayerRef = new Firebase(Constants.FIREBASE_URL_PLAYERS);
+        mFirebasePlayerRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                mCurrentPlayer = dataSnapshot.child(mCurrentPlayerId).getValue(Player
+                        .class);
+            }
+
+            @Override
+            public void onCancelled(FirebaseError firebaseError) {
+
+            }
+        });
+        return mCurrentPlayer;
     }
 
 
 
     private void searchArtist(final String userSearch) {
+//        USING SEARCH AS ASYNC TIMER
+        mCurrentPlayer = getCurrentPlayer();
+
         SpotifyService.findArtist(userSearch, new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
@@ -134,6 +162,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 Intent intent = new Intent(MainActivity.this, GameRoundActivity.class);
                 intent.putExtra("artist", Parcels.wrap(artist));
                 intent.putExtra("songs", Parcels.wrap(songs));
+                intent.putExtra("player", Parcels.wrap(mCurrentPlayer));
                 startActivity(intent);
             }
         });

@@ -33,7 +33,7 @@ public class PlayerAdapter extends ArrayAdapter<Player> {
         TextView playerScore = (TextView) convertView.findViewById(R.id.playerScore);
         // Populate the data into the template view using the data object
         playerName.setText(player.getName());
-        playerScore.setText(player.getScore().toString());
+        playerScore.setText(player.getTopScore().toString());
         // Return the completed view to render on screen
         return convertView;
     }

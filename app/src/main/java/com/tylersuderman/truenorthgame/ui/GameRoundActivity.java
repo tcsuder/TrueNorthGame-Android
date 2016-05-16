@@ -43,7 +43,7 @@ public class GameRoundActivity extends AppCompatActivity implements OnChoiceSele
     private static final int MAX_HEIGHT = 700;
     private static final int POINTS_PER_ROUND = Constants.POINTS_PER_ROUND;
     private static final int MILLIS_PER_ROUND = Constants.MILLIS_PER_ROUND;
-    private static final int ROUNDS_PER_GAME = Constants.ROUNDS_PER_GAME;
+    private static int ROUNDS_IN_CURRENT_GAME;
 
     @Bind(R.id.countdownTextView) TextView mCountdownTextView;
     @Bind(R.id.pointsTextView) TextView mPointsTextView;
@@ -51,7 +51,6 @@ public class GameRoundActivity extends AppCompatActivity implements OnChoiceSele
     @Bind(R.id.recyclerView) RecyclerView mRecyclerView;
 
     private Artist mArtist;
-    private Integer mPosition;
     private ArrayList<Song> mRoundSongs = new ArrayList<>();
     private ArrayList<Song> mAllSongs = new ArrayList<>();
     private Player mCurrentPlayer;
@@ -85,14 +84,18 @@ public class GameRoundActivity extends AppCompatActivity implements OnChoiceSele
         mArtist = Parcels.unwrap(intent.getParcelableExtra("artist"));
         setImage(this);
         mAllSongs = Parcels.unwrap(intent.getParcelableExtra("songs"));
-        mCurrentPlayer = getCurrentPlayer();
+        mCurrentPlayer = Parcels.unwrap(intent.getParcelableExtra("player"));
 
         mCurrentRound = checkRound();
+        ROUNDS_IN_CURRENT_GAME = mAllSongs.size();
+
         mCountdownTime = MILLIS_PER_ROUND;
         mPointsScorable = POINTS_PER_ROUND;
-        mRoundSongs = createSongArray(mAllSongs);
         mPointsTextView.setText("points: "+ mPointsScorable);
         mCountdownTextView.setText("time: " + (mCountdownTime/1000));
+
+
+        mRoundSongs = createSongArray(mAllSongs);
         mTimerHandler = new android.os.Handler();
         mTimer = new Runnable() {
             @Override
@@ -101,7 +104,6 @@ public class GameRoundActivity extends AppCompatActivity implements OnChoiceSele
             }
         };
         syncRoundTimerWithSongAndPoints(mRoundSongs);
-
         try {
             mOnChoiceSelectedListener = (OnChoiceSelectedListener) this;
         } catch (ClassCastException e) {
@@ -116,34 +118,16 @@ public class GameRoundActivity extends AppCompatActivity implements OnChoiceSele
         mPreviousRound = mSharedPreferences.getInt(Constants.PREFERENCES_ROUND_NUMBER_KEY, 0);
         mCurrentRound = mPreviousRound + 1;
         mPreferenceEditor.putInt(Constants.PREFERENCES_ROUND_NUMBER_KEY, mCurrentRound).apply();
-        if (mCurrentRound == ROUNDS_PER_GAME) {
-            Log.d(TAG, "DONE WITH GAME");
+        mFirebasePlayerRef = new Firebase(Constants.FIREBASE_URL_PLAYERS);
+        Log.d(TAG, "Round: " + mCurrentRound);
+        if (mCurrentRound == ROUNDS_IN_CURRENT_GAME) {
+            mCurrentPlayer.resetScore();
+            Log.d(TAG, "FRESH SCORE: "+mCurrentPlayer.getScore());
+            mFirebasePlayerRef.child(mCurrentPlayer.getPushId()).setValue(mCurrentPlayer);
             Intent intent = new Intent(GameRoundActivity.this, TopScoresActivity.class);
             startActivity(intent);
         }
         return mCurrentRound;
-    }
-
-    private Player getCurrentPlayer() {
-        mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-        mPreferenceEditor = mSharedPreferences.edit();
-        mCurrentPlayerId = mSharedPreferences.getString(Constants.PREFERENCES_PLAYER_KEY, null);
-        mFirebasePlayerRef = new Firebase(Constants.FIREBASE_URL_PLAYERS);
-
-        mFirebasePlayerRef.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                mCurrentPlayer = dataSnapshot.child(mCurrentPlayerId).getValue(Player
-                        .class);
-            }
-
-            @Override
-            public void onCancelled(FirebaseError firebaseError) {
-
-            }
-        });
-
-        return mCurrentPlayer;
     }
 
 
@@ -153,6 +137,9 @@ public class GameRoundActivity extends AppCompatActivity implements OnChoiceSele
         ArrayList<Song> roundSongs = new ArrayList<>();
         for (int i=0; i<allSongs.size(); i++) {
             Song song = allSongs.get(i);
+            String title = song.getTitle();
+            boolean played = song.hasBeenPlayed();
+            Log.d(TAG, "Song: " + title + " played? " + played);
             if (roundSongs.size() == 4) {
                 break;
             } else if (roundSongs.size() < 3) {
@@ -189,10 +176,6 @@ public class GameRoundActivity extends AppCompatActivity implements OnChoiceSele
     @Override
     public void onChoiceSelected(Song selectedSong) {
         mSelectedSong = selectedSong;
-
-        Log.d(TAG, "SELECTED SONG: " + selectedSong.getTitle());
-
-
         if(selectedSong.isRightAnswer()){
             mCurrentPlayer.addToScore(mPointsScorable);
             Toast.makeText(GameRoundActivity.this, "YEP!", Toast.LENGTH_SHORT).show();
@@ -203,9 +186,10 @@ public class GameRoundActivity extends AppCompatActivity implements OnChoiceSele
             Toast.makeText(GameRoundActivity.this, "NOPE!", Toast.LENGTH_SHORT).show();
         }
 
-
-        mFirebasePlayerRef = new Firebase(Constants.FIREBASE_URL_PLAYERS);
-        mFirebasePlayerRef.child(mCurrentPlayerId).setValue(mCurrentPlayer);
+        if (mCurrentPlayer.getScore() > mCurrentPlayer.getTopScore()) {
+            mCurrentPlayer.setTopScore(mCurrentPlayer.getScore());
+        }
+        mFirebasePlayerRef.child(mCurrentPlayer.getPushId()).setValue(mCurrentPlayer);
 
         for (int i=0; i<mRoundSongs.size(); i++) {
             Song song = mRoundSongs.get(i);
@@ -214,15 +198,11 @@ public class GameRoundActivity extends AppCompatActivity implements OnChoiceSele
             }
         }
 
-        if (mCurrentPlayer.getScore() > mCurrentPlayer.getTopScore()) {
-            mCurrentPlayer.setTopScore(mCurrentPlayer.getScore());
-        }
-        mCurrentPlayer.resetScore();
-
-        if (mCurrentRound != ROUNDS_PER_GAME) {
+        if (mCurrentRound != ROUNDS_IN_CURRENT_GAME) {
             final Intent intent = getIntent();
             intent.putExtra("songs", Parcels.wrap(mAllSongs));
             intent.putExtra("artist", Parcels.wrap(mArtist));
+            intent.putExtra("player", Parcels.wrap(mCurrentPlayer));
 
             new android.os.Handler().postDelayed(
                     new Runnable() {
@@ -237,6 +217,8 @@ public class GameRoundActivity extends AppCompatActivity implements OnChoiceSele
     }
 
     private void syncRoundTimerWithSongAndPoints(ArrayList<Song> roundSongs) {
+
+        Log.d(TAG, "ROUND SONGS IS NULL: " + (roundSongs == null));
         final CountDownTimer countdownTimer;
 
         //        ERROR HANDLING FOR SONG RETREIVAL
