@@ -1,11 +1,14 @@
 package com.tylersuderman.truenorthgame.models;
 
 
+import org.parceler.Parcel;
+
 import java.util.ArrayList;
 
 /**
  * Created by tylersuderman on 4/24/16.
  */
+@Parcel
 public class Player {
     String name;
     Integer score;
@@ -43,16 +46,21 @@ public class Player {
     public void resetScore() { score = 0; }
     public Integer getTopScore() { return topScore; }
     public void setTopScore(int score) { topScore = score; }
-
+    public void setFakeScore() { topScore = (int) Math.floor(Math.random() * 50000); }
 
     //    FAKE DATA
 
     public static ArrayList<Player> getPlayers() {
         Player tom = new Player("Tom");
+        tom.setFakeScore();
         Player tracy = new Player("Tracy");
+        tracy.setFakeScore();
         Player tim = new Player("Tim");
+        tim.setFakeScore();
         Player devona = new Player("Devona");
+        devona.setFakeScore();
         Player lawdyJean = new Player("Lawdy-Jean");
+        lawdyJean.setFakeScore();
 
         ArrayList<Player> players = new ArrayList<>();
         players.add(tom);

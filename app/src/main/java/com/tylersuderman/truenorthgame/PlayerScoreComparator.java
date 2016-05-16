@@ -10,6 +10,6 @@ import java.util.Comparator;
 public class PlayerScoreComparator implements Comparator<Player> {
     @Override
     public int compare(Player player1, Player player2){
-        return player2.getScore() - player1.getScore();
+        return player2.getTopScore() - player1.getTopScore();
     }
 }
