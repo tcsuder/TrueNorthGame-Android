@@ -42,13 +42,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Bind(R.id.loginButton) Button mLoginButton;
     @Bind(R.id.aboutButton) Button mAboutButton;
     @Bind(R.id.topScoresButton) Button mTopScoreButton;
-    @Bind(R.id.quickPlayButton) Button mPlayButton;
+    @Bind(R.id.playButton) Button mPlayButton;
     @Bind(R.id.artistNameEditText) EditText mArtistNameEditText;
 
 
     private static final int REQUEST_CODE = Constants.REQUEST_CODE;
     private static final String REDIRECT_URI = Constants.REDIRECT_URI;
-    private static final String SPOTIFY_CLIENT_SECRET = Constants.SPOTIFY_CLIENT_SECRET;
     private static final String SPOTIFY_CLIENT_ID = Constants.SPOTIFY_CLIENT_ID;
 
     private String mCurrentPlayerId;
@@ -81,7 +80,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         super.onActivityResult(requestCode, resultCode, intent);
 
         SpotifyService.saveAuthorizedUser(requestCode, resultCode, intent, MainActivity.this);
-
     }
 
     public void resetRounds() {
@@ -112,7 +110,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
 
     private void searchArtist(final String userSearch) {
-//        USING SEARCH AS ASYNC TIMER
+//        USING SEARCH AS TRIGGER/ASYNC SOLUTION FOR getCurrentPlayer()
         mCurrentPlayer = getCurrentPlayer();
 
         SpotifyService.findArtist(userSearch, new Callback() {
@@ -193,7 +191,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 startActivity(getIntent());
                 break;
 
-            case R.id.quickPlayButton:
+            case R.id.playButton:
                 final String artistName = mArtistNameEditText.getText().toString();
 
                 if (artistName.equals("")) {
@@ -202,7 +200,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
                 } else {
                     Log.i(TAG, "ROUND NUMBER FROM INTENT: " + mSharedPreferences.getInt(Constants
-                            .PREFERENCES_ROUND_NUMBER_KEY, 100));
+                            .PREFERENCES_ROUND_NUMBER_KEY, 666));
 
 //                    SEARCH CONTAINS SONGS RETRIEVAL AND NEW INTEN UPON SUCCESS
                     resetRounds();

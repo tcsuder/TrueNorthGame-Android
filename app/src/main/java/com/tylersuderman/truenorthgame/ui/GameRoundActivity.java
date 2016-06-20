@@ -16,10 +16,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.firebase.client.DataSnapshot;
 import com.firebase.client.Firebase;
-import com.firebase.client.FirebaseError;
-import com.firebase.client.ValueEventListener;
 import com.squareup.picasso.Picasso;
 import com.tylersuderman.truenorthgame.Constants;
 import com.tylersuderman.truenorthgame.R;
@@ -54,24 +51,16 @@ public class GameRoundActivity extends AppCompatActivity implements OnChoiceSele
     private ArrayList<Song> mRoundSongs = new ArrayList<>();
     private ArrayList<Song> mAllSongs = new ArrayList<>();
     private Player mCurrentPlayer;
-    private String mCurrentPlayerId;
     private Firebase mFirebasePlayerRef;
 
-    private boolean unplayedSongLoaded;
     private MediaPlayer mMediaPlayer;
     private int mCurrentRound;
-    private int mPreviousRound;
     private String mAudioPath;
     private int mCountdownTime;
     private int mPointsScorable;
     private android.os.Handler mTimerHandler;
     private Runnable mTimer;
-    private Song mSelectedSong;
-
-    private MultipleChoiceAdapter mAdapter;
     private OnChoiceSelectedListener mOnChoiceSelectedListener;
-    private SharedPreferences mSharedPreferences;
-    private SharedPreferences.Editor mPreferenceEditor;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -113,11 +102,13 @@ public class GameRoundActivity extends AppCompatActivity implements OnChoiceSele
     }
 
     private int checkRound() {
-        mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(GameRoundActivity.this);
-        mPreferenceEditor = mSharedPreferences.edit();
-        mPreviousRound = mSharedPreferences.getInt(Constants.PREFERENCES_ROUND_NUMBER_KEY, 0);
-        mCurrentRound = mPreviousRound + 1;
-        mPreferenceEditor.putInt(Constants.PREFERENCES_ROUND_NUMBER_KEY, mCurrentRound).apply();
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences
+                (GameRoundActivity
+                .this);
+        SharedPreferences.Editor preferenceEditor = sharedPreferences.edit();
+        int previousRound = sharedPreferences.getInt(Constants.PREFERENCES_ROUND_NUMBER_KEY, 0);
+        mCurrentRound = previousRound + 1;
+        preferenceEditor.putInt(Constants.PREFERENCES_ROUND_NUMBER_KEY, mCurrentRound).apply();
         mFirebasePlayerRef = new Firebase(Constants.FIREBASE_URL_PLAYERS);
         Log.d(TAG, "Round: " + mCurrentRound);
         if (mCurrentRound == ROUNDS_IN_CURRENT_GAME) {
@@ -132,7 +123,7 @@ public class GameRoundActivity extends AppCompatActivity implements OnChoiceSele
 
 
     private ArrayList<Song> createSongArray(ArrayList<Song> allSongs) {
-        unplayedSongLoaded = false;
+        boolean unplayedSongLoaded = false;
         Collections.shuffle(allSongs);
         ArrayList<Song> roundSongs = new ArrayList<>();
         for (int i=0; i<allSongs.size(); i++) {
@@ -174,8 +165,8 @@ public class GameRoundActivity extends AppCompatActivity implements OnChoiceSele
 
 
     @Override
-    public void onChoiceSelected(Song selectedSong) {
-        mSelectedSong = selectedSong;
+    public void onChoiceSelected(Song selection) {
+        Song selectedSong = selection;
         if(selectedSong.isRightAnswer()){
             mCurrentPlayer.addToScore(mPointsScorable);
             Toast.makeText(GameRoundActivity.this, "YEP!", Toast.LENGTH_SHORT).show();
@@ -219,7 +210,6 @@ public class GameRoundActivity extends AppCompatActivity implements OnChoiceSele
     private void syncRoundTimerWithSongAndPoints(ArrayList<Song> roundSongs) {
 
         Log.d(TAG, "ROUND SONGS IS NULL: " + (roundSongs == null));
-        final CountDownTimer countdownTimer;
 
         //        ERROR HANDLING FOR SONG RETREIVAL
         if (roundSongs.size() > 0) {
@@ -247,6 +237,7 @@ public class GameRoundActivity extends AppCompatActivity implements OnChoiceSele
             e.printStackTrace();
         }
 
+        // GAME END TIED TO ALLSONGS DIRECTLY
         if (mCurrentRound != mAllSongs.size()) {
             //        DELAY PLAY OF SONG AND SHOWING OF CHOICES
             new android.os.Handler().postDelayed(
@@ -266,9 +257,10 @@ public class GameRoundActivity extends AppCompatActivity implements OnChoiceSele
     }
 
     private void showGuessRoundSongs() {
-        mAdapter = new MultipleChoiceAdapter(getApplicationContext(), mRoundSongs,
+        MultipleChoiceAdapter adapter = new MultipleChoiceAdapter(getApplicationContext(),
+                mRoundSongs,
                 mOnChoiceSelectedListener);
-        mRecyclerView.setAdapter(mAdapter);
+        mRecyclerView.setAdapter(adapter);
         RecyclerView.LayoutManager layoutManager =
                 new LinearLayoutManager(GameRoundActivity.this);
         mRecyclerView.setLayoutManager(layoutManager);
@@ -301,6 +293,7 @@ public class GameRoundActivity extends AppCompatActivity implements OnChoiceSele
     }
 
     private void recursiveDisplayRoundPointsTimer() {
+        // mTimer set to a funciton runTimer()
         mTimerHandler.postDelayed(mTimer, 100);
     }
 
