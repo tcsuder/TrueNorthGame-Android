@@ -64,5 +64,6 @@ public class Song {
     public boolean isAdded() { return mAdded; }
 
     public void setToAdded() { mAdded = true; }
+
     public void unsetAdded() { mAdded = false; }
 }

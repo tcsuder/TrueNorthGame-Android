@@ -75,7 +75,7 @@
     <Button
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:text="LOGOUT/CHANGE USER"
+        android:text="LOGIN"
         android:id="@+id/loginButton"
         android:background="@drawable/login_button"
         android:textColor="@color/colorTextIcons"

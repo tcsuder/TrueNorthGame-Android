@@ -169,7 +169,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     public void customToast(String string) {
         LayoutInflater inflater = getLayoutInflater();
-        final View layout = inflater.inflate(R.layout.no_artist_toast,
+        final View layout = inflater.inflate(R.layout.toast_custom,
                 (ViewGroup) findViewById(R.id.toast_layout_root));
         final TextView toastText = (TextView) layout.findViewById(R.id
                 .toastText);

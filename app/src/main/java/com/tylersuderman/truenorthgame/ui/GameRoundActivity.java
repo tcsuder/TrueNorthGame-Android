@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
-import android.os.CountDownTimer;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -77,6 +76,7 @@ public class GameRoundActivity extends AppCompatActivity implements OnChoiceSele
 
         mCurrentRound = checkRound();
         ROUNDS_IN_CURRENT_GAME = mAllSongs.size();
+        mRoundSongs = createSongArray(mAllSongs);
 
         mCountdownTime = MILLIS_PER_ROUND;
         mPointsScorable = POINTS_PER_ROUND;
@@ -84,7 +84,6 @@ public class GameRoundActivity extends AppCompatActivity implements OnChoiceSele
         mCountdownTextView.setText("time: " + (mCountdownTime/1000));
 
 
-        mRoundSongs = createSongArray(mAllSongs);
         mTimerHandler = new android.os.Handler();
         mTimer = new Runnable() {
             @Override
@@ -285,6 +284,15 @@ public class GameRoundActivity extends AppCompatActivity implements OnChoiceSele
             }
             recursiveDisplayRoundPointsTimer();
         } else {
+
+            for (int i=0; i<mRoundSongs.size(); i++) {
+                Song song = mRoundSongs.get(i);
+                if (song.isRightAnswer()) {
+                    Log.d(TAG, "The answer was: " + song.getTitle());
+                    song.unsetRightAnswer();
+                }
+            }
+
             Intent intent = new Intent(GameRoundActivity.this, GameRoundActivity.class);
             intent.putExtra("songs", Parcels.wrap(mAllSongs));
             intent.putExtra("artist", Parcels.wrap(mArtist));

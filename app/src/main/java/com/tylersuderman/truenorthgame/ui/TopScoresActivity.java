@@ -22,7 +22,6 @@ import java.util.List;
 
 public class TopScoresActivity extends AppCompatActivity {
     public static final String TAG = TopScoresActivity.class.getSimpleName();
-    private ArrayList<Player> players = new ArrayList<>();
     private Firebase mFirebasePlayersRef;
     private ArrayList<Player> mfirebasePlayers = new ArrayList<>();
 
