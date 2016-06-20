@@ -59,7 +59,7 @@ public class Player {
         tim.setFakeScore();
         Player devona = new Player("Devona");
         devona.setFakeScore();
-        Player lawdyJean = new Player("Lawdy-Jean");
+        Player lawdyJean = new Player("Jean");
         lawdyJean.setFakeScore();
 
         ArrayList<Player> players = new ArrayList<>();

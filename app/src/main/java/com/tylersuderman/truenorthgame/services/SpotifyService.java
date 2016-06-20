@@ -41,10 +41,7 @@ import okhttp3.Response;
  */
 public class SpotifyService extends AppCompatActivity {
     private static final int ROUNDS_PER_GAME = Constants.MAX_ROUNDS_PER_GAME;
-    private static final String SPOTIFY_CLIENT_SECRET = Constants.SPOTIFY_CLIENT_SECRET;
     public static final String TAG = SpotifyService.class.getSimpleName();
-    private String finalTitle;
-    private ArrayList<String> characterArray;
 
     public static void unauthorizeUser(Context context) {
         AuthenticationClient.clearCookies(context);
