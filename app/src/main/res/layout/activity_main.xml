@@ -44,6 +44,7 @@
             android:layout_width="292dp"
             android:layout_height="wrap_content"
             android:id="@+id/artistNameEditText"
+            android:singleLine="true"
             android:layout_marginTop="39dp"
             android:hint="artist name"
             android:layout_below="@+id/appSubtitleTextView"
