@@ -62,6 +62,7 @@ public class TopScoresActivity extends AppCompatActivity {
         ButterKnife.bind(this);
         getTopScores();
         mHandler = new Handler();
+        mCalls = 0;
         scrollArtistPics();
     }
 
@@ -123,7 +124,7 @@ public class TopScoresActivity extends AppCompatActivity {
                 Log.d(TAG, "response: " + responseArray.get(0).getName());
                 int size = responseArray.size();
 
-                if (mCalls == 3 && mGameOver) {
+                if (mCalls >= 3 && mGameOver) {
                     Intent intent = new Intent(TopScoresActivity.this, MainActivity.class);
                     startActivity(intent);
                 } else {
