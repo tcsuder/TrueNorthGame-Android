@@ -295,7 +295,8 @@ public class SpotifyService extends AppCompatActivity {
     private static String removeUnwantedSubstrings(String title) {
         ArrayList<String> chopItUp;
         String[] takeOutStrings = {" - Single", " - Pt", "Part 1", "part 1", " - From", " - 20",
-                " - Live", " - Feat", " - feat", ";", "/L", " - Remastered"};
+                " - Live", " - Feat", " - feat", ";", "/L", " - Remastered", " - JXL", " - from " +
+                "The"};
 
         for (int i=0; i<takeOutStrings.length; i++) {
             chopItUp = new ArrayList<>(Arrays.asList(title.split

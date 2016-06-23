@@ -82,7 +82,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="30dp"
-            android:text="ABOUT TRUE NORTH"
+            android:text="ABOUT TUNE PURSUIT"
             android:id="@+id/aboutTitleTextView"
             android:layout_gravity="center_horizontal"
             android:textStyle="bold"

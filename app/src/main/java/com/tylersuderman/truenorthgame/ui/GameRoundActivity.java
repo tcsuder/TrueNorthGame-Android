@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
+import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -80,7 +81,6 @@ public class GameRoundActivity extends AppCompatActivity implements OnChoiceSele
             mRoundSongs = Parcels.unwrap(savedInstanceState.getParcelable("roundSongs"));
             mRightAnswerSong = Parcels.unwrap(savedInstanceState.getParcelable("rightAnswerSong"));
             mCurrentPlayer = Parcels.unwrap(savedInstanceState.getParcelable("currentPlayer"));
-            Log.d(TAG, "CURRENT PLAYER: " + mCurrentPlayer);
             mCurrentRound = savedInstanceState.getInt("currentRound");
             mCountdownTime = savedInstanceState.getInt("countdownTime");
             mPointsScorable = savedInstanceState.getInt("pointsScorable");
@@ -90,6 +90,7 @@ public class GameRoundActivity extends AppCompatActivity implements OnChoiceSele
             Intent intent = getIntent();
             mArtist = Parcels.unwrap(intent.getParcelableExtra("artist"));
             mAllSongs = Parcels.unwrap(intent.getParcelableExtra("songs"));
+            ROUNDS_IN_CURRENT_GAME = mAllSongs.size();
             mCurrentPlayer = Parcels.unwrap(intent.getParcelableExtra("player"));
             mCurrentRound = checkRound();
             mRoundSongs = createSongArray(mAllSongs);
@@ -97,7 +98,6 @@ public class GameRoundActivity extends AppCompatActivity implements OnChoiceSele
             mPointsScorable = POINTS_PER_ROUND;
         }
 
-        ROUNDS_IN_CURRENT_GAME = mAllSongs.size();
 
         setImage(this);
         mPointsTextView.setText("points: "+ mPointsScorable);
@@ -126,10 +126,9 @@ public class GameRoundActivity extends AppCompatActivity implements OnChoiceSele
         mCurrentRound = previousRound + 1;
         preferenceEditor.putInt(Constants.PREFERENCES_ROUND_NUMBER_KEY, mCurrentRound).apply();
         mFirebasePlayerRef = new Firebase(Constants.FIREBASE_URL_PLAYERS);
-        Log.d(TAG, "Round: " + mCurrentRound);
-        if (mCurrentRound == ROUNDS_IN_CURRENT_GAME) {
+
+        if (mCurrentRound >= ROUNDS_IN_CURRENT_GAME) {
             mCurrentPlayer.resetScore();
-            Log.d(TAG, "FRESH SCORE: "+mCurrentPlayer.getScore());
             mFirebasePlayerRef.child(mCurrentPlayer.getPushId()).setValue(mCurrentPlayer);
             Intent intent = new Intent(GameRoundActivity.this, TopScoresActivity.class);
             startActivity(intent);
@@ -146,7 +145,6 @@ public class GameRoundActivity extends AppCompatActivity implements OnChoiceSele
             Song song = allSongs.get(i);
             String title = song.getTitle();
             boolean played = song.hasBeenPlayed();
-            Log.d(TAG, "Song: " + title + " played? " + played);
             if (roundSongs.size() == 4) {
                 break;
             } else if (roundSongs.size() < 3) {
@@ -205,8 +203,6 @@ public class GameRoundActivity extends AppCompatActivity implements OnChoiceSele
             mCurrentPlayer.setTopScore(mCurrentPlayer.getScore());
         }
 
-        Log.d(TAG, "CURRENT PLAYER: " + mFirebasePlayerRef);
-
         mFirebasePlayerRef.child(mCurrentPlayer.getPushId()).setValue(mCurrentPlayer);
 
         for (int i=0; i<mRoundSongs.size(); i++) {
@@ -235,8 +231,6 @@ public class GameRoundActivity extends AppCompatActivity implements OnChoiceSele
     }
 
     private void syncRoundTimerWithSongAndPoints(ArrayList<Song> roundSongs) {
-
-        Log.d(TAG, "ROUND SONGS IS NULL: " + (roundSongs == null));
 
         //        ERROR HANDLING FOR SONG RETREIVAL
         if (roundSongs.size() > 0) {
@@ -323,6 +317,7 @@ public class GameRoundActivity extends AppCompatActivity implements OnChoiceSele
             Intent intent = new Intent(GameRoundActivity.this, GameRoundActivity.class);
             intent.putExtra("songs", Parcels.wrap(mAllSongs));
             intent.putExtra("artist", Parcels.wrap(mArtist));
+            intent.putExtra("player", Parcels.wrap(mCurrentPlayer));
             startActivity(intent);
         }
     }
@@ -347,13 +342,25 @@ public class GameRoundActivity extends AppCompatActivity implements OnChoiceSele
         final TextView toastText = (TextView) layout.findViewById(R.id
                 .toastText);
         toastText.setText(string);
-        Toast toast = new Toast(getApplicationContext());
+        final Toast toast = new Toast(getApplicationContext());
         toast.setGravity(Gravity.CENTER_VERTICAL, 0, 275);
         Log.d(TAG, "LENGTH OF TOAST: " + length);
         if(length.equalsIgnoreCase("short")) {
-            toast.setDuration(Toast.LENGTH_SHORT);
+            Handler handler = new Handler();
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    toast.cancel();
+                }
+            }, 500);
         } else {
-            toast.setDuration(Toast.LENGTH_SHORT);
+            Handler handler = new Handler();
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    toast.cancel();
+                }
+            }, 1500);
         }
         toast.setView(layout);
         toast.show();
