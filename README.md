@@ -1,11 +1,11 @@
-# True North
+# TUNE PURSUIT
 
-## Trivia game tests users for knowledge of longitudinal aptitude
+## Trivia game tests users knowledge of famous or obscure music
 #### By Tyler Suderman
 
 
 ## description
-True North is a game conceptualized written and designed entirely by [Tyler Suderman](https://www.linkedin.com/in/tylersuderman). It utilizes technologies necessary for creating modern Android apps like persistent data through firebase and multiple api calls, along with JAVA conventions and a strong understanding of other programming and debugging principles.
+Tune Pursuit is a game conceptualized written and designed entirely by [Tyler Suderman](https://www.linkedin.com/in/tylersuderman). The intention for the project was to work with API calls, callbacks, JSON, activity lifecycles, and UX design with XML.
 
 ## Installation Instructions
 
