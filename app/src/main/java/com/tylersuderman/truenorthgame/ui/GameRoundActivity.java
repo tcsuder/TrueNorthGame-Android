@@ -11,6 +11,10 @@ import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.Gravity;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -27,6 +31,7 @@ import com.tylersuderman.truenorthgame.util.OnChoiceSelectedListener;
 
 import org.parceler.Parcels;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Collections;
 
@@ -49,10 +54,11 @@ public class GameRoundActivity extends AppCompatActivity implements OnChoiceSele
     private Artist mArtist;
     private ArrayList<Song> mRoundSongs = new ArrayList<>();
     private ArrayList<Song> mAllSongs = new ArrayList<>();
+    private Song mRightAnswerSong;
     private Player mCurrentPlayer;
     private Firebase mFirebasePlayerRef;
-
     private MediaPlayer mMediaPlayer;
+    private Boolean mOrientationChange = false;
     private int mCurrentRound;
     private String mAudioPath;
     private int mCountdownTime;
@@ -67,23 +73,33 @@ public class GameRoundActivity extends AppCompatActivity implements OnChoiceSele
         setContentView(R.layout.activity_game_round);
         ButterKnife.bind(this);
 
+        if(savedInstanceState !=null) {
+            mOrientationChange = true;
+            mArtist = Parcels.unwrap(savedInstanceState.getParcelable("artist"));
+            mAllSongs = Parcels.unwrap(savedInstanceState.getParcelable("allSongs"));
+            mRoundSongs = Parcels.unwrap(savedInstanceState.getParcelable("roundSongs"));
+            mRightAnswerSong = Parcels.unwrap(savedInstanceState.getParcelable("rightAnswerSong"));
+            mCurrentPlayer = Parcels.unwrap(savedInstanceState.getParcelable("currentPlayer"));
+            mCurrentRound = savedInstanceState.getInt("currentRound");
+            mCountdownTime = savedInstanceState.getInt("countdownTime");
+            mPointsScorable = savedInstanceState.getInt("pointsScorable");
 
-        Intent intent = getIntent();
-        mArtist = Parcels.unwrap(intent.getParcelableExtra("artist"));
-        setImage(this);
-        mAllSongs = Parcels.unwrap(intent.getParcelableExtra("songs"));
-        mCurrentPlayer = Parcels.unwrap(intent.getParcelableExtra("player"));
+        } else {
+            Intent intent = getIntent();
+            mArtist = Parcels.unwrap(intent.getParcelableExtra("artist"));
+            mAllSongs = Parcels.unwrap(intent.getParcelableExtra("songs"));
+            mCurrentPlayer = Parcels.unwrap(intent.getParcelableExtra("player"));
+            mCurrentRound = checkRound();
+            mRoundSongs = createSongArray(mAllSongs);
+            mCountdownTime = MILLIS_PER_ROUND;
+            mPointsScorable = POINTS_PER_ROUND;
+        }
 
-        mCurrentRound = checkRound();
         ROUNDS_IN_CURRENT_GAME = mAllSongs.size();
-        mRoundSongs = createSongArray(mAllSongs);
 
-        mCountdownTime = MILLIS_PER_ROUND;
-        mPointsScorable = POINTS_PER_ROUND;
+        setImage(this);
         mPointsTextView.setText("points: "+ mPointsScorable);
         mCountdownTextView.setText("time: " + (mCountdownTime/1000));
-
-
         mTimerHandler = new android.os.Handler();
         mTimer = new Runnable() {
             @Override
@@ -97,7 +113,6 @@ public class GameRoundActivity extends AppCompatActivity implements OnChoiceSele
         } catch (ClassCastException e) {
             throw new ClassCastException(this.toString() + e.getMessage());
         }
-
     }
 
     private int checkRound() {
@@ -138,6 +153,7 @@ public class GameRoundActivity extends AppCompatActivity implements OnChoiceSele
                 if(!song.hasBeenPlayed() && !unplayedSongLoaded) {
                     song.setToPlayed();
                     song.setRightAnswer();
+                    mRightAnswerSong = song;
                     unplayedSongLoaded = true;
                 }
             } else {
@@ -146,6 +162,7 @@ public class GameRoundActivity extends AppCompatActivity implements OnChoiceSele
                 } else if (!song.hasBeenPlayed()) {
                     song.setToPlayed();
                     song.setRightAnswer();
+                    mRightAnswerSong = song;
                     roundSongs.add(song);
                 } else {
                     Log.d(TAG, "skipped song");
@@ -168,12 +185,18 @@ public class GameRoundActivity extends AppCompatActivity implements OnChoiceSele
         Song selectedSong = selection;
         if(selectedSong.isRightAnswer()){
             mCurrentPlayer.addToScore(mPointsScorable);
-            Toast.makeText(GameRoundActivity.this, "YEP!", Toast.LENGTH_SHORT).show();
+            final String[] strings = {"YEP!", "GREAT JOB!", "WAY TO GO!", "SO SMART!", "NOT BAD!"};
+            final int index = (int) Math.floor(Math.random() * strings.length);
+            final String string = strings[index];
+            customToast(string);
         } else {
             if (mCurrentPlayer.getScore() > 50) {
                 mCurrentPlayer.subtractFromScore(mPointsScorable);
             }
-            Toast.makeText(GameRoundActivity.this, "NOPE!", Toast.LENGTH_SHORT).show();
+            final String[] strings = {"NOT QUITE!", "NOPE!", "NOT RIGHT!"};
+            final int index = (int) Math.floor(Math.random() * strings.length);
+            final String string = strings[index];
+            customToast(string);
         }
 
         if (mCurrentPlayer.getScore() > mCurrentPlayer.getTopScore()) {
@@ -212,12 +235,7 @@ public class GameRoundActivity extends AppCompatActivity implements OnChoiceSele
 
         //        ERROR HANDLING FOR SONG RETREIVAL
         if (roundSongs.size() > 0) {
-            for (int i=0; i<roundSongs.size(); i++) {
-                Song song = roundSongs.get(i);
-                if (song.isRightAnswer()) {
-                    mAudioPath = song.getPreview();
-                }
-            }
+            mAudioPath = mRightAnswerSong.getPreview();
         } else {
             Toast.makeText(GameRoundActivity.this, "Async error: please choose artist again.",
                     Toast.LENGTH_SHORT).show();
@@ -245,6 +263,10 @@ public class GameRoundActivity extends AppCompatActivity implements OnChoiceSele
                         public void run() {
 
                             //        PLAY SONG
+                            if (mOrientationChange) {
+                                final int lastPause = MILLIS_PER_ROUND - mCountdownTime;
+                                mMediaPlayer.seekTo(lastPause);
+                            }
                             mMediaPlayer.start();
                             showGuessRoundSongs();
                             recursiveDisplayRoundPointsTimer();
@@ -313,11 +335,38 @@ public class GameRoundActivity extends AppCompatActivity implements OnChoiceSele
                 .into(mArtistImageView);
     }
 
+    public void customToast(String string) {
+        LayoutInflater inflater = getLayoutInflater();
+        final View layout = inflater.inflate(R.layout.toast_custom,
+                (ViewGroup) findViewById(R.id.toast_layout_root));
+        final TextView toastText = (TextView) layout.findViewById(R.id
+                .toastText);
+        toastText.setText(string);
+        Toast toast = new Toast(getApplicationContext());
+        toast.setGravity(Gravity.CENTER_VERTICAL, 0, 275);
+        toast.setDuration(Toast.LENGTH_SHORT);
+        toast.setView(layout);
+        toast.show();
+    }
+
     @Override
     protected void onPause() {
         super.onPause();
         mTimerHandler.removeCallbacks(mTimer);
         mMediaPlayer.stop();
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putParcelable("artist", Parcels.wrap(mArtist));
+        outState.putParcelable("roundSongs", Parcels.wrap(mRoundSongs));
+        outState.putParcelable("allSongs", Parcels.wrap(mAllSongs));
+        outState.putParcelable("rightAnswerSong", Parcels.wrap(mRightAnswerSong));
+        outState.putParcelable("currentPlayer", Parcels.wrap(mCurrentPlayer));
+        outState.putInt("currentRound", mCurrentRound);
+        outState.putInt("countdownTime", mCountdownTime);
+        outState.putInt("pointsScorable", mPointsScorable);
     }
 }
 
