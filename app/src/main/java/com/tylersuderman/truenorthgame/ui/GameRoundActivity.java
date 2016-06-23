@@ -32,7 +32,6 @@ import com.tylersuderman.truenorthgame.util.OnChoiceSelectedListener;
 
 import org.parceler.Parcels;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Collections;
 
@@ -131,6 +130,7 @@ public class GameRoundActivity extends AppCompatActivity implements OnChoiceSele
             mCurrentPlayer.resetScore();
             mFirebasePlayerRef.child(mCurrentPlayer.getPushId()).setValue(mCurrentPlayer);
             Intent intent = new Intent(GameRoundActivity.this, TopScoresActivity.class);
+            intent.putExtra("gameOver", true);
             startActivity(intent);
         }
         return mCurrentRound;
@@ -205,12 +205,7 @@ public class GameRoundActivity extends AppCompatActivity implements OnChoiceSele
 
         mFirebasePlayerRef.child(mCurrentPlayer.getPushId()).setValue(mCurrentPlayer);
 
-        for (int i=0; i<mRoundSongs.size(); i++) {
-            Song song = mRoundSongs.get(i);
-            if (song.isRightAnswer()) {
-                song.unsetRightAnswer();
-            }
-        }
+        mRightAnswerSong.unsetRightAnswer();
 
         if (mCurrentRound != ROUNDS_IN_CURRENT_GAME) {
             final Intent intent = getIntent();
@@ -337,14 +332,13 @@ public class GameRoundActivity extends AppCompatActivity implements OnChoiceSele
 
     public void customToast(String string, String length) {
         LayoutInflater inflater = getLayoutInflater();
-        final View layout = inflater.inflate(R.layout.toast_custom,
+        final View layout = inflater.inflate(R.layout.toast_custom_game_round,
                 (ViewGroup) findViewById(R.id.toast_layout_root));
         final TextView toastText = (TextView) layout.findViewById(R.id
                 .toastText);
         toastText.setText(string);
         final Toast toast = new Toast(getApplicationContext());
         toast.setGravity(Gravity.CENTER_VERTICAL, 0, 275);
-        Log.d(TAG, "LENGTH OF TOAST: " + length);
         if(length.equalsIgnoreCase("short")) {
             Handler handler = new Handler();
             handler.postDelayed(new Runnable() {

@@ -1,12 +1,20 @@
 package com.tylersuderman.truenorthgame.ui;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
+import android.graphics.drawable.Drawable;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 
 import com.firebase.client.DataSnapshot;
 import com.firebase.client.Firebase;
@@ -39,6 +47,8 @@ public class TopScoresActivity extends AppCompatActivity {
     private static final int MAX_HEIGHT = 700;
     private Firebase mFirebasePlayersRef;
     private Handler mHandler;
+    private boolean mGameOver;
+    private int mCalls;
     private ArrayList<Player> mfirebasePlayers = new ArrayList<>();
 
     @Bind(R.id.artistImageView) ImageView mArtistImageView;
@@ -46,6 +56,8 @@ public class TopScoresActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Intent intent = getIntent();
+        mGameOver = intent.getBooleanExtra("gameOver", false);
         setContentView(R.layout.activity_top_scores);
         ButterKnife.bind(this);
         getTopScores();
@@ -111,18 +123,24 @@ public class TopScoresActivity extends AppCompatActivity {
                 Log.d(TAG, "response: " + responseArray.get(0).getName());
                 int size = responseArray.size();
 
-                if (size > 0) {
-                    final Artist artist = responseArray.get(0);
-                    setImage(TopScoresActivity.this, artist);
-                }
-
-                mHandler.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        scrollArtistPics();
+                if (mCalls == 3 && mGameOver) {
+                    Intent intent = new Intent(TopScoresActivity.this, MainActivity.class);
+                    startActivity(intent);
+                } else {
+                    if (size > 0) {
+                        final Artist artist = responseArray.get(0);
+                        setImage(TopScoresActivity.this, artist);
+                        mCalls ++;
                     }
-                }, 3000);
-
+                    if (mCalls < 15) {
+                        mHandler.postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                scrollArtistPics();
+                            }
+                        }, 3000);
+                    }
+                }
             }
         });
     }
