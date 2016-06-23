@@ -5,71 +5,75 @@
     android:layout_height="match_parent"
     tools:context="com.tylersuderman.truenorthgame.ui.MainActivity">
 
-    <LinearLayout
-        android:orientation="vertical"
+    <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true">
-
-
-        <TextView
+        android:fillViewport="true">
+        <LinearLayout
+            android:orientation="vertical"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="TUNE PERSUIT"
-            android:id="@+id/appTitleTextView"
-            android:textStyle="bold"
-            android:textSize="50dp"
+            android:layout_height="match_parent"
             android:layout_alignParentTop="true"
-            android:layout_centerHorizontal="true"
-            android:layout_marginTop="35dp"
-            android:textColor="@color/colorSecondaryDark"
-            android:gravity="center"/>
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="A MUSIC TRIVIA GAME!"
-            android:id="@+id/appSubtitleTextView"
-            android:layout_below="@+id/appTitleTextView"
-            android:layout_centerHorizontal="true"
-            android:textSize="30dp"
-            android:textColor="@color/colorSecondaryDark"
-            android:gravity="center"/>
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true">
 
 
-        <EditText
-            android:layout_width="292dp"
-            android:layout_height="wrap_content"
-            android:id="@+id/artistNameEditText"
-            android:singleLine="true"
-            android:layout_marginTop="39dp"
-            android:hint="artist name"
-            android:layout_below="@+id/appSubtitleTextView"
-            android:layout_alignLeft="@+id/appSubtitleTextView"
-            android:layout_alignStart="@+id/appSubtitleTextView"
-            android:layout_alignRight="@+id/appSubtitleTextView"
-            android:layout_alignEnd="@+id/appSubtitleTextView"
-            android:layout_gravity="center_horizontal"/>
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="TUNE PURSUIT"
+                android:id="@+id/appTitleTextView"
+                android:textStyle="bold"
+                android:textSize="50dp"
+                android:layout_alignParentTop="true"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="35dp"
+                android:textColor="@color/colorSecondaryDark"
+                android:gravity="center"/>
 
-        <Button
-            android:layout_width="299dp"
-            android:layout_height="wrap_content"
-            android:text="play"
-            android:id="@+id/playButton"
-            android:background="@drawable/quick_play_button"
-            android:layout_marginTop="20dp"
-            android:layout_below="@+id/artistNameEditText"
-            android:layout_alignRight="@+id/artistNameEditText"
-            android:layout_alignEnd="@id/appTitleTextView"
-            android:layout_alignLeft="@+id/appTitleTextView"
-            android:layout_alignStart="@+id/appTitleTextView"
-            android:textSize="20sp"
-            android:layout_gravity="center_horizontal"/>
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="A MUSIC TRIVIA GAME!"
+                android:id="@+id/appSubtitleTextView"
+                android:layout_below="@+id/appTitleTextView"
+                android:layout_centerHorizontal="true"
+                android:textSize="30dp"
+                android:textColor="@color/colorSecondaryDark"
+                android:gravity="center"/>
 
-    </LinearLayout>
 
+            <EditText
+                android:layout_width="292dp"
+                android:layout_height="wrap_content"
+                android:id="@+id/artistNameEditText"
+                android:singleLine="true"
+                android:layout_marginTop="39dp"
+                android:hint="artist name"
+                android:layout_below="@+id/appSubtitleTextView"
+                android:layout_alignLeft="@+id/appSubtitleTextView"
+                android:layout_alignStart="@+id/appSubtitleTextView"
+                android:layout_alignRight="@+id/appSubtitleTextView"
+                android:layout_alignEnd="@+id/appSubtitleTextView"
+                android:layout_gravity="center_horizontal"/>
+
+            <Button
+                android:layout_width="299dp"
+                android:layout_height="wrap_content"
+                android:text="play"
+                android:id="@+id/playButton"
+                android:background="@drawable/quick_play_button"
+                android:layout_marginTop="20dp"
+                android:layout_below="@+id/artistNameEditText"
+                android:layout_alignRight="@+id/artistNameEditText"
+                android:layout_alignEnd="@id/appTitleTextView"
+                android:layout_alignLeft="@+id/appTitleTextView"
+                android:layout_alignStart="@+id/appTitleTextView"
+                android:textSize="20sp"
+                android:layout_gravity="center_horizontal"/>
+
+        </LinearLayout>
+    </ScrollView>
 
     <Button
         android:layout_width="fill_parent"

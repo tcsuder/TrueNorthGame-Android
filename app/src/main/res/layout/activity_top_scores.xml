@@ -6,13 +6,22 @@
     tools:context="com.tylersuderman.truenorthgame.ui.TopScoresActivity">
 
     <ImageView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/imageView5"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:id="@+id/artistImageView"
         android:layout_alignParentTop="true"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:src="@drawable/backgroundinverse1" />
+        android:scaleType="centerCrop" />
+
+    <ImageView
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:id="@+id/backgroundGradientImageView"
+        android:layout_alignTop="@+id/artistImageView"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:src="@drawable/background_gradient_top_scores" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -23,12 +32,11 @@
         android:textStyle="bold"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
-        android:textColor="@color/colorSecondaryDark" />
+        android:textColor="@color/colorAccentGreen" />
 
     <ListView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_margin="20dp"
         android:id="@+id/topScoresListView"
         android:layout_below="@+id/topScoresTitleTextView"
         android:layout_centerHorizontal="true" />

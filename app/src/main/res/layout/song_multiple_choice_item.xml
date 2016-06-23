@@ -9,7 +9,7 @@
         android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@drawable/background_gradient"
+        android:background="@drawable/background_gradient_game"
         android:layout_marginTop="10dp"
         android:layout_marginBottom="10dp"
         android:padding="10dp">

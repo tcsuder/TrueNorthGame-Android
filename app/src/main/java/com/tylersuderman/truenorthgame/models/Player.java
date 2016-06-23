@@ -51,16 +51,19 @@ public class Player {
     //    FAKE DATA
 
     public static ArrayList<Player> getPlayers() {
-        Player tom = new Player("Tom");
+        Player tom = new Player("Tom k");
         tom.setFakeScore();
-        Player tracy = new Player("Tracy");
+        Player tracy = new Player("Tracy k");
         tracy.setFakeScore();
-        Player tim = new Player("Tim");
+        Player tim = new Player("Tim k");
         tim.setFakeScore();
-        Player devona = new Player("Devona");
+        Player devona = new Player("Devona R");
         devona.setFakeScore();
-        Player lawdyJean = new Player("Jean");
+        Player lawdyJean = new Player("Jean S");
         lawdyJean.setFakeScore();
+        Player steve = new Player("Steve W");
+        steve.setFakeScore();
+        Player grant = new Player("Grant F");
 
         ArrayList<Player> players = new ArrayList<>();
         players.add(tom);
@@ -68,6 +71,8 @@ public class Player {
         players.add(tim);
         players.add(devona);
         players.add(lawdyJean);
+        players.add(steve);
+        players.add(grant);
 
         return players;
     }

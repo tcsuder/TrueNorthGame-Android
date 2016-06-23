@@ -13,7 +13,7 @@ android:layout_height="match_parent"
         android:text="Name"
         android:shadowColor="@color/colorSecondaryDark"
         android:textStyle="bold"
-        android:textColor="@color/colorSecondaryDark" />
+        android:textColor="@color/colorTextIcons" />
 
     <TextView
         android:id="@+id/playerScore"
@@ -26,5 +26,5 @@ android:layout_height="match_parent"
         android:text="Score"
         android:layout_weight="0.97"
         android:shadowColor="@color/colorPrimaryDark"
-        android:textColor="@color/colorPrimaryDark" />
+        android:textColor="@color/colorAccentGreen" />
 </LinearLayout>

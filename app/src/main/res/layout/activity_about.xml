@@ -7,144 +7,118 @@
     tools:context="com.tylersuderman.truenorthgame.ui.AboutActivity">
 
     <ImageView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/imageView3"
-        android:layout_alignParentTop="true"
-        android:src="@drawable/backgroundinverse2" />
-
-    <ImageView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/imageView4"
-        android:src="@drawable/background1"
-        android:layout_alignTop="@+id/imageView3"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/backgroundGradientImageView"
+        android:layout_alignTop="@+id/artistImageView"
         android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true" />
+        android:layout_alignParentEnd="true"
+        android:src="@drawable/background_gradient_top_scores" />
 
     <LinearLayout
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_margin="25dp"
-        android:background="@drawable/about_background"
-        android:layout_centerHorizontal="true"
-        android:layout_alignParentTop="true">
+        android:layout_marginRight="2dp">
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="HOW TO PLAY"
-            android:id="@+id/HowToTitleTextView"
-            android:layout_gravity="center_horizontal"
-            android:textStyle="bold"
-            android:textSize="30dp"
-            android:textColor="@color/colorPrimaryLight" />
 
-        <TextView
-            android:layout_width="264dp"
-            android:layout_height="wrap_content"
-            android:text="1. True North gives you two cities."
-            android:id="@+id/howToTextView1"
-            android:layout_marginTop="10dp"
-            android:layout_gravity="center_horizontal"
-            android:textColor="@color/colorTextIcons"
-            android:textStyle="bold" />
+    <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true">
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginLeft="25dp"
+                android:layout_marginRight="25dp"
+                android:gravity="center_horizontal"
+                android:layout_centerHorizontal="true"
+                android:layout_alignParentTop="true"
+                android:id="@+id/linearLayout">
 
-        <TextView
-            android:layout_width="264dp"
-            android:layout_height="wrap_content"
-            android:text="2. You guess which is the northernmost."
-            android:id="@+id/howToTextView2"
-            android:layout_gravity="center_horizontal"
-            android:textColor="@color/colorTextIcons"
-            android:textStyle="bold" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="30dp"
+                    android:text="TUNE PURSUIT"
+                    android:id="@+id/aboutTitleTextView"
+                    android:layout_gravity="center_horizontal"
+                    android:textStyle="bold"
+                    android:textSize="40sp"
+                    android:textColor="@color/colorAccentGreen"
+                    android:textAlignment="center"/>
 
-        <TextView
-            android:layout_width="264dp"
-            android:layout_height="wrap_content"
-            android:text="3. Repeat 10 times for a round."
-            android:id="@+id/howToTextView3"
-            android:layout_gravity="center_horizontal"
-            android:textColor="@color/colorTextIcons"
-            android:textStyle="bold" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Tune Pursuit is a game by me, Tyler Suderman. Tune Pursuit was written and designed at Epicodus, a vocational school for web development. The aim of the project was to familiarize myself with third party API’s, user Authentication, activity lifecycle, state, XML design, and other major android development principles."
+                    android:id="@+id/aboutTextView"
+                    android:layout_gravity="center_horizontal"
+                    android:textStyle="bold"
+                    android:textColor="@color/colorTextIcons"
+                    android:textSize="15sp"
+                    android:textAlignment="center"
+                    android:layout_marginTop="10dp"/>
 
-        <TextView
-            android:layout_width="264dp"
-            android:layout_height="wrap_content"
-            android:text="4. Get better at trivia one round at a time!"
-            android:id="@+id/howToTextView4"
-            android:layout_gravity="center_horizontal"
-            android:textColor="@color/colorTextIcons"
-            android:textStyle="bold" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="35dp"
+                    android:text="MORE INFO"
+                    android:id="@+id/aboutMoreInfoTextView"
+                    android:layout_gravity="center_horizontal"
+                    android:textStyle="bold"
+                    android:textSize="40sp"
+                    android:textColor="@color/colorAccentGreen"
+                    android:textAlignment="center"/>
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="30dp"
-            android:text="ABOUT TUNE PURSUIT"
-            android:id="@+id/aboutTitleTextView"
-            android:layout_gravity="center_horizontal"
-            android:textStyle="bold"
-            android:textSize="30dp"
-            android:textColor="@color/colorPrimaryLight" />
+                <Button
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="True North Repo"
+                    android:id="@+id/repoLinkButton"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginTop="10dp"
+                    android:textSize="20sp"
+                    android:textStyle="bold"
+                    android:background="@android:color/transparent"
+                    android:textColor="@color/colorTextIcons"
+                    android:clickable="true"
+                    android:elegantTextHeight="false"
+                    android:allowUndo="true" />
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="True North is a game by Tyler Suderman, written and designed at Epicodus, a vocational school for web development. More info:"
-            android:id="@+id/aboutTextView"
-            android:layout_gravity="center_horizontal"
-            android:layout_margin="10dp"
-            android:textStyle="bold"
-            android:textColor="@color/colorTextIcons"
-            android:textSize="15dp" />
+                <Button
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Other Projects"
+                    android:id="@+id/gitHubLinkButton"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginTop="10dp"
+                    android:textSize="20sp"
+                    android:textStyle="bold"
+                    android:background="@android:color/transparent"
+                    android:textColor="@color/colorTextIcons"
+                    android:clickable="true"
+                    android:elegantTextHeight="false"
+                    android:allowUndo="true" />
 
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="True North Repo"
-            android:id="@+id/repoLinkButton"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginTop="10dp"
-            android:textSize="20dp"
-            android:textStyle="bold"
-            android:background="@android:color/transparent"
-            android:textColor="@color/colorPrimaryLight"
-            android:clickable="true"
-            android:elegantTextHeight="false"
-            android:allowUndo="true" />
+                <Button
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="LinkedIn"
+                    android:id="@+id/linkdInLinkButton"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginTop="10dp"
+                    android:textSize="20sp"
+                    android:textStyle="bold"
+                    android:background="@android:color/transparent"
+                    android:textColor="@color/colorTextIcons"
+                    android:clickable="true"
+                    android:elegantTextHeight="false"
+                    android:allowUndo="true" />
 
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Other Projects"
-            android:id="@+id/gitHubLinkButton"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginTop="20dp"
-            android:textSize="20dp"
-            android:textStyle="bold"
-            android:background="@android:color/transparent"
-            android:textColor="@color/colorPrimaryLight"
-            android:clickable="true"
-            android:elegantTextHeight="false"
-            android:allowUndo="true" />
-
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="LinkedIn"
-            android:id="@+id/linkdInLinkButton"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginTop="20dp"
-            android:textSize="20dp"
-            android:textStyle="bold"
-            android:background="@android:color/transparent"
-            android:textColor="@color/colorPrimaryLight"
-            android:clickable="true"
-            android:elegantTextHeight="false"
-            android:allowUndo="true" />
-
+            </LinearLayout>
+        </ScrollView>
     </LinearLayout>
-
 </RelativeLayout>
