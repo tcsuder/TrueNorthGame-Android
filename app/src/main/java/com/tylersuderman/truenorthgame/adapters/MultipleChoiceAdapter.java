@@ -1,30 +1,14 @@
 package com.tylersuderman.truenorthgame.adapters;
 
 import android.content.Context;
-import android.content.Intent;
-import android.content.SharedPreferences;
-import android.preference.PreferenceManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import android.widget.Toast;
-
-import com.firebase.client.DataSnapshot;
-import com.firebase.client.Firebase;
-import com.firebase.client.FirebaseError;
-import com.firebase.client.ValueEventListener;
-import com.tylersuderman.truenorthgame.Constants;
 import com.tylersuderman.truenorthgame.R;
-import com.tylersuderman.truenorthgame.models.Artist;
-import com.tylersuderman.truenorthgame.models.Player;
 import com.tylersuderman.truenorthgame.models.Song;
-import com.tylersuderman.truenorthgame.ui.GameRoundActivity;
 import com.tylersuderman.truenorthgame.util.OnChoiceSelectedListener;
-
-import org.parceler.Parcels;
 
 import java.util.ArrayList;
 
@@ -71,7 +55,6 @@ public class MultipleChoiceAdapter  extends RecyclerView.Adapter<MultipleChoiceA
 
     public class ChoiceViewHolder extends RecyclerView.ViewHolder {
         @Bind(R.id.songTitleTextView) TextView mSongTitleTextView;
-        private Context mContext;
 
         public ChoiceViewHolder(View itemView) {
             super(itemView);

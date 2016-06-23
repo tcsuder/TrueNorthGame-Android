@@ -11,14 +11,13 @@
         android:layout_height="match_parent"
         android:layout_alignParentTop="true"
         android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_above="@+id/slide_menu_fragment">
+        android:layout_alignParentStart="true">
 
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="TUNE PERSUIT"
+            android:text="TUNE PURSUIT"
             android:id="@+id/appTitleTextView"
             android:textStyle="bold"
             android:textSize="50dp"
@@ -70,7 +69,6 @@
             android:layout_gravity="center_horizontal"/>
 
     </LinearLayout>
-
 
     <Button
         android:layout_width="fill_parent"

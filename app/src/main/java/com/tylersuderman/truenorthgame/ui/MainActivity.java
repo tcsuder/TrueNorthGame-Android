@@ -169,7 +169,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     public void customToast(String string) {
         LayoutInflater inflater = getLayoutInflater();
-        final View layout = inflater.inflate(R.layout.toast_custom,
+        final View layout = inflater.inflate(R.layout.toast_custom_main_activity,
                 (ViewGroup) findViewById(R.id.toast_layout_root));
         final TextView toastText = (TextView) layout.findViewById(R.id
                 .toastText);
@@ -213,6 +213,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 break;
             case R.id.topScoresButton:
                 Intent topScoresIntent = new Intent(MainActivity.this, TopScoresActivity.class);
+                topScoresIntent.putExtra("gameOver", false);
                 startActivity(topScoresIntent);
             default:
                 break;
