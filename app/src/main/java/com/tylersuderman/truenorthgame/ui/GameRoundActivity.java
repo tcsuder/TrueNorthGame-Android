@@ -80,9 +80,11 @@ public class GameRoundActivity extends AppCompatActivity implements OnChoiceSele
             mRoundSongs = Parcels.unwrap(savedInstanceState.getParcelable("roundSongs"));
             mRightAnswerSong = Parcels.unwrap(savedInstanceState.getParcelable("rightAnswerSong"));
             mCurrentPlayer = Parcels.unwrap(savedInstanceState.getParcelable("currentPlayer"));
+            Log.d(TAG, "CURRENT PLAYER: " + mCurrentPlayer);
             mCurrentRound = savedInstanceState.getInt("currentRound");
             mCountdownTime = savedInstanceState.getInt("countdownTime");
             mPointsScorable = savedInstanceState.getInt("pointsScorable");
+            mFirebasePlayerRef = new Firebase(Constants.FIREBASE_URL_PLAYERS);
 
         } else {
             Intent intent = getIntent();
@@ -188,7 +190,7 @@ public class GameRoundActivity extends AppCompatActivity implements OnChoiceSele
             final String[] strings = {"YEP!", "GREAT JOB!", "WAY TO GO!", "SO SMART!", "NOT BAD!"};
             final int index = (int) Math.floor(Math.random() * strings.length);
             final String string = strings[index];
-            customToast(string);
+            customToast(string, "long");
         } else {
             if (mCurrentPlayer.getScore() > 50) {
                 mCurrentPlayer.subtractFromScore(mPointsScorable);
@@ -196,12 +198,15 @@ public class GameRoundActivity extends AppCompatActivity implements OnChoiceSele
             final String[] strings = {"NOT QUITE!", "NOPE!", "NOT RIGHT!"};
             final int index = (int) Math.floor(Math.random() * strings.length);
             final String string = strings[index];
-            customToast(string);
+            customToast(string, "long");
         }
 
         if (mCurrentPlayer.getScore() > mCurrentPlayer.getTopScore()) {
             mCurrentPlayer.setTopScore(mCurrentPlayer.getScore());
         }
+
+        Log.d(TAG, "CURRENT PLAYER: " + mFirebasePlayerRef);
+
         mFirebasePlayerRef.child(mCurrentPlayer.getPushId()).setValue(mCurrentPlayer);
 
         for (int i=0; i<mRoundSongs.size(); i++) {
@@ -335,7 +340,7 @@ public class GameRoundActivity extends AppCompatActivity implements OnChoiceSele
                 .into(mArtistImageView);
     }
 
-    public void customToast(String string) {
+    public void customToast(String string, String length) {
         LayoutInflater inflater = getLayoutInflater();
         final View layout = inflater.inflate(R.layout.toast_custom,
                 (ViewGroup) findViewById(R.id.toast_layout_root));
@@ -344,7 +349,12 @@ public class GameRoundActivity extends AppCompatActivity implements OnChoiceSele
         toastText.setText(string);
         Toast toast = new Toast(getApplicationContext());
         toast.setGravity(Gravity.CENTER_VERTICAL, 0, 275);
-        toast.setDuration(Toast.LENGTH_SHORT);
+        Log.d(TAG, "LENGTH OF TOAST: " + length);
+        if(length.equalsIgnoreCase("short")) {
+            toast.setDuration(Toast.LENGTH_SHORT);
+        } else {
+            toast.setDuration(Toast.LENGTH_SHORT);
+        }
         toast.setView(layout);
         toast.show();
     }
@@ -367,6 +377,11 @@ public class GameRoundActivity extends AppCompatActivity implements OnChoiceSele
         outState.putInt("currentRound", mCurrentRound);
         outState.putInt("countdownTime", mCountdownTime);
         outState.putInt("pointsScorable", mPointsScorable);
+    }
+
+    @Override
+    public void onBackPressed() {
+        customToast("no cheating...", "short");
     }
 }
 
