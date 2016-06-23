@@ -57,22 +57,13 @@ public class Player {
         tracy.setFakeScore();
         Player tim = new Player("Tim k");
         tim.setFakeScore();
-        Player devona = new Player("Devona R");
-        devona.setFakeScore();
-        Player lawdyJean = new Player("Jean S");
-        lawdyJean.setFakeScore();
-        Player steve = new Player("Steve W");
-        steve.setFakeScore();
-        Player grant = new Player("Grant F");
+
 
         ArrayList<Player> players = new ArrayList<>();
         players.add(tom);
         players.add(tracy);
         players.add(tim);
-        players.add(devona);
-        players.add(lawdyJean);
-        players.add(steve);
-        players.add(grant);
+
 
         return players;
     }

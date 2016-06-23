@@ -287,7 +287,6 @@ public class GameRoundActivity extends AppCompatActivity implements OnChoiceSele
             mCountdownTime -= Math.floor(MILLIS_PER_ROUND/60);
             if ((mCountdownTime % 1000) == 0 && mCountdownTime < (MILLIS_PER_ROUND - 50)) {
                 mCountdownTextView.setText("time: "+ mCountdownTime/1000);
-                Log.d(TAG, "TICK TOCK " + mCountdownTime);
             }
             if ((mCountdownTime % 300) == 0) {
                 if (mPointsScorable > Math.floor(POINTS_PER_ROUND /15)) {
@@ -304,7 +303,6 @@ public class GameRoundActivity extends AppCompatActivity implements OnChoiceSele
             for (int i=0; i<mRoundSongs.size(); i++) {
                 Song song = mRoundSongs.get(i);
                 if (song.isRightAnswer()) {
-                    Log.d(TAG, "The answer was: " + song.getTitle());
                     song.unsetRightAnswer();
                 }
             }

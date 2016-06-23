@@ -45,7 +45,6 @@ public class SpotifyService extends AppCompatActivity {
 
     public static void unauthorizeUser(Context context) {
         AuthenticationClient.clearCookies(context);
-        Log.d(TAG, "LOGOUT");
     }
 
     public static void spotifyUserAuth(Activity activity, String clientId, String redirectUri,
@@ -67,7 +66,6 @@ public class SpotifyService extends AppCompatActivity {
         if (requestCode == Constants.REQUEST_CODE) {
 
             AuthenticationResponse response = AuthenticationClient.getResponse(resultCode, intent);
-            Log.d(TAG, "RESPONSE TOKEN TYPE: " + response.getType());
             switch (response.getType()) {
                 // Response was successful and contains auth token
                 case TOKEN:
@@ -150,8 +148,6 @@ public class SpotifyService extends AppCompatActivity {
                 .url(url)
                 .build();
 
-        Log.d(TAG, "FIND ARTIST URL " + url);
-
         Call call = client.newCall(request);
         call.enqueue(callback);
     }
@@ -202,7 +198,6 @@ public class SpotifyService extends AppCompatActivity {
                 .header("Authorization", "Bearer " + token)
                 .build();
 
-        Log.d(TAG, "FIND USER REQUEST" + request);
 
         Call call = client.newCall(request);
         call.enqueue(callback);
@@ -280,7 +275,6 @@ public class SpotifyService extends AppCompatActivity {
 
             for (int i=secondPrin+1; i>=firstPrin; i--) {
                 characterArray.remove(i);
-                Log.d(TAG, "CHARACTER ARRAY BEING SHORTENED: " + characterArray);
             }
             for (String s : characterArray) {
                 resultWord.append(s);
@@ -302,17 +296,14 @@ public class SpotifyService extends AppCompatActivity {
             chopItUp = new ArrayList<>(Arrays.asList(title.split
                     (takeOutStrings[i])));
             title = chopItUp.get(0);
-            Log.d(TAG, "CHOP CHOP: " + chopItUp);
         }
 
         return title;
     }
 
     private static String shortenTitle(String title) {
-        Log.d(TAG, "OLD TITLE: " + title);
         String noUnwantedSubstringstitle = removeUnwantedSubstrings(title);
         String noPrinsTitle = recursiveRemovePrins(noUnwantedSubstringstitle);
-        Log.d(TAG, "NEW TITLE: " + noPrinsTitle);
         return noPrinsTitle;
     }
 
@@ -367,7 +358,6 @@ public class SpotifyService extends AppCompatActivity {
             e.printStackTrace();
         }
         Collections.shuffle(songs);
-        Log.d(TAG, "SONG LIST LENGTH FROM BUILDER: " + songs.size());
         return songs;
     }
 }
